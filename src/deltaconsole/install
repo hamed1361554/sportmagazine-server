@@ -1,0 +1,58 @@
+#!/bin/sh
+
+if test -z "$1"; then
+    INSTALLPATH="/usr/local/"
+else
+    INSTALLPATH=$1
+fi
+
+INSTALLPATH="$INSTALLPATH/deltaconsole/"
+
+echo ""
+echo "Copying files to $INSTALLPATH ..."
+echo ""
+
+mkdir "-p" "$INSTALLPATH"
+[ "$?" != 0 ] && exit $?
+
+chmod "+x" "console.py"
+[ "$?" != 0 ] && exit $?
+
+if [ -e "Pyro" ]; then
+    python -c "import Pyro" > /dev/null 2>&1
+    if [ $? != 0 ]; then
+    	cp "-rf" "Pyro" "$INSTALLPATH"
+    	[ "$?" != 0 ] && exit $?
+    fi
+fi
+
+cp "-f" *.py $INSTALLPATH
+cp "-f" *.ice $INSTALLPATH
+cp "-rf" hooks $INSTALLPATH
+
+ln "-sf" "$INSTALLPATH/console.py" "/usr/bin/dsc"
+[ "$?" != 0 ] && exit $?
+
+ln "-sf" "$INSTALLPATH/console.py" "/usr/bin/deltaconsole"
+[ "$?" != 0 ] && exit $?
+
+mkdir -p /etc/deltaconsole/
+[ "$?" != 0 ] && exit $?
+
+if [ ! -e /etc/deltaconsole/services.conf ]; then
+    cp "-f" services.conf "/etc/deltaconsole/"
+fi
+if [ ! -e /etc/deltaconsole/alias.conf ]; then
+    cp "-f" alias.conf "/etc/deltaconsole/"
+fi
+
+
+echo "Installation of delta console completed successfully"
+echo "You can now run the console by invoking: 'deltaconsole' or 'dsc'"
+echo ""
+echo "Note: For uninstalling, simply remove the installed files in"
+echo "      $INSTALLPATH and /usr/bin/deltaconsole"
+echo ""
+
+exit 0
+

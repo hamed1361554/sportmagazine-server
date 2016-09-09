@@ -1,0 +1,8 @@
+from deltapy.packaging.package import Package
+
+{component_id}
+
+class {package_name}Package(Package):
+    '''
+    '''
+        

@@ -1,0 +1,130 @@
+2016-09-09 18:24:30,989 - authentication - ERROR - authenticator : 133 - Exception : Expected unicode, found <type 'str'>: 'hamed'
+Traceback (most recent call last):
+  File "E:/Git-Projects/SportMagazineServer/src\deltapy\security\authentication\authenticator.py", line 100, in login
+    user = security_services.get_user(user_name)
+  File "E:/Git-Projects/SportMagazineServer/src\deltapy\security\services\__init__.py", line 69, in get_user
+    return get_component(APP_SECURITY).get_user(id)
+  File "E:/Git-Projects/SportMagazineServer/src\deltapy\transaction\decorators.py", line 29, in new_func
+    result = old_func(*args, **kwds)
+  File "E:/Git-Projects/SportMagazineServer/src\server\security\manager.py", line 98, in get_user
+    user = store.find(UserEntity, And(UserEntity.id == id)).one()
+  File "E:/Git-Projects/SportMagazineServer/src\storm\expr.py", line 412, in __eq__
+    other = getattr(self, "variable_factory", Variable)(value=other)
+  File "E:/Git-Projects/SportMagazineServer/src\storm\variables.py", line 148, in __init__
+    self.set(value, from_db)
+  File "E:/Git-Projects/SportMagazineServer/src\storm\variables.py", line 222, in set
+    new_value = self.parse_set(value, from_db)
+  File "E:/Git-Projects/SportMagazineServer/src\storm\variables.py", line 396, in parse_set
+    % (type(value), value))
+TypeError: Expected unicode, found <type 'str'>: 'hamed'
+2016-09-09 18:24:30,990 - requestprocessor - ERROR - base_processor : 221 - User[hamed@127.0.0.1],Channel[None] Login failed: Expected unicode, found <type 'str'>: 'hamed'
+2016-09-09 18:24:30,992 - communicator - ERROR - communicator : 238 - Traceback (most recent call last):
+  File "E:/Git-Projects/SportMagazineServer/src\deltapy\communication\communicator.py", line 235, in login
+    return request_processor.login(login_request)
+  File "E:/Git-Projects/SportMagazineServer/src\deltapy\request_processor\services\__init__.py", line 114, in login
+    return get_component(APP_REQUEST_PROCESSOR).login(login_request)
+  File "E:/Git-Projects/SportMagazineServer/src\deltapy\request_processor\manager.py", line 167, in login
+    return self.get_processor().login(login_request)
+  File "E:/Git-Projects/SportMagazineServer/src\deltapy\request_processor\multithread\processor.py", line 51, in login
+    return login(login_request)
+  File "E:/Git-Projects/SportMagazineServer/src\deltapy\request_processor\base_processor.py", line 194, in login
+    **login_request['options'])
+  File "E:/Git-Projects/SportMagazineServer/src\deltapy\event_system\decorators.py", line 20, in new_func
+    return event_services.fire(event_name, *args, **kwds)
+  File "E:/Git-Projects/SportMagazineServer/src\deltapy\event_system\services\__init__.py", line 35, in fire
+    return get_component(EVENT_MANAGER).fire(event_name, *args, **kwargs)
+  File "E:/Git-Projects/SportMagazineServer/src\deltapy\event_system\manager.py", line 80, in fire
+    return event.fire(*args, **kwargs)
+  File "E:/Git-Projects/SportMagazineServer/src\deltapy\event_system\event.py", line 53, in fire
+    params['result'] = self._function(*args, **kwargs)
+  File "E:/Git-Projects/SportMagazineServer/src\deltapy\security\authentication\services\__init__.py", line 36, in login
+    return get_component(APP_AUTHENTICATOR).login(user_name, password, **options)
+  File "E:/Git-Projects/SportMagazineServer/src\deltapy\security\authentication\authenticator.py", line 134, in login
+    raise AuthenticationException(str(error))
+AuthenticationException: Expected unicode, found <type 'str'>: 'hamed'
+
+2016-09-09 18:26:18,217 - authentication - ERROR - authenticator : 133 - Exception : Expected unicode, found <type 'str'>: 'hamed'
+Traceback (most recent call last):
+  File "E:/Git-Projects/SportMagazineServer/src\deltapy\security\authentication\authenticator.py", line 100, in login
+    user = security_services.get_user(user_name)
+  File "E:/Git-Projects/SportMagazineServer/src\deltapy\security\services\__init__.py", line 69, in get_user
+    return get_component(APP_SECURITY).get_user(id)
+  File "E:/Git-Projects/SportMagazineServer/src\deltapy\transaction\decorators.py", line 29, in new_func
+    result = old_func(*args, **kwds)
+  File "E:/Git-Projects/SportMagazineServer/src\server\security\manager.py", line 98, in get_user
+    user = store.find(UserEntity, And(UserEntity.id == id)).one()
+  File "E:/Git-Projects/SportMagazineServer/src\storm\expr.py", line 412, in __eq__
+    other = getattr(self, "variable_factory", Variable)(value=other)
+  File "E:/Git-Projects/SportMagazineServer/src\storm\variables.py", line 148, in __init__
+    self.set(value, from_db)
+  File "E:/Git-Projects/SportMagazineServer/src\storm\variables.py", line 222, in set
+    new_value = self.parse_set(value, from_db)
+  File "E:/Git-Projects/SportMagazineServer/src\storm\variables.py", line 396, in parse_set
+    % (type(value), value))
+TypeError: Expected unicode, found <type 'str'>: 'hamed'
+2016-09-09 18:26:18,220 - requestprocessor - ERROR - base_processor : 221 - User[hamed@127.0.0.1],Channel[None] Login failed: Expected unicode, found <type 'str'>: 'hamed'
+2016-09-09 18:26:18,221 - communicator - ERROR - communicator : 238 - Traceback (most recent call last):
+  File "E:/Git-Projects/SportMagazineServer/src\deltapy\communication\communicator.py", line 235, in login
+    return request_processor.login(login_request)
+  File "E:/Git-Projects/SportMagazineServer/src\deltapy\request_processor\services\__init__.py", line 114, in login
+    return get_component(APP_REQUEST_PROCESSOR).login(login_request)
+  File "E:/Git-Projects/SportMagazineServer/src\deltapy\request_processor\manager.py", line 167, in login
+    return self.get_processor().login(login_request)
+  File "E:/Git-Projects/SportMagazineServer/src\deltapy\request_processor\multithread\processor.py", line 51, in login
+    return login(login_request)
+  File "E:/Git-Projects/SportMagazineServer/src\deltapy\request_processor\base_processor.py", line 194, in login
+    **login_request['options'])
+  File "E:/Git-Projects/SportMagazineServer/src\deltapy\event_system\decorators.py", line 20, in new_func
+    return event_services.fire(event_name, *args, **kwds)
+  File "E:/Git-Projects/SportMagazineServer/src\deltapy\event_system\services\__init__.py", line 35, in fire
+    return get_component(EVENT_MANAGER).fire(event_name, *args, **kwargs)
+  File "E:/Git-Projects/SportMagazineServer/src\deltapy\event_system\manager.py", line 80, in fire
+    return event.fire(*args, **kwargs)
+  File "E:/Git-Projects/SportMagazineServer/src\deltapy\event_system\event.py", line 53, in fire
+    params['result'] = self._function(*args, **kwargs)
+  File "E:/Git-Projects/SportMagazineServer/src\deltapy\security\authentication\services\__init__.py", line 36, in login
+    return get_component(APP_AUTHENTICATOR).login(user_name, password, **options)
+  File "E:/Git-Projects/SportMagazineServer/src\deltapy\security\authentication\authenticator.py", line 134, in login
+    raise AuthenticationException(str(error))
+AuthenticationException: Expected unicode, found <type 'str'>: 'hamed'
+
+2016-09-09 18:27:05,226 - requestprocessor - ERROR - base_processor : 221 - User[hamed@127.0.0.1],Channel[None] Login failed: Expected unicode, found <type 'str'>: 'hamed'
+2016-09-09 18:27:05,232 - communicator - ERROR - communicator : 238 - Traceback (most recent call last):
+  File "E:/Git-Projects/SportMagazineServer/src\deltapy\communication\communicator.py", line 235, in login
+    return request_processor.login(login_request)
+  File "E:/Git-Projects/SportMagazineServer/src\deltapy\request_processor\services\__init__.py", line 114, in login
+    return get_component(APP_REQUEST_PROCESSOR).login(login_request)
+  File "E:/Git-Projects/SportMagazineServer/src\deltapy\request_processor\manager.py", line 167, in login
+    return self.get_processor().login(login_request)
+  File "E:/Git-Projects/SportMagazineServer/src\deltapy\request_processor\multithread\processor.py", line 51, in login
+    return login(login_request)
+  File "E:/Git-Projects/SportMagazineServer/src\deltapy\request_processor\base_processor.py", line 194, in login
+    **login_request['options'])
+  File "E:/Git-Projects/SportMagazineServer/src\deltapy\event_system\decorators.py", line 20, in new_func
+    return event_services.fire(event_name, *args, **kwds)
+  File "E:/Git-Projects/SportMagazineServer/src\deltapy\event_system\services\__init__.py", line 35, in fire
+    return get_component(EVENT_MANAGER).fire(event_name, *args, **kwargs)
+  File "E:/Git-Projects/SportMagazineServer/src\deltapy\event_system\manager.py", line 80, in fire
+    return event.fire(*args, **kwargs)
+  File "E:/Git-Projects/SportMagazineServer/src\deltapy\event_system\event.py", line 53, in fire
+    params['result'] = self._function(*args, **kwargs)
+  File "E:/Git-Projects/SportMagazineServer/src\deltapy\security\authentication\services\__init__.py", line 36, in login
+    return get_component(APP_AUTHENTICATOR).login(user_name, password, **options)
+  File "E:/Git-Projects/SportMagazineServer/src\deltapy\security\authentication\authenticator.py", line 100, in login
+    user = security_services.get_user(user_name)
+  File "E:/Git-Projects/SportMagazineServer/src\deltapy\security\services\__init__.py", line 69, in get_user
+    return get_component(APP_SECURITY).get_user(id)
+  File "E:/Git-Projects/SportMagazineServer/src\deltapy\transaction\decorators.py", line 29, in new_func
+    result = old_func(*args, **kwds)
+  File "E:/Git-Projects/SportMagazineServer/src\server\security\manager.py", line 98, in get_user
+    user = store.find(UserEntity, And(UserEntity.id == id)).one()
+  File "E:/Git-Projects/SportMagazineServer/src\storm\expr.py", line 412, in __eq__
+    other = getattr(self, "variable_factory", Variable)(value=other)
+  File "E:/Git-Projects/SportMagazineServer/src\storm\variables.py", line 148, in __init__
+    self.set(value, from_db)
+  File "E:/Git-Projects/SportMagazineServer/src\storm\variables.py", line 222, in set
+    new_value = self.parse_set(value, from_db)
+  File "E:/Git-Projects/SportMagazineServer/src\storm\variables.py", line 396, in parse_set
+    % (type(value), value))
+TypeError: Expected unicode, found <type 'str'>: 'hamed'
+

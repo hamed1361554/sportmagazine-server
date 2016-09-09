@@ -1,0 +1,15 @@
+from deltapy.application.base import Application
+from deltapy.core import DynamicObject
+
+class {application_class_name}(Application):
+    '''
+    '''
+    
+    def get_version(self):
+        '''
+        Returns application version.
+        
+        @return: str
+        '''
+        
+        return '0.1'

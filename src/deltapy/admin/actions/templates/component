@@ -1,0 +1,9 @@
+from deltapy.application.decorators import register
+from {package_name} import {component_id}
+from {package_name}.{module} import {class_name}
+
+@register({component_id})
+class {class_name}Component({class_name}):
+    '''
+    Component of {class_name}
+    '''

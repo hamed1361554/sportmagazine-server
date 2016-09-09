@@ -1,0 +1,14 @@
+from deltapy.application.services import get_component
+from {package_name} import {component_id} 
+
+def add(a, b):
+    '''
+    Returns a + b
+    
+    @param a: int
+    @param b: int 
+    
+    @return: int
+    '''
+    
+    return get_component({component_id}).add(a, b)

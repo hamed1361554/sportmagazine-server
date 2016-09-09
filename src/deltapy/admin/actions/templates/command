@@ -1,0 +1,15 @@
+from deltapy.commander.decorators import command 
+import {package_name}.services as services 
+
+@command('{package_name}.add')
+def add(a, b):
+    '''
+    Returns a + b
+    
+    @param a: int
+    @param b: int 
+    
+    @return: int
+    '''
+    
+    return services.add(a, b)
