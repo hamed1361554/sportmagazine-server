@@ -16,7 +16,7 @@ __version__ = '0.11.1'
 # in the module but are exported as public interface.
 from werkzeug.exceptions import abort
 from werkzeug.utils import redirect
-from jinja2 import Markup, escape
+from markupsafe import Markup, escape
 
 from .app import Flask, Request, Response
 from .config import Config
@@ -38,7 +38,7 @@ from .signals import signals_available, template_rendered, request_started, \
 
 # We're not exposing the actual json module but a convenient wrapper around
 # it.
-from . import json
+import json
 
 # This was the only thing that flask used to export at one point and it had
 # a more generic name.

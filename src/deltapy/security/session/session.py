@@ -1,8 +1,8 @@
-'''
+"""
 Created on May 18, 2010
 
 @author: Abi.Mohammadi & Majid.Vesal
-'''
+"""
 
 from threading import current_thread
 
@@ -16,9 +16,9 @@ import deltapy.security.session.services as session_services
 import deltapy.unique_id.services as unique_id_services
 
 class SessionException(DeltaException):
-    '''
+    """
     A class for handling session exceptions.
-    '''
+    """
     pass
 
 #class SessionContext(Context):
@@ -47,25 +47,25 @@ class SessionException(DeltaException):
 #        return result
 
 class SessionContext(dict):
-    '''
+    """
     A class for saving some data in session domain.
-    '''
+    """
     
     def __init__(self, session):
-        '''
+        """
         @param session:
-        '''
+        """
         
         super(SessionContext, self).__init__()
         self._ticket = session.get_ticket()
         
     def __setitem__(self, key, value):
-        '''
+        """
         Sets new item or updates existing item in context
-        
+
         @param key:
         @param value:
-        '''
+        """
         result = super(SessionContext, self).__setitem__(key, value)
         
         # Updating session because of this change in session context
@@ -79,9 +79,9 @@ class Session:
     """
 
     class StateEnum:
-        '''
+        """
         A class for defining session state.
-        '''
+        """
         ACTIVE = "Active"
         INACTIVE = "Inactive"
         CLOSED = "Closed"
@@ -101,22 +101,22 @@ class Session:
         self._lifetime = lifetime  # millisecond
         
     def get_client_ip(self):
-        '''
+        """
         Returns the user IP address.
-        '''
+        """
         
         return self._client_ip
         
     def close(self):
-        '''
+        """
         Closes the session.
-        '''
+        """
         session_services.close_session(self)
             
     def active(self, client_request):
-        '''
+        """
         Activates the session. Sets this session to current thread.
-        '''
+        """
         
         self._set_client_request(client_request)
         thread = current_thread()
@@ -124,30 +124,30 @@ class Session:
         session_services.active_session(self)
         
     def _set_client_request(self, client_request):
-        '''
+        """
         Sets call context to session.
-        '''
+        """
         
         if client_request.context is None:
             client_request.context = {}
         self._client_request = copy.deepcopy(client_request)
         
     def get_call_context(self):
-        '''
+        """
         Returns call context.
-        
+
         @return {}
-        '''
+        """
         
         return self._client_request.context
 
     def get_internal_context(self):
-        '''
+        """
         Retunrs internal system context for the current call
 
         @rtype: dict
         @return: internal context dictionary
-        '''
+        """
 
         if not hasattr(self._client_request, 'internal_context') or \
            self._client_request.internal_context is None:
@@ -156,100 +156,99 @@ class Session:
         return self._client_request.internal_context
     
     def get_client_request(self):
-        '''
+        """
         Returns current client request.
-        
+
         @rtype: ClientRequest
         @return: client request
-        '''
+        """
         
         return self._client_request
 
     def get_ticket(self):
-        '''
+        """
         Returns session ID.
-        
+
         @return: str
-        '''
+        """
         
         return self._ticket
     
     def get_id(self):
-        '''
+        """
         Returns session ID.
-        
+
         @return: int
-        '''
+        """
         
         return self._id
-        
 
     def get_user(self):
-        '''
+        """
         Returns the user which creates this session.
-        
+
         @return: user
-        '''
+        """
         
         return security_services.get_user(self._user_id)
     
     def get_user_id(self):
-        '''
+        """
         Returns the user which creates this session.
-        
+
         @return: user
-        '''
+        """
         
         return self._user_id
 
     def update(self):
-        '''
+        """
         Updates session.
-        '''
+        """
         
         session_services.update_session(self)
         
     def cleanup(self):
-        '''
+        """
         Cleanups the session.
-        '''
+        """
         
         session_services.cleanup_session(self)
             
     def get_state(self):
-        '''
+        """
         Returns the session state.
-        
+
         @return: str
-        '''
+        """
         
         return self._state
     
     def set_state(self, state):
-        '''
+        """
         Returns the session state.
-        
+
         @return: str
-        '''
+        """
         
         self._state = state
         self.update()
 
     def get_creation_date(self):
-        '''
+        """
         Returns the session creation date.
-        
-        @return: 
-        '''
+
+        @return:
+        """
         
         return time.ctime(self._create_date)
     
     def get_context(self):
-        '''
+        """
         Returns session context.
-        
+
         @return: SessionContext
-        '''
+        """
         
         return self._context 
     

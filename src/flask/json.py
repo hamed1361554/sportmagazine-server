@@ -15,7 +15,7 @@ from .globals import current_app, request
 from ._compat import text_type, PY2
 
 from werkzeug.http import http_date
-from jinja2 import Markup
+from markupsafe import Markup
 
 # Use the same json implementation as itsdangerous on which we
 # depend anyways.

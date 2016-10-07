@@ -15,7 +15,7 @@ import errno
 
 from werkzeug.utils import import_string
 from ._compat import string_types, iteritems
-from . import json
+import json
 
 
 class ConfigAttribute(object):

@@ -25,7 +25,90 @@
     <option name="FILTER_BY_CURRENT_PROJECT" value="true" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="bda39890-1f43-4527-bcce-6a1e73b208f6" name="Default" comment="" />
+    <list default="true" id="bda39890-1f43-4527-bcce-6a1e73b208f6" name="Default" comment="">
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/server/utils/__init__.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/werkzeug" afterPath="$PROJECT_DIR$/src/werkzeug" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/inspectionProfiles/Project_Default.xml" afterPath="$PROJECT_DIR$/.idea/inspectionProfiles/Project_Default.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/misc.xml" afterPath="$PROJECT_DIR$/.idea/misc.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/deltapy/security/authentication/authenticator.py" afterPath="$PROJECT_DIR$/src/deltapy/security/authentication/authenticator.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/deltapy/security/manager.py" afterPath="$PROJECT_DIR$/src/deltapy/security/manager.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/deltapy/security/session/session.py" afterPath="$PROJECT_DIR$/src/deltapy/security/session/session.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/flask/__init__.py" afterPath="$PROJECT_DIR$/src/flask/__init__.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/flask/app.py" afterPath="$PROJECT_DIR$/src/flask/app.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/flask/config.py" afterPath="$PROJECT_DIR$/src/flask/config.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/flask/json.py" afterPath="$PROJECT_DIR$/src/flask/json.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/flask/sessions.py" afterPath="$PROJECT_DIR$/src/flask/sessions.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/flask/wrappers.py" afterPath="$PROJECT_DIR$/src/flask/wrappers.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/jinja2/__init__.py" afterPath="$PROJECT_DIR$/src/jinja2/__init__.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/jinja2/compiler.py" afterPath="$PROJECT_DIR$/src/jinja2/compiler.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/jinja2/environment.py" afterPath="$PROJECT_DIR$/src/jinja2/environment.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/jinja2/filters.py" afterPath="$PROJECT_DIR$/src/jinja2/filters.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/jinja2/nodes.py" afterPath="$PROJECT_DIR$/src/jinja2/nodes.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/jinja2/optimizer.py" afterPath="$PROJECT_DIR$/src/jinja2/optimizer.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/jinja2/parser.py" afterPath="$PROJECT_DIR$/src/jinja2/parser.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/jinja2/runtime.py" afterPath="$PROJECT_DIR$/src/jinja2/runtime.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/server/model/__init__.py" afterPath="$PROJECT_DIR$/src/server/model/__init__.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/server/security/authenticator.py" afterPath="$PROJECT_DIR$/src/server/security/authenticator.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/server/security/components/__init__.py" afterPath="$PROJECT_DIR$/src/server/security/components/__init__.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/server/security/manager.py" afterPath="$PROJECT_DIR$/src/server/security/manager.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/server/settings/communication.config" afterPath="$PROJECT_DIR$/src/server/settings/communication.config" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/server/settings/logging.config" afterPath="$PROJECT_DIR$/src/server/settings/logging.config" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/server/settings/request_processor.config" afterPath="$PROJECT_DIR$/src/server/settings/request_processor.config" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/server/wsdl/__init__.py" afterPath="$PROJECT_DIR$/src/server/wsdl/__init__.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/server/wsdl/components/__init__.py" afterPath="$PROJECT_DIR$/src/server/wsdl/components/__init__.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/server/wsdl/manager.py" afterPath="$PROJECT_DIR$/src/server/wsdl/manager.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/server/wsdl/service_manager.py" afterPath="$PROJECT_DIR$/src/server/wsdl/service_manager.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/server/wsdl/type_convertor.py" afterPath="$PROJECT_DIR$/src/server/wsdl/type_convertor.py" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/src/werkzeug/werkzeug/__init__.py" afterPath="$PROJECT_DIR$/src/werkzeug/__init__.py" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/src/werkzeug/werkzeug/_compat.py" afterPath="$PROJECT_DIR$/src/werkzeug/_compat.py" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/src/werkzeug/werkzeug/_internal.py" afterPath="$PROJECT_DIR$/src/werkzeug/_internal.py" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/src/werkzeug/werkzeug/_reloader.py" afterPath="$PROJECT_DIR$/src/werkzeug/_reloader.py" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/src/werkzeug/werkzeug/contrib/__init__.py" afterPath="$PROJECT_DIR$/src/werkzeug/contrib/__init__.py" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/src/werkzeug/werkzeug/contrib/atom.py" afterPath="$PROJECT_DIR$/src/werkzeug/contrib/atom.py" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/src/werkzeug/werkzeug/contrib/cache.py" afterPath="$PROJECT_DIR$/src/werkzeug/contrib/cache.py" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/src/werkzeug/werkzeug/contrib/fixers.py" afterPath="$PROJECT_DIR$/src/werkzeug/contrib/fixers.py" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/src/werkzeug/werkzeug/contrib/iterio.py" afterPath="$PROJECT_DIR$/src/werkzeug/contrib/iterio.py" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/src/werkzeug/werkzeug/contrib/jsrouting.py" afterPath="$PROJECT_DIR$/src/werkzeug/contrib/jsrouting.py" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/src/werkzeug/werkzeug/contrib/limiter.py" afterPath="$PROJECT_DIR$/src/werkzeug/contrib/limiter.py" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/src/werkzeug/werkzeug/contrib/lint.py" afterPath="$PROJECT_DIR$/src/werkzeug/contrib/lint.py" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/src/werkzeug/werkzeug/contrib/profiler.py" afterPath="$PROJECT_DIR$/src/werkzeug/contrib/profiler.py" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/src/werkzeug/werkzeug/contrib/securecookie.py" afterPath="$PROJECT_DIR$/src/werkzeug/contrib/securecookie.py" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/src/werkzeug/werkzeug/contrib/sessions.py" afterPath="$PROJECT_DIR$/src/werkzeug/contrib/sessions.py" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/src/werkzeug/werkzeug/contrib/testtools.py" afterPath="$PROJECT_DIR$/src/werkzeug/contrib/testtools.py" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/src/werkzeug/werkzeug/contrib/wrappers.py" afterPath="$PROJECT_DIR$/src/werkzeug/contrib/wrappers.py" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/src/werkzeug/werkzeug/datastructures.py" afterPath="$PROJECT_DIR$/src/werkzeug/datastructures.py" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/src/werkzeug/werkzeug/debug/__init__.py" afterPath="$PROJECT_DIR$/src/werkzeug/debug/__init__.py" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/src/werkzeug/werkzeug/debug/console.py" afterPath="$PROJECT_DIR$/src/werkzeug/debug/console.py" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/src/werkzeug/werkzeug/debug/repr.py" afterPath="$PROJECT_DIR$/src/werkzeug/debug/repr.py" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/src/werkzeug/werkzeug/debug/shared/FONT_LICENSE" afterPath="$PROJECT_DIR$/src/werkzeug/debug/shared/FONT_LICENSE" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/src/werkzeug/werkzeug/debug/shared/console.png" afterPath="$PROJECT_DIR$/src/werkzeug/debug/shared/console.png" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/src/werkzeug/werkzeug/debug/shared/debugger.js" afterPath="$PROJECT_DIR$/src/werkzeug/debug/shared/debugger.js" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/src/werkzeug/werkzeug/debug/shared/jquery.js" afterPath="$PROJECT_DIR$/src/werkzeug/debug/shared/jquery.js" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/src/werkzeug/werkzeug/debug/shared/less.png" afterPath="$PROJECT_DIR$/src/werkzeug/debug/shared/less.png" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/src/werkzeug/werkzeug/debug/shared/more.png" afterPath="$PROJECT_DIR$/src/werkzeug/debug/shared/more.png" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/src/werkzeug/werkzeug/debug/shared/source.png" afterPath="$PROJECT_DIR$/src/werkzeug/debug/shared/source.png" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/src/werkzeug/werkzeug/debug/shared/style.css" afterPath="$PROJECT_DIR$/src/werkzeug/debug/shared/style.css" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/src/werkzeug/werkzeug/debug/shared/ubuntu.ttf" afterPath="$PROJECT_DIR$/src/werkzeug/debug/shared/ubuntu.ttf" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/src/werkzeug/werkzeug/debug/tbtools.py" afterPath="$PROJECT_DIR$/src/werkzeug/debug/tbtools.py" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/src/werkzeug/werkzeug/exceptions.py" afterPath="$PROJECT_DIR$/src/werkzeug/exceptions.py" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/src/werkzeug/werkzeug/filesystem.py" afterPath="$PROJECT_DIR$/src/werkzeug/filesystem.py" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/src/werkzeug/werkzeug/formparser.py" afterPath="$PROJECT_DIR$/src/werkzeug/formparser.py" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/src/werkzeug/werkzeug/http.py" afterPath="$PROJECT_DIR$/src/werkzeug/http.py" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/src/werkzeug/werkzeug/local.py" afterPath="$PROJECT_DIR$/src/werkzeug/local.py" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/src/werkzeug/werkzeug/posixemulation.py" afterPath="$PROJECT_DIR$/src/werkzeug/posixemulation.py" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/src/werkzeug/werkzeug/routing.py" afterPath="$PROJECT_DIR$/src/werkzeug/routing.py" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/src/werkzeug/werkzeug/script.py" afterPath="$PROJECT_DIR$/src/werkzeug/script.py" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/src/werkzeug/werkzeug/security.py" afterPath="$PROJECT_DIR$/src/werkzeug/security.py" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/src/werkzeug/werkzeug/serving.py" afterPath="$PROJECT_DIR$/src/werkzeug/serving.py" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/src/werkzeug/werkzeug/test.py" afterPath="$PROJECT_DIR$/src/werkzeug/test.py" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/src/werkzeug/werkzeug/testapp.py" afterPath="$PROJECT_DIR$/src/werkzeug/testapp.py" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/src/werkzeug/werkzeug/urls.py" afterPath="$PROJECT_DIR$/src/werkzeug/urls.py" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/src/werkzeug/werkzeug/useragents.py" afterPath="$PROJECT_DIR$/src/werkzeug/useragents.py" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/src/werkzeug/werkzeug/utils.py" afterPath="$PROJECT_DIR$/src/werkzeug/utils.py" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/src/werkzeug/werkzeug/wrappers.py" afterPath="$PROJECT_DIR$/src/werkzeug/wrappers.py" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/src/werkzeug/werkzeug/wsgi.py" afterPath="$PROJECT_DIR$/src/werkzeug/wsgi.py" />
+    </list>
     <ignored path="SportMagazineServer.iws" />
     <ignored path=".idea/workspace.xml" />
     <ignored path=".idea/dataSources.local.xml" />
@@ -38,8 +121,8 @@
   </component>
   <component name="ChangesViewManager" flattened_view="true" show_ignored="false" />
   <component name="CoverageDataManager">
-    <SUITE FILE_PATH="coverage/SportMagazineServer$deltaconsole.coverage" NAME="deltaconsole Coverage Results" MODIFIED="1473442155888" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/src/deltaconsole" />
-    <SUITE FILE_PATH="coverage/SportMagazineServer$DebugApp.coverage" NAME="DebugApp Coverage Results" MODIFIED="1473442153458" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/src" />
+    <SUITE FILE_PATH="coverage/SportMagazineServer$deltaconsole.coverage" NAME="deltaconsole Coverage Results" MODIFIED="1474651609863" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/src/deltaconsole" />
+    <SUITE FILE_PATH="coverage/SportMagazineServer$DebugApp.coverage" NAME="DebugApp Coverage Results" MODIFIED="1475259744515" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/src" />
   </component>
   <component name="CreatePatchCommitExecutor">
     <option name="PATCH_PATH" value="" />
@@ -49,23 +132,15 @@
     <favorites_list name="SportMagazineServer" />
   </component>
   <component name="FileEditorManager">
-    <leaf>
-      <file leaf-file-name="authenticator.py" pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/src/deltapy/security/authentication/authenticator.py">
+    <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
+      <file leaf-file-name="manager.py" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/src/server/wsdl/manager.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-578">
-              <caret line="157" column="27" selection-start-line="157" selection-start-column="27" selection-end-line="157" selection-end-column="27" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="manager.py" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/deltapy/security/manager.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="238">
-              <caret line="151" column="0" selection-start-line="151" selection-start-column="0" selection-end-line="151" selection-end-column="0" />
-              <folding />
+            <state relative-caret-position="387">
+              <caret line="89" column="57" selection-start-line="89" selection-start-column="57" selection-end-line="89" selection-end-column="57" />
+              <folding>
+                <element signature="e#55#109#0" expanded="true" />
+              </folding>
             </state>
           </provider>
         </entry>
@@ -73,20 +148,60 @@
       <file leaf-file-name="manager.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/server/security/manager.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="170">
-              <caret line="113" column="82" selection-start-line="113" selection-start-column="82" selection-end-line="113" selection-end-column="82" />
+            <state relative-caret-position="171">
+              <caret line="78" column="0" selection-start-line="78" selection-start-column="0" selection-end-line="78" selection-end-column="0" />
               <folding>
-                <element signature="e#54#88#0" expanded="true" />
+                <element signature="e#54#69#0" expanded="true" />
               </folding>
             </state>
           </provider>
         </entry>
       </file>
       <file leaf-file-name="__init__.py" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/server/model/__init__.py">
+        <entry file="file://$PROJECT_DIR$/src/deltapy/security/commands/__init__.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="205">
-              <caret line="18" column="16" selection-start-line="18" selection-start-column="16" selection-end-line="18" selection-end-column="16" />
+            <state relative-caret-position="462">
+              <caret line="32" column="0" selection-start-line="32" selection-start-column="0" selection-end-line="32" selection-end-column="0" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="decorators.py" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/deltapy/commander/decorators.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="171">
+              <caret line="33" column="0" selection-start-line="33" selection-start-column="0" selection-end-line="33" selection-end-column="0" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="command.py" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/deltapy/commander/command.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="213">
+              <caret line="141" column="0" selection-start-line="141" selection-start-column="0" selection-end-line="141" selection-end-column="0" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="session.py" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/deltapy/security/session/session.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="161">
+              <caret line="252" column="0" selection-start-line="252" selection-start-column="0" selection-end-line="252" selection-end-column="0" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="base_processor.py" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/deltapy/request_processor/base_processor.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="108">
+              <caret line="37" column="0" selection-start-line="37" selection-start-column="0" selection-end-line="37" selection-end-column="0" />
               <folding />
             </state>
           </provider>
@@ -101,25 +216,52 @@
       </list>
     </option>
   </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
       <list>
         <option value="$PROJECT_DIR$/src/server/__init__.py" />
         <option value="$PROJECT_DIR$/src/server/settings/app.config" />
-        <option value="$PROJECT_DIR$/src/server/settings/communication.config" />
         <option value="$PROJECT_DIR$/src/deltapy/communication/ice/__init__.py" />
         <option value="$PROJECT_DIR$/src/deltapy/communication/zmq/__init__.py" />
         <option value="$PROJECT_DIR$/src/deltapy/request_processor/zmq/__init__.py" />
         <option value="$PROJECT_DIR$/src/server/settings/database.config" />
         <option value="$PROJECT_DIR$/src/server/security/__init__.py" />
-        <option value="$PROJECT_DIR$/src/server/security/authenticator.py" />
-        <option value="$PROJECT_DIR$/src/server/security/components/__init__.py" />
         <option value="$PROJECT_DIR$/src/start.py" />
-        <option value="$PROJECT_DIR$/src/deltapy/security/manager.py" />
         <option value="$PROJECT_DIR$/src/deltapy/security/services/__init__.py" />
+        <option value="$PROJECT_DIR$/src/server/security/components/__init__.py" />
+        <option value="$PROJECT_DIR$/src/deltapy/security/session/session.py" />
+        <option value="$PROJECT_DIR$/src/server/wsdl/type_convertor.py" />
+        <option value="$PROJECT_DIR$/src/server/settings/request_processor.config" />
+        <option value="$PROJECT_DIR$/src/server/wsdl/__init__.py" />
+        <option value="$PROJECT_DIR$/src/jinja2/utils.py" />
+        <option value="$PROJECT_DIR$/src/jinja2/nodes.py" />
+        <option value="$PROJECT_DIR$/src/jinja2/filters.py" />
+        <option value="$PROJECT_DIR$/src/jinja2/runtime.py" />
+        <option value="$PROJECT_DIR$/src/jinja2/parser.py" />
+        <option value="$PROJECT_DIR$/src/jinja2/optimizer.py" />
+        <option value="$PROJECT_DIR$/src/jinja2/compiler.py" />
+        <option value="$PROJECT_DIR$/src/jinja2/environment.py" />
+        <option value="$PROJECT_DIR$/src/jinja2/__init__.py" />
+        <option value="$PROJECT_DIR$/src/flask/json.py" />
+        <option value="$PROJECT_DIR$/src/flask/app.py" />
+        <option value="$PROJECT_DIR$/src/flask/wrappers.py" />
+        <option value="$PROJECT_DIR$/src/flask/config.py" />
+        <option value="$PROJECT_DIR$/src/flask/sessions.py" />
+        <option value="$PROJECT_DIR$/src/flask/__init__.py" />
+        <option value="$PROJECT_DIR$/src/server/wsdl/service_manager.py" />
+        <option value="$PROJECT_DIR$/src/server/wsdl/components/__init__.py" />
+        <option value="$PROJECT_DIR$/src/server/settings/communication.config" />
+        <option value="$PROJECT_DIR$/src/server/settings/logging.config" />
+        <option value="$PROJECT_DIR$/src/server/security/authenticator.py" />
+        <option value="$PROJECT_DIR$/src/deltapy/security/manager.py" />
         <option value="$PROJECT_DIR$/src/server/model/__init__.py" />
-        <option value="$PROJECT_DIR$/src/server/security/manager.py" />
+        <option value="$PROJECT_DIR$/src/server/utils/__init__.py" />
         <option value="$PROJECT_DIR$/src/deltapy/security/authentication/authenticator.py" />
+        <option value="$PROJECT_DIR$/src/server/security/manager.py" />
+        <option value="$PROJECT_DIR$/src/server/wsdl/manager.py" />
       </list>
     </option>
   </component>
@@ -135,20 +277,81 @@
     <option name="width" value="1936" />
     <option name="height" value="1056" />
   </component>
-  <component name="ProjectLevelVcsManager" settingsEditedManually="false">
+  <component name="ProjectInspectionProfilesVisibleTreeState">
+    <entry key="Project Default">
+      <profile-state>
+        <expanded-state>
+          <State>
+            <id />
+          </State>
+          <State>
+            <id>CSS</id>
+          </State>
+          <State>
+            <id>Django</id>
+          </State>
+          <State>
+            <id>General</id>
+          </State>
+          <State>
+            <id>GeneralJavaScript</id>
+          </State>
+          <State>
+            <id>HTML</id>
+          </State>
+          <State>
+            <id>Invalid elementsCSS</id>
+          </State>
+          <State>
+            <id>JavaScript</id>
+          </State>
+          <State>
+            <id>JavaScript validity issuesJavaScript</id>
+          </State>
+          <State>
+            <id>Less</id>
+          </State>
+          <State>
+            <id>Python</id>
+          </State>
+          <State>
+            <id>RELAX NG</id>
+          </State>
+          <State>
+            <id>SQL</id>
+          </State>
+          <State>
+            <id>Sass/SCSS</id>
+          </State>
+          <State>
+            <id>TypeScript</id>
+          </State>
+          <State>
+            <id>XML</id>
+          </State>
+        </expanded-state>
+        <selected-state>
+          <State>
+            <id>PyCompatibilityInspection</id>
+          </State>
+        </selected-state>
+      </profile-state>
+    </entry>
+  </component>
+  <component name="ProjectLevelVcsManager" settingsEditedManually="true">
     <OptionsSetting value="true" id="Add" />
     <OptionsSetting value="true" id="Remove" />
     <OptionsSetting value="true" id="Checkout" />
     <OptionsSetting value="true" id="Update" />
     <OptionsSetting value="true" id="Status" />
     <OptionsSetting value="true" id="Edit" />
-    <ConfirmationsSetting value="0" id="Add" />
+    <ConfirmationsSetting value="2" id="Add" />
     <ConfirmationsSetting value="0" id="Remove" />
   </component>
   <component name="ProjectView">
     <navigator currentView="ProjectPane" proportions="" version="1">
       <flattenPackages />
-      <showMembers />
+      <showMembers ProjectPane="true" />
       <showModules />
       <showLibraryContents />
       <hideEmptyPackages />
@@ -202,22 +405,101 @@
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
           </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="SportMagazineServer" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="SportMagazineServer" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="src" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="deltapy" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="security" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="SportMagazineServer" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="SportMagazineServer" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="src" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="deltapy" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="security" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="session" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="session.py" />
+              <option name="myItemType" value="com.jetbrains.python.projectView.PyFileNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="SportMagazineServer" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="SportMagazineServer" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="src" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="deltapy" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="security" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="session" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
         </subPane>
       </pane>
     </panes>
   </component>
   <component name="PropertiesComponent">
     <property name="WebServerToolWindowFactoryState" value="false" />
-    <property name="settings.editor.selected.configurable" value="com.jetbrains.python.configuration.PythonContentEntriesConfigurable" />
+    <property name="settings.editor.selected.configurable" value="com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable" />
     <property name="settings.editor.splitter.proportion" value="0.2" />
     <property name="last_opened_file_path" value="$PROJECT_DIR$/src/deltaconsole/console.py" />
   </component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
+      <recent name="E:\Git-Projects\SportMagazineServer\src\server\wsdl" />
       <recent name="E:\Git-Projects\SportMagazineServer\src" />
     </key>
   </component>
-  <component name="RunManager" selected="Python.deltaconsole">
+  <component name="RunManager" selected="Python.DebugApp">
     <configuration default="true" type="DjangoTestsConfigurationType" factoryName="Django tests">
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
@@ -301,6 +583,12 @@
       <method />
     </configuration>
     <configuration default="true" type="js.build_tools.gulp" factoryName="Gulp.js">
+      <node-interpreter>project</node-interpreter>
+      <node-options />
+      <gulpfile />
+      <tasks />
+      <arguments />
+      <envs />
       <method />
     </configuration>
     <configuration default="true" type="js.build_tools.npm" factoryName="npm">
@@ -452,7 +740,7 @@
       <module name="SportMagazineServer" />
       <EXTENSION ID="PythonCoverageRunConfigurationExtension" enabled="false" sample_coverage="true" runner="coverage.py" />
       <option name="SCRIPT_NAME" value="$PROJECT_DIR$/src/deltaconsole/console.py" />
-      <option name="PARAMETERS" value="-p 9082 -t pyro -u hamed" />
+      <option name="PARAMETERS" value="-p 6082 -t pyro -u hamed" />
       <option name="SHOW_COMMAND_LINE" value="false" />
       <method />
     </configuration>
@@ -463,6 +751,9 @@
   </component>
   <component name="ShelveChangesManager" show_recycled="false">
     <option name="remove_strategy" value="false" />
+  </component>
+  <component name="SvnConfiguration">
+    <configuration />
   </component>
   <component name="TaskManager">
     <task active="true" id="Default" summary="Default task">
@@ -475,248 +766,461 @@
     <servers />
   </component>
   <component name="ToolWindowManager">
-    <frame x="-8" y="-8" width="1936" height="1056" extended-state="7" />
-    <editor active="false" />
+    <frame x="-8" y="-8" width="1936" height="1056" extended-state="6" />
+    <editor active="true" />
     <layout>
-      <window_info id="Project" active="true" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.25266525" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.1913646" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
-      <window_info id="TeamCity" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
-      <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="-1" side_tool="true" content_ui="tabs" />
-      <window_info id="Database" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
-      <window_info id="Python Console" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
-      <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
-      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="TeamCity" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="true" content_ui="tabs" />
+      <window_info id="Database" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="Python Console" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32962137" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32998884" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32962137" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
-      <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
-      <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="-1" side_tool="true" content_ui="tabs" />
-      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.3997773" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
+      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.3975501" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
-      <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="SLIDING" type="SLIDING" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
-      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
+      <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
+      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
     </layout>
   </component>
   <component name="UnknownFeatures">
     <option featureType="com.intellij.fileTypeFactory" implementationName="*.config" />
   </component>
+  <component name="Vcs.Log.UiProperties">
+    <option name="RECENTLY_FILTERED_USER_GROUPS">
+      <collection />
+    </option>
+    <option name="RECENTLY_FILTERED_BRANCH_GROUPS">
+      <collection />
+    </option>
+  </component>
   <component name="VcsContentAnnotationSettings">
     <option name="myLimit" value="2678400000" />
   </component>
+  <component name="VcsManagerConfiguration">
+    <option name="SHOW_DIRTY_RECURSIVELY" value="true" />
+  </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
-      <option name="time" value="3" />
+      <breakpoints>
+        <line-breakpoint enabled="true" type="python-line">
+          <url>file://$PROJECT_DIR$/src/server/security/manager.py</url>
+          <line>34</line>
+          <option name="timeStamp" value="28" />
+        </line-breakpoint>
+      </breakpoints>
+      <default-breakpoints>
+        <breakpoint type="python-exception">
+          <properties notifyOnTerminate="true" exception="BaseException">
+            <option name="notifyOnTerminate" value="true" />
+          </properties>
+        </breakpoint>
+      </default-breakpoints>
+      <option name="time" value="38" />
     </breakpoint-manager>
-    <watches-manager />
+    <watches-manager>
+      <configuration name="PythonConfigurationType">
+        <watch expression="encrypt_sha512(password)" language="Python" />
+      </configuration>
+    </watches-manager>
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/src/deltapy/__init__.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/deltapy/application/__init__.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="6" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/deltapy/config/manager.py">
+    <entry file="file://$PROJECT_DIR$/src/deltapy/packaging/manager.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="170">
-          <caret line="115" column="0" selection-start-line="115" selection-start-column="0" selection-end-line="115" selection-end-column="0" />
-          <folding />
+          <caret line="176" column="36" selection-start-line="176" selection-start-column="36" selection-end-line="176" selection-end-column="36" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/jinja2/nodes.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-2751">
+          <caret line="13" column="3" selection-start-line="13" selection-start-column="3" selection-end-line="13" selection-end-column="3" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/jinja2/utils.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="447">
+          <caret line="531" column="0" selection-start-line="531" selection-start-column="0" selection-end-line="531" selection-end-column="0" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/jinja2/filters.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="170">
+          <caret line="16" column="51" selection-start-line="16" selection-start-column="51" selection-end-line="16" selection-end-column="51" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/jinja2/runtime.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="212">
+          <caret line="15" column="42" selection-start-line="15" selection-start-column="42" selection-end-line="15" selection-end-column="42" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/jinja2/parser.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="191">
+          <caret line="10" column="0" selection-start-line="10" selection-start-column="0" selection-end-line="10" selection-end-column="0" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/jinja2/optimizer.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="191">
+          <caret line="18" column="0" selection-start-line="18" selection-start-column="0" selection-end-line="18" selection-end-column="0" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/jinja2/compiler.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="212">
+          <caret line="18" column="31" selection-start-line="18" selection-start-column="31" selection-end-line="18" selection-end-column="31" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/jinja2/environment.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="212">
+          <caret line="29" column="48" selection-start-line="29" selection-start-column="48" selection-end-line="29" selection-end-column="48" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/jinja2/__init__.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="428">
+          <caret line="56" column="24" selection-start-line="56" selection-start-column="24" selection-end-line="56" selection-end-column="24" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/flask/cli.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="212">
+          <caret line="17" column="0" selection-start-line="17" selection-start-column="0" selection-end-line="17" selection-end-column="0" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/flask/wrappers.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="191">
+          <caret line="14" column="9" selection-start-line="14" selection-start-column="9" selection-end-line="14" selection-end-column="9" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/flask/json.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="231">
+          <caret line="23" column="19" selection-start-line="23" selection-start-column="19" selection-end-line="23" selection-end-column="19" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/flask/config.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="191">
+          <caret line="17" column="0" selection-start-line="17" selection-start-column="0" selection-end-line="17" selection-end-column="0" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/flask/sessions.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="212">
+          <caret line="18" column="29" selection-start-line="18" selection-start-column="29" selection-end-line="18" selection-end-column="29" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/flask/__init__.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="554">
+          <caret line="40" column="0" selection-start-line="40" selection-start-column="0" selection-end-line="40" selection-end-column="0" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/werkzeug/serving.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="359">
+          <caret line="692" column="0" selection-start-line="692" selection-start-column="0" selection-end-line="692" selection-end-column="0" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/werkzeug/_reloader.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="322">
+          <caret line="249" column="0" selection-start-line="249" selection-start-column="0" selection-end-line="249" selection-end-column="0" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/flask/globals.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="233">
+          <caret line="37" column="0" selection-start-line="37" selection-start-column="0" selection-end-line="37" selection-end-column="0" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/deltapy/utils/concurrent.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="504">
+          <caret line="27" column="0" selection-start-line="27" selection-start-column="0" selection-end-line="27" selection-end-column="0" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/server/settings/app.config">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="34">
-          <caret line="2" column="14" selection-start-line="2" selection-start-column="14" selection-end-line="2" selection-end-column="14" />
-          <folding />
+        <state relative-caret-position="0">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/deltapy/communication/ice/__init__.py">
+    <entry file="file://$PROJECT_DIR$/src/server/settings/database.config">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="255">
-          <caret line="17" column="22" selection-start-line="17" selection-start-column="22" selection-end-line="17" selection-end-column="22" />
+        <state relative-caret-position="0">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/server/settings/request_processor.config">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="147">
+          <caret line="7" column="13" selection-start-line="7" selection-start-column="13" selection-end-line="7" selection-end-column="13" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/deltapy/communication/pyro/listener.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1773">
+          <caret line="297" column="0" selection-start-line="297" selection-start-column="0" selection-end-line="297" selection-end-column="0" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/deltaconsole/console.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="150">
+          <caret line="93" column="9" selection-start-line="93" selection-start-column="9" selection-end-line="93" selection-end-column="9" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/deltaconsole/service_manager.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="171">
+          <caret line="183" column="0" selection-start-line="183" selection-start-column="0" selection-end-line="183" selection-end-column="0" />
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/server/settings/communication.config">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="119">
-          <caret line="7" column="0" selection-start-line="7" selection-start-column="0" selection-end-line="7" selection-end-column="0" />
+        <state relative-caret-position="105">
+          <caret line="5" column="6" selection-start-line="5" selection-start-column="6" selection-end-line="5" selection-end-column="6" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://C:/Python27/Lib/site-packages/Pyro/protocol.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="24696">
+          <caret line="1177" column="0" selection-start-line="1177" selection-start-column="0" selection-end-line="1177" selection-end-column="0" />
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/deltapy/communication/zmq/__init__.py">
+    <entry file="file://C:/Python27/Lib/SocketServer.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="238">
-          <caret line="17" column="22" selection-start-line="17" selection-start-column="22" selection-end-line="17" selection-end-column="22" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/deltapy/request_processor/zmq/__init__.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="255">
-          <caret line="15" column="22" selection-start-line="15" selection-start-column="22" selection-end-line="15" selection-end-column="22" />
+        <state relative-caret-position="3150">
+          <caret line="154" column="0" selection-start-line="154" selection-start-column="0" selection-end-line="154" selection-end-column="0" />
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/server/settings/logging.config">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+        <state relative-caret-position="273">
+          <caret line="13" column="11" selection-start-line="13" selection-start-column="11" selection-end-line="13" selection-end-column="11" />
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/server/settings/request_processor.config">
+    <entry file="file://$PROJECT_DIR$/src/werkzeug/exceptions.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+        <state relative-caret-position="290">
+          <caret line="674" column="39" selection-start-line="674" selection-start-column="39" selection-end-line="674" selection-end-column="39" />
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://C:/Python27/Lib/logging/__init__.py">
+    <entry file="file://$USER_HOME$/.PyCharm2016.1/system/python_stubs/-762174762/exceptions.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="170">
-          <caret line="935" column="0" selection-start-line="935" selection-start-column="0" selection-end-line="935" selection-end-column="0" />
+        <state relative-caret-position="191">
+          <caret line="17" column="6" selection-start-line="17" selection-start-column="6" selection-end-line="17" selection-end-column="6" />
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/server/settings/database.config">
+    <entry file="file://$PROJECT_DIR$/src/deltapy/core/__init__.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="221">
-          <caret line="13" column="9" selection-start-line="13" selection-start-column="9" selection-end-line="13" selection-end-column="9" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/server/__init__.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="119">
-          <caret line="7" column="0" selection-start-line="7" selection-start-column="0" selection-end-line="7" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/storm/locals.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/deltapy/utils/__init__.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="170">
-          <caret line="71" column="0" selection-start-line="71" selection-start-column="0" selection-end-line="71" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/server/security/__init__.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="68">
-          <caret line="4" column="3" selection-start-line="4" selection-start-column="3" selection-end-line="4" selection-end-column="3" />
+        <state relative-caret-position="84">
+          <caret line="4" column="25" selection-start-line="4" selection-start-column="25" selection-end-line="4" selection-end-column="25" />
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/server/security/authenticator.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="4" selection-end-column="3" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/server/security/components/__init__.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="68">
-          <caret line="4" column="3" selection-start-line="4" selection-start-column="3" selection-end-line="4" selection-end-column="3" />
+        <state relative-caret-position="735">
+          <caret line="35" column="37" selection-start-line="35" selection-start-column="37" selection-end-line="35" selection-end-column="37" />
           <folding>
-            <element signature="e#54#105#0" expanded="true" />
+            <element signature="e#54#83#0" expanded="false" />
           </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/deltaconsole/console.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-2158">
-          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-          <folding>
-            <element signature="e#921#931#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/start.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="238">
-          <caret line="14" column="23" selection-start-line="14" selection-start-column="23" selection-end-line="14" selection-end-column="23" />
-          <folding>
-            <element signature="e#54#73#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/deltapy/security/services/__init__.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="391">
-          <caret line="79" column="62" selection-start-line="79" selection-start-column="62" selection-end-line="79" selection-end-column="62" />
-          <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/deltapy/security/manager.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="238">
-          <caret line="151" column="0" selection-start-line="151" selection-start-column="0" selection-end-line="151" selection-end-column="0" />
-          <folding />
+        <state relative-caret-position="2856">
+          <caret line="184" column="30" selection-start-line="184" selection-start-column="30" selection-end-line="184" selection-end-column="30" />
+          <folding>
+            <element signature="e#71#85#0" expanded="false" />
+          </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/server/model/__init__.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="205">
-          <caret line="18" column="16" selection-start-line="18" selection-start-column="16" selection-end-line="18" selection-end-column="16" />
+        <state relative-caret-position="273">
+          <caret line="57" column="52" selection-start-line="57" selection-start-column="52" selection-end-line="57" selection-end-column="52" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/werkzeug/local.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="323">
+          <caret line="346" column="0" selection-start-line="346" selection-start-column="0" selection-end-line="346" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/server/wsdl/components/__init__.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="420">
+          <caret line="27" column="8" selection-start-line="27" selection-start-column="8" selection-end-line="27" selection-end-column="8" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/server/utils/__init__.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="471">
+          <caret line="33" column="43" selection-start-line="33" selection-start-column="43" selection-end-line="33" selection-end-column="43" />
+          <folding>
+            <element signature="e#54#67#0" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/flask/app.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="171">
+          <caret line="1639" column="0" selection-start-line="1639" selection-start-column="0" selection-end-line="1639" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://C:/Python27/Lib/site-packages/Pyro/core.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="170">
+          <caret line="383" column="0" selection-start-line="383" selection-start-column="0" selection-end-line="383" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/server/wsdl/service_manager.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="360">
+          <caret line="80" column="0" selection-start-line="80" selection-start-column="0" selection-end-line="80" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/deltapy/security/authentication/authenticator.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="255">
+          <caret line="80" column="49" selection-start-line="80" selection-start-column="49" selection-end-line="80" selection-end-column="49" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/deltapy/request_processor/base_processor.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="108">
+          <caret line="37" column="0" selection-start-line="37" selection-start-column="0" selection-end-line="37" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/deltapy/security/session/session.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="161">
+          <caret line="252" column="0" selection-start-line="252" selection-start-column="0" selection-end-line="252" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/deltapy/security/commands/__init__.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="462">
+          <caret line="32" column="0" selection-start-line="32" selection-start-column="0" selection-end-line="32" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/deltapy/commander/decorators.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="171">
+          <caret line="33" column="0" selection-start-line="33" selection-start-column="0" selection-end-line="33" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/deltapy/commander/command.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="213">
+          <caret line="141" column="0" selection-start-line="141" selection-start-column="0" selection-end-line="141" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/deltapy/security/services/__init__.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="171">
+          <caret line="38" column="0" selection-start-line="38" selection-start-column="0" selection-end-line="38" selection-end-column="0" />
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/server/security/manager.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="170">
-          <caret line="113" column="82" selection-start-line="113" selection-start-column="82" selection-end-line="113" selection-end-column="82" />
+        <state relative-caret-position="171">
+          <caret line="78" column="0" selection-start-line="78" selection-start-column="0" selection-end-line="78" selection-end-column="0" />
           <folding>
-            <element signature="e#54#88#0" expanded="true" />
+            <element signature="e#54#69#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/deltapy/security/authentication/authenticator.py">
+    <entry file="file://$PROJECT_DIR$/src/server/wsdl/manager.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-578">
-          <caret line="157" column="27" selection-start-line="157" selection-start-column="27" selection-end-line="157" selection-end-column="27" />
-          <folding />
+        <state relative-caret-position="387">
+          <caret line="89" column="57" selection-start-line="89" selection-start-column="57" selection-end-line="89" selection-end-column="57" />
+          <folding>
+            <element signature="e#55#109#0" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>

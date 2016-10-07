@@ -12,7 +12,7 @@
 from werkzeug.wrappers import Request as RequestBase, Response as ResponseBase
 from werkzeug.exceptions import BadRequest
 
-from . import json
+import json
 from .globals import _request_ctx_stack
 
 _missing = object()

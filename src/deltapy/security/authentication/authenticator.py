@@ -1,74 +1,96 @@
-'''
+"""
 Created on May 18, 2010
 
 @author: Abi.Mohammadi & Majid.Vesal
-'''
+"""
+
 import time
-from deltapy.core import DeltaObject, DeltaException
+
+from deltapy.caching.decorators import cache
+from deltapy.core import DeltaObject, DeltaException, DeltaEnum, DeltaEnumValue
+from deltapy.security.manager import UserNotFoundException
+
 import deltapy.logging.services as logging
 import deltapy.security.session.services as session_services
-import deltapy.security.services as security_services  
-from deltapy.security.manager import UserNotFoundException
+import deltapy.security.services as security_services
 import deltapy.config.services as config_services
-from deltapy.caching.decorators import cache
 
-#Constants
+# Constants
 IP_ADDRESS_OPTION_KEY = '__IP_ADDRESS__'
 
+
 class AuthenticationException(DeltaException):
-    '''
-    '''
+    """
+    """
+
 
 class UserIsInactiveException(AuthenticationException):
-    '''
-    '''
-    
+    """
+    """
+
+
 class UserIsExpiredException(AuthenticationException):
-    '''
-    '''
+    """
+    """
+
+
+class UserStatusEnum(DeltaEnum):
+    USER_REGISTERED = DeltaEnumValue(0, "User Registered")
+    USER_ACTIVATED = DeltaEnumValue(1, "User Activated")
+    LOGIN_SUCCESSFUL = DeltaEnumValue(2, "Login Successful")
+    LOGIN_FAILED = DeltaEnumValue(3, "Login Failed")
+    LOGOUT_SUCCESSFUL = DeltaEnumValue(4, "Logout Successful")
+    LOGOUT_FAILED = DeltaEnumValue(5, "Logout Failed")
+    USER_DEACTIVATED = DeltaEnumValue(6, "User Deactivated")
+    FORGOTTEN_PASSWORD = DeltaEnumValue(7, "Forgotten Password")
+    WRONG_PASSWORD = DeltaEnumValue(8, "Wrong Password")
+
 
 class BaseAuthenticator(DeltaObject):
-    '''
-    '''
+    """
+    Base Authenticator
+    """
+
     INCORRECT_PASSWORD_DELAY = 2
     logger = logging.get_logger(name = "authentication")
     
     def _check_password_(self, password, user, **options):
-        '''
+        """
         Checks user password and return True if password is correct.
-         
+
         @param password: given password
         @param user: user information
-        @param **options: 
-        
+        @param **options:
+
         @return: bool
-        '''
+        """
+
         raise NotImplementedError()
     
     def _validate_user_(self, user_name, user, **options):
-        '''
+        """
         Validates the user.
-        
-        @param user: user
-        '''
 
-        if not security_services.is_active(user.id):
+        @param user: user
+        """
+
+        if not security_services.is_active(user_name):
             BaseAuthenticator.logger.error('User [{user_name}] is inactive.'.format(user_name = user_name))
             raise UserIsInactiveException(_('User [{user_name}] is inactive.').format(user_name = user_name))
             
-        if security_services.is_expired(user.id):
+        if security_services.is_expired(user_name):
             BaseAuthenticator.logger.error('User [{user_name}] is expired.'.format(user_name = user_name))
             raise UserIsExpiredException(_('User [{user_name}] is expired.').format(user_name = user_name))
 
     def internal_login(self, user_name, **options):
-        '''
+        """
         Logins internally and returns security ticket
-        
+
         @param user_name: user name
-        @param **options:  
-        
+        @param **options:
+
         @return: object
-        '''
+        """
 
         user = None
         try:
@@ -86,15 +108,16 @@ class BaseAuthenticator(DeltaObject):
         return session.get_ticket()
 
     def login(self, user_name, password, **options):
-        '''
+        """
         Logins and returns security ticket
-        
+
         @param user_name: user name
         @param password: user password
-        @param **options:  
-        
+
         @return: object
-        '''
+        """
+
+        user = None
 
         try:
             user = security_services.get_user_by_id(user_name)
@@ -107,12 +130,12 @@ class BaseAuthenticator(DeltaObject):
                 message = 'User[{user_name}] entered invalid password[{password}].'
                 BaseAuthenticator.logger.error(message.format(user_name=user_name,
                                                               password=password))
-                #Delay to prevent brute force.
+                # Delay to prevent brute force.
                 time.sleep(BaseAuthenticator.INCORRECT_PASSWORD_DELAY)
                 raise AuthenticationException(_('User or password is invalid.'))
 
-            #Checking the ip address received in options.
-            self._check_recievied_ip_address(user_name, options)
+            # Checking the ip address received in options.
+            self._check_received_ip_address(user_name, options)
 
             self._validate_user_(user_name, user, **options)
 
@@ -124,27 +147,31 @@ class BaseAuthenticator(DeltaObject):
             message = '[{user_name}@{client_ip}] logged in.'
             BaseAuthenticator.logger.info(message.format(user_name = user_name, 
                                                          client_ip = options.get('client_ip')))
-            return session.get_ticket()
+            ticket = session.get_ticket()
+            self._write_user_log(user,
+                                 UserStatusEnum.LOGIN_SUCCESSFUL,
+                                 message="User [{0}] logged in with ticket [{1}]".format(user_name, ticket))
+            return ticket
         except UserNotFoundException:
-            BaseAuthenticator.logger.error('User[{user_name}] not found.'.format(user_name = user_name))
+            BaseAuthenticator.logger.error('User[{user_name}] not found.'.format(user_name=user_name))
             time.sleep(BaseAuthenticator.INCORRECT_PASSWORD_DELAY)
             raise AuthenticationException(_('User or password is invalid.'))
-        except Exception, error:
-            raise
-            BaseAuthenticator.logger.exception('Exception : {error}'.format(error = error))
+        except Exception as error:
+            BaseAuthenticator.logger.error(error)
+            self._write_user_log(user,
+                                 UserStatusEnum.LOGIN_FAILED,
+                                 message=str(error))
             raise AuthenticationException(str(error))
-            
 
     def authenticate(self, ticket, user_name, **options):
-        '''
+        """
         Authenticates user and ticket.
-        
+
         @param ticket: security ticket
         @param user_name: user name
-        @param **options:  
-        
+
         @return: Session
-        '''
+        """
 
         try:        
             session = session_services.get_session(ticket)
@@ -163,7 +190,7 @@ class BaseAuthenticator(DeltaObject):
                 raise AuthenticationException(_('The user or ticket is invalid'))
 
             # Checking the ip address received in options.
-            self._check_recievied_ip_address(user_name, options)
+            self._check_received_ip_address(user_name, options)
 
             # Checking if ip of session is equal to ip of client.
             ip_in_session = session.get_client_ip()
@@ -191,34 +218,41 @@ class BaseAuthenticator(DeltaObject):
             raise
 
     def logout(self, ticket, user_name, **options):
-        '''
+        """
         Logs off given user.
-        
+
         @param ticket: ticket
         @param user_name: user name
-        @param **options:  
+        """
 
-        '''
+        user = None
         
         try:
+            user = security_services.get_user_by_id(user_name)
             message = 'User [{user_name}@{client_ip}] logged off.'
             BaseAuthenticator.logger.info(message.format(user_name = user_name, 
                                                          client_ip = options.get('client_ip')))
             session = self.authenticate(ticket, user_name, **options)
             session.close()
-        except:
-            import traceback
-            BaseAuthenticator.logger.error(traceback.format_exc())
+
+            self._write_user_log(user,
+                                 UserStatusEnum.LOGOUT_SUCCESSFUL,
+                                 message="User [{0}] with ticket [{1}] logged out".format(user_name, ticket))
+        except Exception as error:
+            BaseAuthenticator.logger.error(error)
+            self._write_user_log(user,
+                                 UserStatusEnum.LOGOUT_FAILED,
+                                 message=str(error))
             raise
 
     @cache
     def get_trusted_ips(self):
-        '''
+        """
         Returns a list of IPs that can be trusted.
-        
+
         @return: List of trusted IPs.
         @rtype: list(str)
-        '''
+        """
         result = set()
         configs = config_services.get_app_config_store()
         if configs.has_key('security', 'trusted_ips'):
@@ -228,11 +262,12 @@ class BaseAuthenticator(DeltaObject):
 
         return result
 
-    def _check_recievied_ip_address(self, user_name, options):
-        '''
+    def _check_received_ip_address(self, user_name, options):
+        """
         Checks if the ip_address option passed from client is valid.
         If so, replaces the original ip with the received one in the options.
-        '''
+        """
+
         client_ip = options.get('client_ip')
         if IP_ADDRESS_OPTION_KEY in options:
             if client_ip not in self.get_trusted_ips():
@@ -247,3 +282,11 @@ class BaseAuthenticator(DeltaObject):
                                                          trusted_ip=client_ip,
                                                          true_ip=options.get(IP_ADDRESS_OPTION_KEY)))
             options.update(client_ip=options.pop(IP_ADDRESS_OPTION_KEY))
+
+    def _write_user_log(self, user, status, **options):
+        """
+        Writes down user activity log.
+
+        @param dict user: user info
+        @param int status: user status
+        """

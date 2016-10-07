@@ -24,7 +24,7 @@ from werkzeug.exceptions import HTTPException, InternalServerError, \
 from .helpers import _PackageBoundObject, url_for, get_flashed_messages, \
      locked_cached_property, _endpoint_from_view_func, find_package, \
      get_debug_flag
-from . import json, cli
+import json, cli
 from .wrappers import Request, Response
 from .config import ConfigAttribute, Config
 from .ctx import RequestContext, AppContext, _AppCtxGlobals

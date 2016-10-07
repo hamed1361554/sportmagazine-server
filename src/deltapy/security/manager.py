@@ -36,11 +36,8 @@ class InternalUser(DeltaObject):
     """
     
     def __init__(self, id):
-        """
+        super(InternalUser, self).__init__()
 
-        @param id:
-        """
-        
         self.id = id
         self.fullname = None
     
@@ -52,19 +49,6 @@ class BaseSecurityManager(DeltaObject):
     
     def __init__(self):
         DeltaObject.__init__(self)
-
-    def encrypt_password(self, id, password, **options):
-        """
-        Encrypts the given password.
-
-        @param id: user ID
-        @param password: user password
-        @param **options:
-
-        @return: str
-        """
-        
-        return str(hashlib.sha512(password + id).hexdigest())
 
     def create_internal_user(self, id, **options):
         """
@@ -187,11 +171,8 @@ class BaseSecurityManager(DeltaObject):
         @param user_id: user ID
         @param new_password: user new password
         """
-        user = session_services.get_current_user()
-        if not self.is_superuser(user.id):
-            raise SecurityManagerException('You are not super user.')
 
-        self.update_user(user_id, password = self.encrypt_password(user_id, new_password))
+        raise NotImplemented()
 
     def change_password(self, user_id, current_password, new_password):
         """
@@ -201,11 +182,7 @@ class BaseSecurityManager(DeltaObject):
         @param new_password: user new password
         """
     
-        user = session_services.get_current_user()
-        if self.encrypt_password(user.id, current_password) != user.password:
-            raise SecurityManagerException('Your password is incorrect.')
-        
-        self.update_user(user.id, password = self.encrypt_password(user.id, new_password))
+        raise NotImplemented()
         
     def create_role(self, name, **options):
         """

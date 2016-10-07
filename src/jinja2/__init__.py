@@ -53,7 +53,8 @@ from jinja2.exceptions import TemplateError, UndefinedError, \
 # decorators and public utilities
 from jinja2.filters import environmentfilter, contextfilter, \
      evalcontextfilter
-from jinja2.utils import Markup, escape, clear_caches, \
+from markupsafe import Mapping, escape
+from jinja2.utils import clear_caches, \
      environmentfunction, evalcontextfunction, contextfunction, \
      is_undefined
 

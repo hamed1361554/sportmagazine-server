@@ -10,7 +10,8 @@
 """
 import os
 import sys
-from jinja2 import nodes
+import nodes
+
 from jinja2.defaults import BLOCK_START_STRING, \
      BLOCK_END_STRING, VARIABLE_START_STRING, VARIABLE_END_STRING, \
      COMMENT_START_STRING, COMMENT_END_STRING, LINE_STATEMENT_PREFIX, \
@@ -25,7 +26,8 @@ from jinja2.compiler import generate, CodeGenerator
 from jinja2.runtime import Undefined, new_context, Context
 from jinja2.exceptions import TemplateSyntaxError, TemplateNotFound, \
      TemplatesNotFound, TemplateRuntimeError
-from jinja2.utils import import_string, LRUCache, Markup, missing, \
+from markupsafe import Mapping
+from jinja2.utils import import_string, LRUCache, missing, \
      concat, consume, internalcode
 from jinja2._compat import imap, ifilter, string_types, iteritems, \
      text_type, reraise, implements_iterator, implements_to_string, \
