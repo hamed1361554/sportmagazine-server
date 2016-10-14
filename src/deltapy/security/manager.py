@@ -90,7 +90,7 @@ class BaseSecurityManager(DeltaObject):
 
         raise NotImplementedError()
     
-    def activate_user(self, id, flag):
+    def activate_user(self, id, flag, **options):
         """
         Active or inactive specified user.
 

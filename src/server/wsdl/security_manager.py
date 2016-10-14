@@ -8,6 +8,8 @@ from flask import Flask, request, abort, jsonify, json
 
 from deltapy.core import DeltaObject
 import deltapy.application.services as services
+from server.utils.encryption import decrypt_aes, encrypt_aes
+from server.wsdl import SUCCESS_RESPONSE
 
 from server.wsdl.service_manager import PyroServer
 
@@ -72,7 +74,7 @@ class FlaskWebServicesManager(DeltaObject):
 
     @staticmethod
     @app.route('/signin', methods=["POST"])
-    def Signin():
+    def signin():
         '''
         Sign in!
         '''
@@ -82,9 +84,44 @@ class FlaskWebServicesManager(DeltaObject):
 
         ticket = pyro_server.login('admin', 'sportmagazineserver')
         options = FlaskWebServicesManager.get_service_options()
+
+        if 'status' in request.json:
+            options['status'] = request.json['status']
+        if 'type' in request.json:
+            options['type'] = request.json['type']
+        if 'mobile' in request.json:
+            options['mobile'] = request.json['mobile']
+        if 'email' in request.json:
+            options['email'] = request.json['email']
+        if 'address' in request.json:
+            options['address'] = request.json['address']
+
         user = pyro_server.execute_ex(ticket, 'admin', 'security.user.create', {},
                                       request.json['user_name'], request.json['password'],
                                       request.json['full_name'], **options)
         pyro_server.logoff(ticket, 'admin')
 
         return jsonify({"user_name": user.get('user_name')})
+
+    @staticmethod
+    @app.route('/activate/<path:input_data>', methods=["GET"])
+    def activate(input_data):
+        '''
+        Activates!
+        '''
+
+        if input_data is None or input_data.strip() == "":
+            abort(400)
+
+        decrypted = decrypt_aes(input_data)
+        user_id, activation_data = decrypted.split('$')
+
+        ticket = pyro_server.login('admin', 'sportmagazineserver')
+        data = pyro_server.execute_ex(ticket, 'admin', 'security.user.activate', {},
+                                      user_id, True, activation_data=activation_data)
+        pyro_server.logoff(ticket, 'admin')
+
+        if data is not None and data.get('result') is not None:
+            return jsonify('activate/{0}'.format(encrypt_aes('{0}${1}'.format(user_id, data.get('result')))))
+
+        return jsonify(SUCCESS_RESPONSE)

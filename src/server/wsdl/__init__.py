@@ -8,6 +8,8 @@ from deltapy.packaging.package import Package
 
 
 SERVER_FLASK_WEB_SERVICES_PROVIDER_MANAGER = 'server.flask.web_services.provider.manager'
+SUCCESS_RESPONSE = "SUCCESSFUL"
+FAILED_RESPONSE = "FAILED"
 
 
 class FlaskWebServicesPackage(Package):

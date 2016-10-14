@@ -66,7 +66,7 @@ def get_user(id):
     return security_services.get_user(id)
 
 @command('security.user.activate')
-def activate_user(id, flag):
+def activate_user(id, flag, **options):
     '''
     Active or inactive specified user. 
     
@@ -74,7 +74,7 @@ def activate_user(id, flag):
     @param flag: activation flag(True or False)
     '''
     
-    return security_services.activate_user(id, flag)
+    return security_services.activate_user(id, flag, **options)
 
 @command('security.user.is_superuser')
 def is_superuser(id):

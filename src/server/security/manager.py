@@ -16,8 +16,10 @@ from deltapy.transaction.services import get_current_transaction_store
 
 import deltapy.unique_id.services as unique_id_services
 
-from server.model import UserEntity
-from server.utils import encrypt_sha512
+from server.model import UserEntity, UserActionEntity
+from server.utils.encryption import encrypt_sha512, verify_sha512
+
+import server.utils.email.services as email_services
 
 
 class UserSecurityException(DeltaException):
@@ -54,7 +56,7 @@ class SecurityManager(BaseSecurityManager):
         '''
 
         store = get_current_transaction_store()
-        return store.get(id)
+        return store.get(UserEntity, id)
 
     def create_user(self, id, password, fullname, **options):
         """
@@ -79,7 +81,7 @@ class SecurityManager(BaseSecurityManager):
         user = UserEntity()
         user.id = unicode(unique_id_services.get_id('uuid'))
         user.user_id = id
-        user.user_name = fullname
+        user.user_full_name = fullname
         user.user_password = unicode(encrypt_sha512(password))
 
         status = options.get('status')
@@ -92,10 +94,27 @@ class SecurityManager(BaseSecurityManager):
             type = UserEntity.UserTypeEnum.NORMAL_USER
         user.user_type = type
 
+        mobile = options.get('mobile')
+        if mobile is None:
+            mobile = ""
+        user.user_mobile = unicode(mobile)
+
+        email = options.get('email')
+        if email is None:
+            raise UserSecurityException("User email can not be nothing.")
+        user.user_email = unicode(email)
+
+        address = options.get('address')
+        if address is None:
+            address = ""
+        user.user_address = unicode(address)
+
         user.user_last_login_date = datetime.datetime(datetime.MINYEAR, 1, 1, 0, 0, 0, 0)
 
         store = get_current_transaction_store()
         store.add(user)
+
+        self.activate_user(user.user_id, True)
 
     def remove_user(self, id):
         """
@@ -128,13 +147,21 @@ class SecurityManager(BaseSecurityManager):
 
         full_name = params.get('full_name')
         if full_name is not None and full_name.strip() != "":
-            user_entity.user_name = full_name
+            user_entity.user_full_name = unicode(full_name)
 
         password = params.get('password')
         if password is not None and password.strip() != "":
-            user.user_password = encrypt_sha512(password)
+            user.user_password = unicode(encrypt_sha512(password))
 
-    def activate_user(self, id, flag):
+        address = params.get('address')
+        if address is None and address.strip() != "":
+            user.user_address = unicode(address)
+
+        mobile = params.get('mobile')
+        if mobile is None and mobile.strip() != "":
+            user.user_mobile = unicode(mobile)
+
+    def activate_user(self, id, flag, **options):
         """
         Active or inactive specified user.
 
@@ -148,11 +175,88 @@ class SecurityManager(BaseSecurityManager):
 
         self._check_invalid_user_names(id)
 
+        store = get_current_transaction_store()
+        activation_data = options.get('activation_data')
+
+        statement = \
+            Select(columns=[UserActionEntity.id,
+                            UserActionEntity.user_action_data,
+                            UserActionEntity.user_action_date],
+                   where=And(UserActionEntity.user_id == user.id,
+                             UserActionEntity.user_action == UserActionEntity.UserActionEnum.ACTIVATE_USER,
+                             UserActionEntity.user_action_status == UserActionEntity.UserActionStatusEnum.ACTION_CREATED),
+                   tables=[UserActionEntity])
+        result = store.execute(statement).get_one()
+
         if self.is_active(id):
             raise UserSecurityException("User is already activated.")
+        else:
+            if activation_data is None or activation_data.strip() == "":
+                if result is None:
+                    now_date = datetime.datetime.now()
+                    activation_date = datetime.datetime(now_date.year, now_date.month, now_date.day,
+                                                        now_date.hour, now_date.minute, now_date.second)
+                    activation_data = self._generate_activation_data(user, activation_date)
+
+                    action_entity = UserActionEntity()
+                    action_entity.id = unicode(unique_id_services.get_id('uuid'))
+                    action_entity.user_action = UserActionEntity.UserActionEnum.ACTIVATE_USER
+                    action_entity.user_action_data = unicode(activation_data)
+                    action_entity.user_action_date = activation_date
+                    action_entity.user_id = user.id
+                    action_entity.user_action_status = UserActionEntity.UserActionStatusEnum.ACTION_CREATED
+                    store.add(action_entity)
+
+                    email_services.send_activation_email(user.user_full_name, user.user_email,
+                                                         "http://localhost:5000/activate/{0}".format(activation_data))
+
+                    return activation_data
+                else:
+                    actions_id, user_action_data, user_action_date = result
+                    email_services.send_activation_email(user.user_full_name, user.user_email,
+                                                         "http://localhost:5000/activate/{0}".format(user_action_data))
+                    return user_action_data
+
+        if result is None:
+            raise UserSecurityException("User Activation Error")
+
+        actions_id, user_action_data, user_action_date = result
+        if (user_action_data != activation_data or
+            not self._verify_activation_data(user, user_action_date, activation_data)):
+            action_entity = store.get(UserActionEntity, actions_id)
+            action_entity.user_action_status = UserActionEntity.UserActionStatusEnum.ACTION_FAILED
+            raise UserSecurityException("User Activation Error")
+
+        if (datetime.datetime.now() - user_action_date).total_seconds() > 24*3600:
+            action_entity = store.get(UserActionEntity, actions_id)
+            action_entity.user_action_status = UserActionEntity.UserActionStatusEnum.ACTION_EXPIRED
+            raise UserSecurityException("User Activation Expired")
 
         user_entity = self._get(user.id)
         user_entity.user_status = UserEntity.UserStatusEnum.USER_ACTIVATED
+
+        action_entity = store.get(UserActionEntity, actions_id)
+        action_entity.user_action_status = UserActionEntity.UserActionStatusEnum.ACTION_COMPLETED
+
+    def _generate_activation_data(self, user, activation_date):
+        '''
+        Generates activation/change password data.
+        '''
+
+        to_be_encrypted = \
+            "{0}]*[{1}]*[{2}".format(user.user_id, activation_date, user.user_password)
+
+        return encrypt_sha512(to_be_encrypted)
+
+    def _verify_activation_data(self, user, activation_date, activation_data):
+        '''
+        Generates activation/change password data.
+        '''
+
+        new_data = \
+            "{0}]*[{1}]*[{2}".format(user.user_id, activation_date, user.user_password)
+
+        return verify_sha512(new_data, activation_data)
 
     def is_active(self, user_id):
         """
@@ -252,7 +356,7 @@ class SecurityManager(BaseSecurityManager):
 
         results = []
         for user in entities:
-            if user.user_name not in ('admin', 'root', 'support'):
+            if user.user_id not in ('admin', 'root', 'support'):
                 results.append(DynamicObject(entity_to_dic(user)))
 
         return results

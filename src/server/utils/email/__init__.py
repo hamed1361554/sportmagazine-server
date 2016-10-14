@@ -7,7 +7,10 @@ Created on Sep 9, 2016
 from deltapy.packaging.package import Package
 
 
-class ServerUtilsPackage(Package):
+SMTP_EMAIL_MANAGER = 'server.utils.email.smpt'
+
+
+class SmtpEmailPackage(Package):
     '''
-    Server Utils Package
+    Smtp Email Package
     '''

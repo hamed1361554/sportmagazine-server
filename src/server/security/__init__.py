@@ -7,7 +7,7 @@ Created on Sep 9, 2016
 from deltapy.packaging.package import Package
 
 
-class SecurityPackage(Package):
+class ServerSecurityPackage(Package):
     """
-
+    Server Security Package
     """

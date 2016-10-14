@@ -79,7 +79,7 @@ def get_user_by_id(user_id):
 
     return get_component(APP_SECURITY).get_user_by_id(user_id)
 
-def activate_user(id, flag):
+def activate_user(id, flag, **options):
     '''
     Active or inactive specified user. 
     
@@ -87,7 +87,7 @@ def activate_user(id, flag):
     @param flag: activation flag(True or False)
     '''
     
-    return get_component(APP_SECURITY).activate_user(id, flag)
+    return get_component(APP_SECURITY).activate_user(id, flag, **options)
 
 
 def is_superuser(id):

@@ -13,7 +13,7 @@ import deltapy.security.session.services as session_services
 import deltapy.transaction.services as transaction_services
 
 from server.model import UserHistoryEntity
-from server.utils import verify_sha512
+from server.utils.encryption import verify_sha512
 
 
 class Authenticator(BaseAuthenticator):
