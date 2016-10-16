@@ -372,6 +372,7 @@ class InvoiceItemEntity(InvoiceItemBaseEntity):
     """
 
     invoice_id = Unicode('INVITMINVOICEID')
+    item_row = Int('INVITMROW')
     item_product_id = Unicode('INVITMPRODUCTID')
     item_price = Decimal('INVITMPRICE')
     item_quantity = Int('INVITMQNTY')
