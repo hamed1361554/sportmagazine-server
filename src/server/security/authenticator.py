@@ -6,13 +6,13 @@ Created on Sep 9, 2016
 
 from datetime import datetime
 
-from deltapy.security.authentication.authenticator import BaseAuthenticator, UserStatusEnum
+from deltapy.security.authentication.authenticator import BaseAuthenticator
 
 import deltapy.unique_id.services as unique_id_services
 import deltapy.security.session.services as session_services
 import deltapy.transaction.services as transaction_services
 
-from server.model import UserHistoryEntity
+from server.model import UserHistoryEntity, UserEntity
 from server.utils.encryption import verify_sha512
 
 
@@ -42,7 +42,7 @@ class Authenticator(BaseAuthenticator):
 
         if not result:
             self._write_user_log(user,
-                                 UserStatusEnum.WRONG_PASSWORD,
+                                 UserHistoryEntity.UserHistoryStatusEnum.WRONG_PASSWORD,
                                  message="User [{0}] entered wrong password [{1}]".format(user.user_id, password))
 
         return result

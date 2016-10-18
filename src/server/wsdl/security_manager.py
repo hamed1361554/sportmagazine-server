@@ -4,22 +4,18 @@ Created on Sep 12, 2016
 @author: Hamed Zekri
 """
 
-from flask import Flask, request, abort, jsonify, json
+from flask import request, abort, jsonify, json
 
 from deltapy.core import DeltaObject
-import deltapy.application.services as services
-from server.utils.encryption import decrypt_aes, encrypt_aes
+
 from server.wsdl import SUCCESS_RESPONSE
-
-from server.wsdl.service_manager import PyroServer
-
-pyro_server = PyroServer("127.0.0.1", "6082")
-app = Flask("flask-{0}".format(services.get_name()))
+from server.wsdl import flask_app, pyro_server
+from server.utils.encryption import decrypt_aes, encrypt_aes
 
 
-class FlaskWebServicesManager(DeltaObject):
+class FlaskWebServicesSecurityManager(DeltaObject):
     """
-    Flask Web Services Manager
+    Flask Web Services Security Manager
     """
 
     @staticmethod
@@ -59,31 +55,31 @@ class FlaskWebServicesManager(DeltaObject):
         return options
 
     @staticmethod
-    @app.route("/login", methods=["POST"])
+    @flask_app.route("/login", methods=["POST"])
     def login():
         """
         Logins!
         """
 
-        FlaskWebServicesManager.check_service_requirements(['user_name', 'password'])
-        FlaskWebServicesManager.check_user_name()
+        FlaskWebServicesSecurityManager.check_service_requirements(['user_name', 'password'])
+        FlaskWebServicesSecurityManager.check_user_name()
 
-        options = FlaskWebServicesManager.get_service_options()
+        options = FlaskWebServicesSecurityManager.get_service_options()
         ticket = pyro_server.login(request.json['user_name'], request.json['password'], **options)
         return jsonify({"ticket": ticket})
 
     @staticmethod
-    @app.route('/signin', methods=["POST"])
+    @flask_app.route('/signin', methods=["POST"])
     def signin():
         '''
         Sign in!
         '''
 
-        FlaskWebServicesManager.check_service_requirements(['user_name', 'full_name', 'password'])
-        FlaskWebServicesManager.check_user_name()
+        FlaskWebServicesSecurityManager.check_service_requirements(['user_name', 'full_name', 'password'])
+        FlaskWebServicesSecurityManager.check_user_name()
 
         ticket = pyro_server.login('admin', 'sportmagazineserver')
-        options = FlaskWebServicesManager.get_service_options()
+        options = FlaskWebServicesSecurityManager.get_service_options()
 
         if 'status' in request.json:
             options['status'] = request.json['status']
@@ -104,7 +100,7 @@ class FlaskWebServicesManager(DeltaObject):
         return jsonify({"user_name": user.get('user_name')})
 
     @staticmethod
-    @app.route('/activate/<path:input_data>', methods=["GET"])
+    @flask_app.route('/activate/<path:input_data>', methods=["GET"])
     def activate(input_data):
         '''
         Activates!

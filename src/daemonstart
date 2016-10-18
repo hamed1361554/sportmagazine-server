@@ -1,0 +1,260 @@
+#!/usr/bin/env python
+
+'''
+Created on Oct 18, 2016
+
+@author: Hamed Zekri
+'''
+
+import sys
+import os
+import time
+import datetime
+import atexit
+import glob
+import socket
+import errno
+from signal import SIGTERM
+
+APPLICATION_PATH = '/var/app_root/'
+LOG_PATH = '/var/log/sportmagazine/'
+RUN_PATH = '/var/run/sportmagazine/'
+
+class SportMagServerDeamon:
+    """
+    A generic daemon class.
+    Usage: subclass the Daemon class and override the run() method
+    """
+    
+    def __init__(self, instance_name):
+        self.instance_name = instance_name
+
+        log_file = LOG_PATH + '{0}.log'.format(instance_name)
+        pid_file = RUN_PATH + '{0}.pid'.format(instance_name)
+        ppid_file = RUN_PATH + '{0}.ppid'.format(instance_name)
+        
+        self.stdin = '/dev/null'
+        self.stdout = log_file
+        self.stderr = log_file
+        self.pidfile = pid_file
+
+        self._archive_log_file(log_file)
+        self._make_sure_path_exists(LOG_PATH)
+        self._make_sure_path_exists(RUN_PATH)
+        
+    def _daemonize(self):
+        """
+        do the UNIX double-fork magic, see Stevens' "Advanced
+        Programming in the UNIX Environment" for details (ISBN 0201563177)
+        http://www.erlenstar.demon.co.uk/unix/faq_2.html#SEC16
+        """
+        try:
+            pid = os.fork()
+            if pid > 0:
+                # exit first parent
+                sys.exit(0)
+        except OSError, e:
+            sys.stderr.write("fork #1 failed: %d (%s)\n" % (e.errno, e.strerror))
+            sys.exit(1)
+
+        # decouple from parent environment
+        os.chdir("/")
+        os.setsid()
+        os.umask(0)
+
+        # do second fork
+        try:
+            pid = os.fork()
+            if pid > 0:
+                # exit from second parent
+                sys.exit(0)
+        except OSError, e:
+            sys.stderr.write("fork #2 failed: %d (%s)\n" % (e.errno, e.strerror))
+            sys.exit(1)
+
+        # redirect standard file descriptors
+        sys.stdout.flush()
+        sys.stderr.flush()
+        si = file(self.stdin, 'r')
+        so = file(self.stdout, 'a+')
+        se = file(self.stderr, 'a+', 0)
+        os.dup2(si.fileno(), sys.stdin.fileno())
+        os.dup2(so.fileno(), sys.stdout.fileno())
+        os.dup2(se.fileno(), sys.stderr.fileno())
+        # write pidfile
+        atexit.register(self.delpid)
+        with open(self.pidfile, 'w+') as f:
+            f.write('{0}\n'.format(os.getpid()))
+    
+    def delpid(self):
+        os.remove(self.pidfile)
+    
+    def start(self):
+        """
+        Start the daemon
+        """
+        # Check for a pidfile to see if the daemon already runs
+        try:
+            pf = file(self.pidfile,'r')
+            pid = int(pf.read().strip())
+            pf.close()
+        except IOError:
+            pid = None
+
+        if pid:
+            try:
+                os.getsid(pid)
+                message = "Process[{pid}] already exist. Is daemon started?\n"
+                sys.stderr.write(message.format(pid=pid))
+                sys.exit(1)
+            except OSError:
+                pass
+        
+        # Start the daemon
+        self._daemonize()
+        self._run()
+        
+    def stop(self):
+        """
+        Stop the daemon
+        """
+        # Get the pid from the pidfile
+        try:
+            pf = file(self.pidfile,'r')
+            pid = int(pf.read().strip())
+            pf.close()
+        except IOError:
+            pid = None
+
+        if not pid:
+            message = "pidfile %s does not exist. Is daemon started?\n"
+            sys.stderr.write(message % self.pidfile)
+            return # not an error in a restart
+
+        # Removing sid file of this process.
+        try:
+            socket_address = RUN_PATH + str(pid) + '.sid'
+            os.remove(socket_address)
+        except Exception:
+            pass # Not a big deal.
+
+        # Try killing the daemon process       
+        try:
+            while 1:
+                os.kill(pid, SIGTERM)
+                time.sleep(0.1)
+        except OSError, err:
+            err = str(err)
+            if err.find("No such process") > 0:
+                if os.path.exists(self.pidfile):
+                    os.remove(self.pidfile)
+            else:
+                print str(err)
+                sys.exit(1)
+
+    def restart(self):
+        """
+        Restart the daemon
+        """
+        self.stop()
+        self.start()
+
+    def status(self):
+        '''
+        Gets the server status and prints it on stdout.
+        '''
+        with open(self.pidfile, 'r') as pid_file:
+            pid = pid_file.read().strip()
+
+        socket_address = RUN_PATH + pid + '.sid'
+        client_socket = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
+        client_socket.connect(socket_address)
+
+        msg = ''
+        while True:
+            chunk = client_socket.recv(1024)
+            if not chunk:
+                break
+            msg += chunk
+
+        print msg
+
+    def reload(self):
+        '''
+        Make application to reloads its configs.
+        '''
+        try:
+            with open(self.pidfile, 'r') as pid_file:
+                pid = int(pid_file.read().strip())
+        except IOError:
+            ppid = None
+
+        if pid is None:
+            return
+
+        # Sending SIGUSR1 to the process group.
+        pgid = os.getpgid(pid)
+        os.system('kill -10 -{0}'.format(pgid))
+
+    def _make_sure_path_exists(self, path):
+        '''
+        Creates the path if does not exists
+        '''
+        try:
+            os.makedirs(path)
+        except OSError as exception:
+            if exception.errno != errno.EEXIST:
+                raise
+
+    def _archive_log_file(self, log_file_path):
+        '''
+        Archives old logs.
+        '''
+        # Archiving log file
+        if os.path.exists(log_file_path):
+            if datetime.datetime.fromtimestamp(os.path.getmtime(log_file_path)).date() < datetime.datetime.now().date():
+                yesterday = (datetime.datetime.now() + datetime.timedelta(-1)).date()
+                os.rename(log_file_path, log_file_path + '.' + str(yesterday))
+
+        dir_name, file_name, = os.path.split(log_file_path)
+        if len(glob.glob1(dir_name, file_name+'.*')) > 7:
+            file_list = glob.glob1(dir_name, file_name+'.*')
+            file_list.sort()
+            os.remove(os.path.join(dir_name,file_list[0]))
+    
+    def _run(self):
+        """
+        It will be called after the process has been
+        daemonized by start() or restart().
+        """
+        sys.path.append(APPLICATION_PATH)
+        from server import SportMagazineServerApplication
+        SportMagazineServerApplication().run(instance_name=self.instance_name)
+
+if __name__ == '__main__':
+
+    # Parsing command line options and starting deamon.
+    if len(sys.argv) == 3:
+        instance_name = sys.argv[1]
+        command = sys.argv[2]
+
+        daemon = SportMagServerDeamon(instance_name)
+
+        if command == 'start':
+            daemon.start()
+        elif command == 'stop':
+            daemon.stop()
+        elif command == 'restart':
+            daemon.restart()
+        elif command == 'status':
+            daemon.status()
+        elif command == 'reload':
+            daemon.reload()
+        else:
+            print "Unknown command '{0}'".format(command)
+            sys.exit(2)
+        sys.exit(0)
+    else:
+        print "usage: %s instance_name start|stop|restart|status|reload" % sys.argv[0]
+        sys.exit(2)
+

@@ -5,8 +5,8 @@ Created on Oct 14, 2016
 """
 
 from deltapy.commander.decorators import command
-
 import server.products.services as products_services
+
 
 @command('server.products.get')
 def get(product_id):

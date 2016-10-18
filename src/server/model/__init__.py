@@ -118,6 +118,8 @@ class UserHistoryEntity(UserHistoryBaseEntity):
         LOGOUT = DeltaEnumValue(4, "Logout")
         USER_DEACTIVATED = DeltaEnumValue(5, "User Deactivated")
         FORGOTTEN_PASSWORD = DeltaEnumValue(6, "Forgotten Password")
+        USER_BLOCKED = DeltaEnumValue(7, "Blocked User")
+        WRONG_PASSWORD = DeltaEnumValue(8, "Wrong Password")
 
     user_id = Unicode("USERID")
     user_history_date = DateTime("USHISTDATE")
@@ -236,8 +238,8 @@ class ProductsEntity(ProductsBaseEntity):
         GYMNASTICS_TOOLS = DeltaEnumValue(19, "Gymnastics Tools")
 
     class ProductStatusEnum(DeltaEnum):
-        OUT_OF_STOCK = DeltaEnum(0, "Out of Stock")
-        IN_STOCK = DeltaEnum(1, "In Stock")
+        OUT_OF_STOCK = DeltaEnumValue(0, "Out of Stock")
+        IN_STOCK = DeltaEnumValue(1, "In Stock")
 
     product_name = Unicode("PRODUCTNAME")
     product_price = Decimal('PRODUCTPRICE')
@@ -247,6 +249,78 @@ class ProductsEntity(ProductsBaseEntity):
     product_unique_name = Unicode("PRODUCTUNIQNAME")
     product_producer_user_id = Unicode("PRODUCTPRODUCERID")
     product_creation_date = DateTime("PRODUCTCREATIONDATE")
+
+
+class ProductsHistoryBaseEntity(Storm):
+    """
+    This class defines spproducthist table.
+    *Created automatically by ExtractorEngine*
+    """
+    __version__ = 1.0
+    __storm_table__ = "spproducthist"
+    __storm_primary__ = "product_history_id"
+
+    product_history_id = Unicode("PRDCTHISTID")
+
+    def __eq__(self, other):
+        if isinstance(other, ProductsHistoryBaseEntity):
+            return self.product_history_id == other.product_history_id
+        return False
+
+    def __hash__(self):
+        return hash(self.product_history_id)
+
+    def __repr__(self):
+        return '<%s.%s [ %s ] >' % (self.__module__,
+                                    self.__class__.__name__,
+                                    str(self.product_history_id))
+
+    def __str__(self):
+        return self.__storm_primary__.__str__()
+
+
+class ProductsHistoryEntity(ProductsHistoryBaseEntity):
+    """
+    This class defines spproducthist table.
+    *Created automatically by ExtractorEngine*
+    """
+
+    class ProductHistoryCategoryEnum(DeltaEnum):
+        BODY_BUILDING_POWER_LIFTING = DeltaEnumValue(0, 'Body Building & Power Lifting')
+        CLOTHING_WEAR = DeltaEnumValue(1, "Clothing & Wear")
+        SPORT_CLOTHING_PRINT = DeltaEnumValue(2, "Sport Clothing Print")
+        SNEAKERS = DeltaEnumValue(3, "Sneakers")
+        MARTIAL_ARTS = DeltaEnumValue(4, "Martial Arts")
+        DISTRIBUTION = DeltaEnumValue(5, "Distribution")
+        SPORTS_BAG_BACKPACK = DeltaEnumValue(6, "Sports Bag & Backpack")
+        ELECTRONICS = DeltaEnumValue(7, "Electronics")
+        ARTIFICIAL_GRASS = DeltaEnumValue(8, "Artificial Grass")
+        SPORT_FLOOR_COVER = DeltaEnumValue(9, "Sports Floor Cover")
+        INSTALLATION_ESTABLISHMENT = DeltaEnumValue(10, "Installation & Establishment")
+        SKATE_SKI = DeltaEnumValue(11, "Skate & Ski")
+        CLIMBING_BOULDERING = DeltaEnumValue(12, "Mountaineering & Bouldering & Climbing")
+        POOL_ROCKET = DeltaEnumValue(13, "Pool & Rocket")
+        BALL_NET = DeltaEnumValue(14, "Ball & Net")
+        SWIMMING_TOOLS = DeltaEnumValue(15, "Swimming Tools")
+        BICYCLING_TOOLS = DeltaEnumValue(16, "Bicycling Tools")
+        HUNTING_TOOLS = DeltaEnumValue(17, "Hunting Tools")
+        BOW_ARROW = DeltaEnumValue(18, "Bow & Arrow")
+        GYMNASTICS_TOOLS = DeltaEnumValue(19, "Gymnastics Tools")
+
+    class ProductHistoryStatusEnum(DeltaEnum):
+        OUT_OF_STOCK = DeltaEnumValue(0, "Out of Stock")
+        IN_STOCK = DeltaEnumValue(1, "In Stock")
+
+    product_id = Unicode("PRDCTID")
+    product_history_name = Unicode("PRDCTHISTNAME")
+    product_history_price = Decimal('PRDCTHISTPRICE')
+    product_history_category = Int('PRDCTHISTCATEGORY')
+    product_history_image = RawStr('PRDCTHISTIMAGE')
+    product_history_status = Int('PRDCTHISTSTATE')
+    product_history_unique_name = Unicode("PRDCTHISTUNIQNAME")
+    product_history_edit_date = DateTime("PRDCTHISTEDITDATE")
+    product_history_colors = Unicode("PRDCTHISTCOLORS")
+    product_history_sizes = Unicode("PRDCTHISTSIZES")
 
 
 class ProductsColorsBaseEntity(Storm):
@@ -285,6 +359,44 @@ class ProductsColorsEntity(ProductsColorsBaseEntity):
 
     product_id = Unicode('PRDCTCLRPRODUCTID')
     product_color_hex = Unicode('PRDCTCLRHEX')
+
+
+class ProductsSizesBaseEntity(Storm):
+    """
+    This class defines spproductsizes table.
+    *Created automatically by ExtractorEngine*
+    """
+    __version__ = 1.0
+    __storm_table__ = "spproductsizes"
+    __storm_primary__ = "product_size_id"
+
+    product_size_id = Unicode("PRDCTSIZEID")
+
+    def __eq__(self, other):
+        if isinstance(other, ProductsSizesBaseEntity):
+            return self.product_size_id == other.product_size_id
+        return False
+
+    def __hash__(self):
+        return hash(self.product_size_id)
+
+    def __repr__(self):
+        return '<%s.%s [ %s ] >' % (self.__module__,
+                                    self.__class__.__name__,
+                                    str(self.product_size_id))
+
+    def __str__(self):
+        return self.__storm_primary__.__str__()
+
+
+class ProductsSizesEntity(ProductsSizesBaseEntity):
+    """
+    This class defines spproductsizes table.
+    *Created automatically by ExtractorEngine*
+    """
+
+    product_id = Unicode('PRDCTSIZEPRODUCTID')
+    product_size = Unicode('PRDCTSIZE')
 
 
 class InvoiceBaseEntity(Storm):

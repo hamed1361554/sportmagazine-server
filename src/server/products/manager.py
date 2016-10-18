@@ -11,7 +11,7 @@ from deltapy.core import DeltaObject, DeltaException, DynamicObject
 from deltapy.security.session.services import get_current_user
 from deltapy.transaction.services import get_current_transaction_store
 from deltapy.utils.storm_aux import entity_to_dic
-from server.model import ProductsEntity, UserEntity, ProductsColorsEntity
+from server.model import ProductsEntity, UserEntity, ProductsColorsEntity, ProductsSizesEntity
 from server.products.helper import generate_product_unique_name
 from storm.expr import Select, Count, And, Like, In
 
@@ -96,13 +96,15 @@ class ProductsManager(DeltaObject):
         if result > 0:
             raise ProductsException("Please select another name for product.")
 
-    def create(self, name, price, category, colors, **options):
+    def create(self, name, price, category, colors, sizes, **options):
         """
         Creates product.
 
         :param name:
         :param price:
         :param category:
+        :param sizes:
+        :param colors:
         :param options:
         :return:
         """
@@ -115,6 +117,9 @@ class ProductsManager(DeltaObject):
 
         if colors is None or len(colors) <= 0:
             raise ProductsException("At least one color for product should be selected.")
+
+        if sizes is None or len(sizes) <= 0:
+            raise ProductsException("At least one size for product should be selected.")
 
         current_user = get_current_user()
         if current_user.user_production_type != UserEntity.UserProductionTypeEnum.PRODUCER:
@@ -145,6 +150,13 @@ class ProductsManager(DeltaObject):
             color_entity.product_id = product.product_id
             color_entity.product_color_hex = unicode(color)
             store.add(color_entity)
+
+        for size in sizes:
+            size_entity = ProductsSizesEntity()
+            size_entity.product_size_id = unicode(unique_id_services.get_id('uuid'))
+            size_entity.product_id = product.product_id
+            size_entity.product_size = unicode(size)
+            store.add(size_entity)
 
         return DynamicObject(entity_to_dic(product))
 
