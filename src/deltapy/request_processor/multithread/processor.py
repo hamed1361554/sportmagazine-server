@@ -61,9 +61,9 @@ class MultiThreadedRequestProcessor(RequestProcessorBase):
     def resize(self, size):
         '''
         Resizes current process pool.
-        @param size:
+        @param int size: pool size
         '''
-        raise NotImplementedError()
+        pass
     
     def terminate(self):
         '''

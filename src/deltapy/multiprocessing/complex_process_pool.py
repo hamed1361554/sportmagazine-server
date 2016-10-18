@@ -183,6 +183,16 @@ class ComplexProcessPool(BasePool):
         
         return  process.execute(func, *args, **kwargs)
 
+    def get_size(self):
+        '''
+        Gets pool size.
+
+        @rtype: int
+        @return: pool size
+        '''
+
+        return len(self._processes)
+
     def _change_size_(self, old_size, size):
         '''
         It will be called when pool size is changed.

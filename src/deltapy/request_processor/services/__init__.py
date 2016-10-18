@@ -140,3 +140,9 @@ def get_timeout():
     '''
 
     return get_component(APP_REQUEST_PROCESSOR).get_timeout()
+
+def reload():
+    '''
+    Re-reads configs from the config file and applying them.
+    '''
+    return get_component(APP_REQUEST_PROCESSOR).reload()

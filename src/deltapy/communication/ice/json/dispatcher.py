@@ -164,11 +164,11 @@ class IceJsonDispatcher(DeltaIce.IIceJsonDispatcher, Dispatcher):
                                         commandKey,
                                         *t_args,
                                         **t_kwargs)
-            return json.dumps(result, cls=JSONCustomEncoder)
+            return json.dumps(result, cls=JSONCustomEncoder, encoding='cp1256')
         except DeltaException, error:
             exception = DeltaIce.JsonGenericException()
             exception.code = error.get_code()
-            exception.data = json.dumps(error.get_data(), cls=JSONCustomEncoder)
+            exception.data = json.dumps(error.get_data(), cls=JSONCustomEncoder, encoding='cp1256')
             exception.message = utils.str_to_external(str(error))
             exception.traceback = utils.str_to_external(traceback.format_exc())
             raise exception
@@ -185,11 +185,11 @@ class IceJsonDispatcher(DeltaIce.IIceJsonDispatcher, Dispatcher):
             t_request['ip'] = self._get_client_ip_(current = current)
             result = \
                 self._listener.execute_ex(t_request)
-            return json.dumps(result, cls=JSONCustomEncoder)
+            return json.dumps(result, cls=JSONCustomEncoder, encoding='cp1256')
         except DeltaException, error:
             exception = DeltaIce.JsonGenericException()
             exception.code = error.get_code()
-            exception.data = json.dumps(error.get_data(), cls=JSONCustomEncoder)
+            exception.data = json.dumps(error.get_data(), cls=JSONCustomEncoder, encoding='cp1256')
             exception.message = utils.str_to_external(str(error))
             exception.traceback = utils.str_to_external(traceback.format_exc())
             raise exception

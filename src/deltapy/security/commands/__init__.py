@@ -54,19 +54,20 @@ def update_user(id, **params):
     return security_services.update_user(id, **params)
 
 @command('security.user.get')
-def get_user(id):
-    '''
+def get_user(id, **options):
+    """
     Returns user information by specified name
     
     @param id: user name
+    @keyword bool get_extra_user_info: extra user info should be gotten
+                                           if this options is true.
     
     @return: user data as DynamicObject
-    '''
-    
-    return security_services.get_user(id)
+    """
+    return security_services.get_user(id, **options)
 
 @command('security.user.activate')
-def activate_user(id, flag, **options):
+def activate_user(id, flag):
     '''
     Active or inactive specified user. 
     
@@ -74,7 +75,7 @@ def activate_user(id, flag, **options):
     @param flag: activation flag(True or False)
     '''
     
-    return security_services.activate_user(id, flag, **options)
+    return security_services.activate_user(id, flag)
 
 @command('security.user.is_superuser')
 def is_superuser(id):

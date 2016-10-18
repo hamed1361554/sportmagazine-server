@@ -44,8 +44,15 @@ def make_error_result(type_converter, exception, **kwargs):
     if isinstance(exception , DeltaException):
         ex['code'] = type_converter.to_external(exception.get_code())
         ex['data'] = type_converter.to_external(exception.get_data())
+        ex['traceback'] = type_converter.to_external(exception.get_traceback())
 
-    ex['traceback'] = type_converter.to_external(traceback.format_exc(exception))
+    # Trying to get the true traceback from the exception object.
+    # This attribute has been set by RequestProcessor before.
+    if ex.get('traceback') is None:
+        if hasattr(exception, 'traceback'):
+            ex['traceback'] = type_converter.to_external(getattr(exception, 'traceback'))
+        else:
+            ex['traceback'] = type_converter.to_external(traceback.format_exc(exception))
 
     return dict(__EXCEPTION__=ex)
 

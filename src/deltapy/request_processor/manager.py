@@ -219,4 +219,13 @@ class RequestProcessorManager(DeltaObject):
         
         return timeout
     
-    
+    def reload(self):
+        '''
+        Re-reads configs from the config file and applying them.
+        '''
+        config_store = \
+            config_services.get_app_config_store('request_processor')
+
+        params = config_store.get_section_data(self._default_processor_name)
+        processor = self.get_processor()
+        processor.resize(int(params.get("max_processes")))

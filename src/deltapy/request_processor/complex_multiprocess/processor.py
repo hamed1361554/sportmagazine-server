@@ -26,9 +26,9 @@ class ComplexMultiProcessRequestProcessor(RequestProcessorBase):
         max_processes = int(params.get('max_processes', 4))
         max_threads = int(params.get('max_threads', 4))
         self._pool =\
-            ComplexProcessPool(max_processes = max_processes,
-                               max_threads = max_threads,
-                               init_func = database.reset_pools)
+            ComplexProcessPool(max_processes=max_processes,
+                               max_threads=max_threads,
+                               init_func=self.__initialize_child)
            
     
     def process(self, 
@@ -71,12 +71,20 @@ class ComplexMultiProcessRequestProcessor(RequestProcessorBase):
     def resize(self, size):
         '''
         Resizes current process pool.
-        @param size:
+        @param int size: pool size
         '''
-        return self._pool.set_size(size)
+        if self._pool is not None:
+            return self._pool.set_size(size)
 
     def terminate(self):
         '''
         Terminates current request processor.
         '''
         self._pool.terminate()
+
+    def __initialize_child(self):
+        '''
+        Initializing child process
+        '''
+        database.reset_pools()
+        self._pool = None

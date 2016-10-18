@@ -12,11 +12,11 @@ import deltapy.communication.services as communication
 
 class ZmqPackage(Package):
     '''
-    Zmq package
+    Pyro4 package
     '''
 
     __disable__ = True
-
+    
     def load(self):
         '''
         Loads package.

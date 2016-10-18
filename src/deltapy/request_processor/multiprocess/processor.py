@@ -15,7 +15,7 @@ class MultiProcessRequestProcessor(RequestProcessorBase):
     
     def __init__(self):
         RequestProcessorBase.__init__(self, 'multiprocess')
-        self._pool =  None
+        self._pool = None
 
     def configure(self, params):
         '''
@@ -28,7 +28,7 @@ class MultiProcessRequestProcessor(RequestProcessorBase):
         
         self._pool =\
             ProcessPool(max_processes,
-                        init_func = database.reset_pools)
+                        init_func=self.__initialize_child)
 
     def process(self, 
                 request,
@@ -70,12 +70,20 @@ class MultiProcessRequestProcessor(RequestProcessorBase):
     def resize(self, size):
         '''
         Resizes current process pool.
-        @param size:
+        @param int size: pool size
         '''
-        return self._pool.set_size(size)
+        if self._pool is not None:
+            return self._pool.set_size(size)
 
     def terminate(self):
         '''
         Terminates current request processor.
         '''
         self._pool.terminate()
+
+    def __initialize_child(self):
+        '''
+        Initializing child process
+        '''
+        database.reset_pools()
+        self._pool = None

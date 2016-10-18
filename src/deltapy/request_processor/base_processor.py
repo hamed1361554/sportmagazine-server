@@ -5,7 +5,6 @@ Created on Feb 8, 2010
 '''
 
 import signal
-import os
 import datetime
 import time
 import traceback
@@ -15,7 +14,6 @@ from deltapy.security.authentication.services import authenticate
 from deltapy.security.authentication.authenticator import IP_ADDRESS_OPTION_KEY
 from deltapy.event_system.decorators import delta_event
 from deltapy.request_processor.services import get_timeout
-from deltapy.request_processor.manager import TimeoutException
 from deltapy.request_processor.response import Response
 from deltapy.request_processor.services import get_request_processor_hooks
 from deltapy.request_processor.request import ClientRequest
@@ -23,6 +21,7 @@ import deltapy.security.authentication.services as authentication_services
 import deltapy.commander.services as commander_services
 import deltapy.logging.services as logging_services
 import deltapy.unique_id.services as unique_id_services
+import deltapy.request_processor.helper.services as request_processor_helper_services
 
 
 LOGGER = logging_services.get_logger(name='requestprocessor')
@@ -81,6 +80,7 @@ def handle_request(raw_request, **options):
 
     if timeout is None:
         timeout = get_timeout()
+        client_request.timeout = timeout
 
     try:
         # Getting command parameters
@@ -89,13 +89,8 @@ def handle_request(raw_request, **options):
             if isinstance(client_request.command_args[0], tuple):
                 _args = client_request.command_args[0]
 
-        # Considering timeout if it is required
-        if timeout is not None and timeout > 0:
-            def handler(signum, frame):
-                message = _('Timeout [{0} second(s)] reached for request [{1}].')
-                raise TimeoutException(message.format(timeout, client_request))
-            signal.signal(signal.SIGALRM, handler)
-            signal.alarm(timeout)
+        # Setting request timeout in current thread
+        request_processor_helper_services.set_request_timeout(timeout)
 
         # Making a loop and informing hooks to prepare before executing the service
         for hook in get_request_processor_hooks():
@@ -109,7 +104,7 @@ def handle_request(raw_request, **options):
         response = Response(client_request,
                             result,
                             session.get_call_context())
-        
+
         # Making a loop and informing hooks to complete their actions
         for hook in reversed(get_request_processor_hooks()):
             hook.on_process_completed(client_request, response, **options)
@@ -133,7 +128,7 @@ def handle_request(raw_request, **options):
                                                                          result=result,
                                                                          context=response.context))
 
-        # Converting the result to the type Communicator expected.        
+        # Converting the result to the type Communicator expected.
         if type_converter is not None:
             response = type_converter.to_external(response)
 
@@ -152,7 +147,7 @@ def handle_request(raw_request, **options):
         # Deactivating alarm
         if timeout is not None and timeout > 0:######insert
             signal.alarm(0)
-        
+
         # Cleaning up the session
         session.cleanup()
 
@@ -173,7 +168,7 @@ def login(login_request):
     @rtype: instance
     """
     converter = login_request.get_converter()
-    
+
     if converter is not None:
         login_request = converter.to_internal(login_request.get_request_dict())
     else:
@@ -182,19 +177,19 @@ def login(login_request):
     try:
         # For calculating execution time.
         process_start_time = time.time()
-    
+
         if login_request.get('options') is None:
             login_request['options'] = {}
-    
+
         login_request['options']['client_ip'] = login_request['ip']
-    
+
         login_info = DynamicObject()
         login_info.ticket = authentication_services.login(login_request['user_name'],
                                                           login_request['password'],
                                                           **login_request['options'])
         login_info.data = {}
         login_info.login_date = datetime.datetime.now()
-    
+
         # Note: This should be refactored later. (see comment on `login_event').
         login_event(None, None,
                     login_request['ip'],
@@ -202,16 +197,16 @@ def login(login_request):
                     login_request['password'],
                     result=login_info,
                     **login_request['options'])
-    
+
         LOGGER.info('User[{user}@{ip}],Channel[{channel}],Ticket[{ticket}] logged in. Time: [{execution_time}]'.format(user=login_request['user_name'],
                                                                                                                        ip=login_request['ip'],
                                                                                                                        channel=login_request['options'].get('channel'),
                                                                                                                        ticket=login_info['ticket'],
                                                                                                                        execution_time=time.time() - process_start_time))
-    
+
         if converter is not None:
             login_info = converter.to_external(login_info)
-    
+
         return login_info
 
     except Exception as error:
@@ -312,3 +307,9 @@ class RequestProcessorBase(DeltaObject):
         '''
 
         raise NotImplementedError()
+
+    def resize(self, size):
+        '''
+        @param size:
+        '''
+        pass

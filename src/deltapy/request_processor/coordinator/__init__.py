@@ -6,7 +6,11 @@ Created on Feb 27, 2013
 
 from deltapy.packaging.package import Package
 
+
 APP_TRANSACTION_COORDINATOR = 'deltapy.transaction_coordinator'
 
+
 class TransactionCordinatorPackage(Package):
-    pass
+    '''
+    Transaction Cordinator Package
+    '''

@@ -7,23 +7,37 @@ Created on Mar 3, 2013
 from deltapy.commander.decorators import command
 import deltapy.request_processor.coordinator.services as coordinator_services
 
-#@command('request_processor.coordinator.transaction.state')
-def get_transaction_state(transaction_id):
+@command('request_processor.coordinator.request')
+def get_request(request_id):
     '''
-    Returns transaction state.
-    
-    @param str transaction_id: transaction ID
-    
-    @rtype: int
-    @note: 
-        0: Completed
-        1: Failed
-        2: Reversed
-        3: Reverse Failed
-    @return: transaction state
+    Returns the specified request.
+
+    @param str request_id: request ID
+
+    @rtype: dict(str request_id: client request ID,
+                 str transaction_id: client request transaction ID,
+                 str user_name: client request user name,
+                 str client_ip: client request IP,
+                 str service_id: client request service ID,
+                 datetime receieve_date: client request recieve date,
+                 datetime request_date: client request request date,
+                 str trace_id: client request trace ID,
+                 int state: request state,
+                 dict data: data)
+    @type data: dict(dict request_header: request header,
+                     dict command_args: command args,
+                     dict command_kwargs: command kwargs,
+                     dict call_context: call context,
+                     dict response_data: response data
+                     str error: error)
+    @type request_header: dict(str recorder_type: recorder type,
+                               int version: version)
+    @type response_data: dict(datetime send_date: client response send date,
+                              dict command_result: client response command result)
+    @return: request info
     '''
-    
-    return coordinator_services.get_transaction_state(transaction_id)
+
+    return coordinator_services.get_request(request_id)
     
 @command('request_processor.coordinator.request.state')
 def get_request_state(request_id):
@@ -37,12 +51,13 @@ def get_request_state(request_id):
         0: Received
         1: Completed
         2: Failed
+        3: Reversed
     @return: request state
     '''
     
     return coordinator_services.get_request_state(request_id)    
     
-#@command('request_processor.coordinator.transaction.detail')
+@command('request_processor.coordinator.transaction.detail')
 def get_transaction_detail(transaction_id):
     '''
     Returns detail information of the specified transaction.
@@ -50,57 +65,30 @@ def get_transaction_detail(transaction_id):
     @param str transaction_id: transaction ID
     
     @rtype: dict(str transaction_id: transaction ID
-                 int state: transaction state,
                  datetime start_date: start date of transaction,
                  str user_id: user ID,
-                 list requests: requests regarding to the transaction)
-    @type requests: dict(str request_id: request ID,
-                         int state: request state,
-                         object input: request input,
-                         object result: request result)
-                         
+                 list(dict) requests: requests regarding to the transaction)
+    @type request: dict(str request_id: client request ID,
+                        str transaction_id: client request transaction ID,
+                        str user_name: client request user name,
+                        str client_ip: client request IP,
+                        str service_id: client request service ID,
+                        datetime receieve_date: client request recieve date,
+                        datetime request_date: client request request date,
+                        str trace_id: client request trace ID,
+                        int state: request state,
+                        dict data: data)
+    @type data: dict(dict request_header: request header,
+                     dict command_args: command args,
+                     dict command_kwargs: command kwargs,
+                     dict call_context: call context,
+                     dict response_data: response data
+                     str error: error)
+    @type request_header: dict(str recorder_type: recorder type,
+                               int version: version)
+    @type response_data: dict(datetime send_date: client response send date,
+                              dict command_result: client response command result)
     @return: transaction detail
     '''
     
     return coordinator_services.get_transaction_detail(transaction_id)    
-    
-#@command('request_processor.coordinator.activate_channel')
-def activate_channel(channel_id):
-    '''
-    Activates transaction coordination on the given channel. 
-    
-    @param str channel_id: channel ID
-    '''
-    
-    return coordinator_services.activate_channel(channel_id)
-    
-#@command('request_processor.coordinator.activate_service')
-def activate_service(service_id):
-    '''
-    Activates transaction coordination on the given service.
-    
-    @param str service_id: service ID
-    '''
-           
-    return coordinator_services.activate_service(service_id)
-
-#@command('request_processor.coordinator.deactivate_channel')
-def deactivate_channel(channel_id):
-    '''
-    Deativates transaction coordination on the given channel. 
-    
-    @param str channel_id: channel ID
-    '''
-    
-    return coordinator_services.deactivate_channel(channel_id)
-
-#@command('request_processor.coordinator.deactivate_service')
-def deactivate_service(service_id):
-    '''
-    Dectivates transaction coordination on the given service.
-    
-    @param str service_id: service ID
-    '''
-    
-    return coordinator_services.deactivate_service(service_id)
-

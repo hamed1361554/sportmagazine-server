@@ -4,256 +4,499 @@ Created on Apr 23, 2013
 @author: Abi.Mohammadi & Majid.Vesal
 '''
 
-from deltapy.core import DeltaObject, DynamicObject, DeltaException
+from deltapy.core import DeltaObject, DeltaException, DynamicObject
 from deltapy.security.channel.services import get_current_channel_id
-from deltapy.request_processor.coordinator.coordinator import TransactionCoordinator
+from deltapy.request_processor.coordinator.recorder.holder import RequestHolder
+from deltapy.request_processor.coordinator.recorder.full_recorder import FullRecorder
+from deltapy.request_processor.coordinator.recorder.simple_recorder import SimpleRecorder
+from deltapy.request_processor.coordinator.coordinator import InvalidRequestIDException
+
 
 class RequestRecordManagerException(DeltaException):
-    pass
+    '''
+    Is raised when request record manager encounters error.
+    '''
 
-class InvalidRequestIDException(RequestRecordManagerException):
-    pass
 
 class RequestRecordManager(DeltaObject):
+    '''
+    Request Record Manager
+    '''
+
+    CURRENT_REQUEST_HEADER_VERSION = 1
     
     def __init__(self):
         '''
+        Initializes request record manager.
         '''
 
-        self._transactions = {}
-        self._requests = {}
-        
-    def _try_get_transaction(self, transaction_id):
+        DeltaObject.__init__(self)
+
+        self._recorders = {}
+        self._request_holder = None
+
+        self._register_holder()
+        self._register_recorders()
+
+    def _register_holder(self):
         '''
-        Returns transaction information, if transaction exists otherwise returns None
-        
+        Registers request holder.
+
+        @param object holder: request holder
+        '''
+
+        self.register_recorder(RequestHolder())
+
+    def _register_recorders(self):
+        '''
+        Registers default recorders.
+        '''
+
+        self.register_recorder(SimpleRecorder())
+        self.register_recorder(FullRecorder())
+
+    def _get_recorder(self, recorder_type):
+        '''
+        Returns recorder for given recorder type.
+
+        @param str recorder_type: recorder type
+        '''
+
+        recorder = self._recorders.get(recorder_type)
+
+        if recorder is None:
+            raise RequestRecordManagerException('Recorder [{0}] not found.'.format(recorder_type))
+
+        return recorder
+
+    def _get_request(self, request_id):
+        '''
+        Fetch request by given ID.
+
+        @param str request_id: request ID
+        '''
+
+        request = self._request_holder.try_get(request_id)
+        if request is None:
+            return None, None
+        return request.data.get('request_header'), request
+
+    def _hold_request(self, request, **options):
+        '''
+        Holds a new request.
+
+        @type request: dict(str id: request ID,
+                            str transaction_id: transaction ID,
+                            str user_name: user name,
+                            str client_ip: client IP,
+                            datetime recieve_date: receive date,
+                            datetime request_date: request date from client)
+        '''
+
+        return self._request_holder.hold(request)
+
+    def _get_transaction(self, transaction_id):
+        '''
+        Fetch transaction by given ID.
+
         @param str transaction_id: transaction ID
-        
-        @rtype: dict(str id,
-                     datetime creation_date,
-                     str channel_id,
-                     str user_name)
-        @return: transaction data
         '''
-        
-        return self._transactions.get(transaction_id)
-    
-    def _verify_transaction(self, transaction, request):
+
+        return self._request_holder.try_get_transaction(transaction_id)
+
+    def _get_transaction_requests(self, transaction_id):
         '''
-        Verifies transaction using the new request.
-        
-        @param dict transaction: transaction data
-        @type transaction: dict(str id,
-                                datetime creation_date,
-                                str channel_id,
-                                str user_name)  
+        Fetch transaction requests for given ID.
+
+        @param str transaction_id: transaction ID
+        '''
+
+        return [(request.data.request_header, request) for request
+                in self._request_holder.transaction_requests(transaction_id)]
+
+    def _hold_transaction(self, request, **options):
+        '''
+        Records a transaction data using the given information.
+
         @param dict request: request data
         @type request: dict(str id: request ID,
                             str transaction_id: transaction ID,
                             str user_name: user name,
-                            str ip: client IP,
+                            str client_ip: client IP,
                             datetime recieve_date: receive date,
                             datetime request_date: request date from client)
         '''
-        
-    def _create_request(self, request):
+
+        # Getting the existed transaction
+        transaction = self._get_transaction(request.transaction_id)
+
+        if transaction is None:
+            # Creating transaction if there is no associated transaction
+            channel_id = get_current_channel_id()
+            transaction = \
+                self._create_transaction_data(request.transaction_id,
+                                              request.request_date,
+                                              channel_id,
+                                              request.user_name)
+            transaction = self._request_holder.hold_transaction(transaction)
+        else:
+            # Verifying the current request information with the related transaction
+            self._verify_transaction(transaction, request)
+
+        return transaction
+
+    def _verify_transaction(self, transaction, client_request, **options):
         '''
-        Records the request.
-        
+        Verifies transaction using the new request.
+
+        @param dict transaction: transaction data
+        @type transaction: dict(str id,
+                                datetime creation_date,
+                                str channel_id,
+                                str user_name)
+        @param dict request: request data
         @type request: dict(str id: request ID,
                             str transaction_id: transaction ID,
                             str user_name: user name,
-                            str ip: client IP,
+                            str client_ip: client IP,
                             datetime recieve_date: receive date,
                             datetime request_date: request date from client)
         '''
-        
-        request_data = \
-            DynamicObject(id=request.id,
-                          transaction_id=request.transaction_id,
-                          user_name=request.user_name,
-                          ip=request.ip,
-                          recieve_date=request.recieve_date,
-                          request_date=request.request_date)
-        self._requests[request.id] = request_data
-        return request_data
-        
-    def _create_transaction(self, transaction_id, request_date, channel_id, user_name, **options):
+
+        return True
+
+    def _create_transaction_data(self, transaction_id, request_date, channel_id, user_name, **options):
         '''
-        Creates a new transaction.
-        
+        Create transaction data.
+
         @param transaction_id: transaction ID
         @param request_date: request date
         @param channel_id: channel ID
         @param user_name: user name
         '''
-        
-        if transaction_id in self._transactions:
+
+        if self._request_holder.contains_transaction(transaction_id):
             raise RequestRecordManagerException('Transaction [{0}] already exists.')
-        
-        transaction = \
-            DynamicObject(id=transaction_id, 
-                          request_date=request_date, 
-                          channel_id=channel_id, 
+
+        transaction_data = \
+            DynamicObject(transaction_id=transaction_id,
+                          request_date=request_date,
+                          channel_id=channel_id,
                           user_name=user_name)
-        self._transactions[transaction_id] = transaction
-        return transaction
-        
-    def record(self, request, **options):
+
+        return transaction_data
+
+    def _create_request(self, recorder_type, client_request, **options):
+        '''
+        Creates request data.
+
+        @param str recorder_type: recorder type
+        @param dict client_request: client request
+        @param dict client_response: client response
+        @param dict error: error
+
+        @return: request data
+        '''
+
+        request_header = \
+            DynamicObject(recorder_type=recorder_type,
+                          version=RequestRecordManager.CURRENT_REQUEST_HEADER_VERSION)
+
+        data = \
+            DynamicObject(request_header=request_header)
+
+        request = \
+            DynamicObject(request_id=client_request.id,
+                          transaction_id=client_request.transaction_id,
+                          user_name=client_request.user_name,
+                          client_ip=client_request.ip,
+                          service_id=client_request.command_key,
+                          receieve_date=client_request.recieve_date,
+                          request_date=client_request.request_date,
+                          trace_id=client_request.trace_id,
+                          data=data)
+
+        return request
+
+    def record(self, recorder_type, client_request, **options):
         '''
         Records a request data using the given information.
-        
-        @param dict request: request data
-        @type request: dict(str id: request ID,
-                            str transaction_id: transaction ID,
-                            str user_name: user name,
-                            str ip: client IP,
-                            datetime recieve_date: receive date,
-                            datetime request_date: request date from client)
+
+        @param str recorder_type: recorder type
+        @param dict client_request: request data
+        @type client_request: dict(str id: request ID,
+                                   str transaction_id: transaction ID,
+                                   str user_name: user name,
+                                   str client_ip: client IP,
+                                   datetime receive_date: receive date,
+                                   datetime request_date: request date from client)
         '''
 
-        # Getting the existed transaction        
-        transaction = self._try_get_transaction(request.transaction_id)
-        channel_id = get_current_channel_id()
-        if transaction is None:
-            # Creating transaction if there is no associated transaction
-            self._create_transaction(request.transaction_id, request.request_date, channel_id, request.user_name)
-        else:
-            # Verifying the current request information with the related transaction 
-            self._verify_transaction(transaction, request)
-            
-        # Creating request
-        self._create_request(request)
-        
-    def _update_request(self, request_id, state, **options):
-        '''
-        Updates the specified request.
-        
-        @param str request_id: request ID
-        @param int state: request state
-        @keyword str error: error description
-        '''
-        
-        request = self.get(request_id)
-        request.state = state
-        request.error = options.get('error')
-        
-    def try_get(self, request_id, **options):
-        '''
-        Returns information of a particular request and if the request was not found,
-        it would return None.
-        
-        @param request_id: request ID
-        
-        @rtype: dict(str id,
-                     str transaction_id,
-                     datetime request_date,
-                     int state,
-                     str error)
-        @return: request info
-        '''
-        
-        return self._requests.get(request_id)
+        request = \
+            self._create_request(recorder_type,
+                                 client_request)
 
-    def get(self, request_id, **options):
+        request = \
+            self._get_recorder(recorder_type).record(request,
+                                                     client_request,
+                                                     **options)
+
+        if request is not None:
+            self._hold_transaction(request, **options)
+            return self._hold_request(request, **options)
+
+    def try_get_by_request_id(self, request_id, **options):
         '''
         Returns information of a particular request.
-        
-        @param request_id: request ID
-        
-        @rtype: dict(str id,
-                     str transaction_id,
-                     datetime request_date,
-                     int state,
-                     str error)
+
+        @param str request_id: request ID
+
+        @rtype: dict(str request_id: client request ID,
+                     str transaction_id: client request transaction ID,
+                     str user_name: client request user name,
+                     str client_ip: client request IP,
+                     str service_id: client request service ID,
+                     datetime receieve_date: client request recieve date,
+                     datetime request_date: client request request date,
+                     str trace_id: client request trace ID,
+                     int state: request state,
+                     dict data: data)
+        @type data: dict(dict request_header: request header,
+                         dict command_args: command args,
+                         dict command_kwargs: command kwargs,
+                         dict call_context: call context,
+                         dict response_data: response data
+                         str error: error)
+        @type request_header: dict(str recorder_type: recorder type,
+                                   int version: version)
+        @type response_data: dict(datetime send_date: client response send date,
+                                  dict command_result: client response command result)
         @return: request info
         '''
-        
-        request = self.try_get(request_id)
+
+        request_header, request = self._get_request(request_id)
+        if request_header is None or request is None:
+            return None
+
+        return self._get_recorder(request_header.recorder_type).get(request, **options)
+
+    def get_by_request_id(self, request_id, **options):
+        '''
+        Returns information of a particular request.
+
+        @param str request_id: request ID
+
+        @rtype: dict(str request_id: client request ID,
+                     str transaction_id: client request transaction ID,
+                     str user_name: client request user name,
+                     str client_ip: client request IP,
+                     str service_id: client request service ID,
+                     datetime receieve_date: client request recieve date,
+                     datetime request_date: client request request date,
+                     str trace_id: client request trace ID,
+                     int state: request state,
+                     dict data: data)
+        @type data: dict(dict request_header: request header,
+                         dict command_args: command args,
+                         dict command_kwargs: command kwargs,
+                         dict call_context: call context,
+                         dict response_data: response data
+                         str error: error)
+        @type request_header: dict(str recorder_type: recorder type,
+                                   int version: version)
+        @type response_data: dict(datetime send_date: client response send date,
+                                  dict command_result: client response command result)
+        @return: request info
+        '''
+
+        request = self.try_get_by_request_id(request_id, **options)
+
         if request is None:
             message = _('Request ID [{0}] is invalid.')
             raise InvalidRequestIDException(message.format(request_id))
+
         return request
         
-    def set_completed(self, request_id, **options):
+    def set_completed(self, recorder_type, client_request, client_response, **options):
         '''
         Completes the state of the given request.
-        
-        @param str request_id: request ID
-        @param request_id: request ID
+
+        @param str recorder_type: recorder type
+        @param dict client_request: request data
+        @type client_request: dict(str id: request ID,
+                                   str transaction_id: transaction ID,
+                                   str user_name: user name,
+                                   str client_ip: client IP,
+                                   datetime receive_date: receive date,
+                                   datetime request_date: request date from client)
+        @param dict client_response: response data
         '''
+
+        request_header, request = self._get_request(client_request.id)
+        if request is None:
+            request = \
+                self._create_request(recorder_type,
+                                     client_request)
+
+        request = \
+            self._get_recorder(recorder_type).set_completed(request,
+                                                            client_request=client_request,
+                                                            client_response=client_response,
+                                                            **options)
+
+        self._hold_transaction(request, **options)
+        self._request_holder.set_completed(request)
+
+        return request
         
-        self._update_request(request_id, state=TransactionCoordinator.StateEnum.COMPLETED)
-        
-    def set_failed(self, request_id, error, **options):
+    def set_failed(self, recorder_type, client_request, error, **options):
         '''
         Sets the state of the given request to failed.
-        
-        @param str request_id: request ID
-        @param str error: error description 
+
+        @param str recorder_type: recorder type
+        @param dict client_request: request data
+        @type client_request: dict(str id: request ID,
+                                   str transaction_id: transaction ID,
+                                   str user_name: user name,
+                                   str client_ip: client IP,
+                                   datetime receive_date: receive date,
+                                   datetime request_date: request date from client)
+        @param str error: error description
         '''
-        
-        self._update_request(request_id, 
-                             state=TransactionCoordinator.StateEnum.FAILED, 
-                             error=error)
-        
-    def get_transaction(self, transaction_id, **options):
+
+        request_header, request = self._get_request(client_request.id)
+        if request is None:
+            request = \
+                self._create_request(recorder_type,
+                                     client_request)
+
+        request = \
+            self._get_recorder(recorder_type).set_failed(request,
+                                                         client_request=client_request,
+                                                         error=error,
+                                                         **options)
+        self._hold_transaction(request, **options)
+        self._request_holder.set_failed(request)
+
+        return request
+
+    def get_by_transaction_id(self, transaction_id, **options):
         '''
-        Returns transaction information.
-        
+        Returns information of a particular transaction.
+
         @param str transaction_id: transaction ID
-        
-        @rtype: dict(str id,
-                     datetime creation_date,
-                     str channel_id,
-                     str user_name)
+
+        @rtype: dict(str id: transaction ID,
+                         datetime creation_date: creation date,
+                         str channel_id: channel ID,
+                         str user_name: user name)
         @return: transaction data
         '''
-        
-        transaction = self._try_get_transaction(transaction_id)
+
+        transaction = self._get_transaction(transaction_id)
+
         if transaction is None:
-            raise RequestRecordManagerException('Could not find transaction [{0}] '.format(transaction_id))
+            message = _('Transaction ID [{0}] is invalid.')
+            raise InvalidRequestIDException(message.format(transaction_id))
+
         return transaction
 
-    def get_transaction_detail(self, transaction_id, **options):
+    def get_detail_by_transaction_id(self, transaction_id, **options):
         '''
-        Returns transaction information.
-        
-        @param str transaction_id: transaction ID
-        
-        @rtype: dict(str id,
-                     datetime creation_date,
-                     str channel_id,
-                     str user_name,
-                     list requests)
-        @type requests: list(dict(str id,
-                                  datetime request_date,
-                                  int state,
-                                  str error) 
+        Returns detail information of a particular transaction.
+
+        @param str transaction_id: tranasction ID
+
+        @rtype: dict(str transaction_id: transaction ID
+                     datetime start_date: start date of transaction,
+                     str user_id: user ID,
+                     list(dict) requests: requests regarding to the transaction)
+        @type request: dict(str request_id: client request ID,
+                            str transaction_id: client request transaction ID,
+                            str user_name: client request user name,
+                            str client_ip: client request IP,
+                            str service_id: client request service ID,
+                            datetime receieve_date: client request recieve date,
+                            datetime request_date: client request request date,
+                            str trace_id: client request trace ID,
+                            int state: request state,
+                            dict data: data)
+        @type data: dict(dict request_header: request header,
+                         dict command_args: command args,
+                         dict command_kwargs: command kwargs,
+                         dict call_context: call context,
+                         dict response_data: response data
+                         str error: error)
+        @type request_header: dict(str recorder_type: recorder type,
+                                   int version: version)
+        @type response_data: dict(datetime send_date: client response send date,
+                                  dict command_result: client response command result)
         @return: transaction data
         '''
-        
-        transaction = self.get_transaction(transaction_id)
+
+        transaction = self._get_transaction(transaction_id)
+
+        if transaction is None:
+            message = _('Transaction ID [{0}] is invalid.')
+            raise InvalidRequestIDException(message.format(transaction_id))
+
+        transaction_requests = self._get_transaction_requests(transaction_id)
         transaction.requests = []
-        for request_id in self._requests:
-            request = self._requests[request_id]
-            if request.transaction_id == transaction_id:
-                transaction.requests.append(request)
-        return request
-            
+        for request_header, request in transaction_requests:
+            request = \
+                self._get_recorder(request_header.recorder_type).get(request, **options)
+            transaction.requests.append(request)
+
+        return transaction
+
     def get_request_state(self, request_id):
         '''
         Returns state of specified request.
-        
+
         @param str request_id: request ID
-        
+
         @rtype: int
-        @note: 
+        @note:
             0: received
             1: completed
             2: failed
+            3: reversed
         @return: request state
         '''
-        
-        return self.get(request_id).state
-    
+
+        request_header, request = self._get_request(request_id)
+        return self._get_recorder(request_header.recorder_type).get_request_state(request)
+
+    def update_request_state(self, request_id, state, **options):
+        '''
+        Updates the specified request.
+
+        @param str request_id: request ID
+        @param int state: request state
+        '''
+
+        request_header, request = self._get_request(request_id)
+
+        if request_header is None:
+            message = _('Request ID [{0}] is invalid.')
+            raise InvalidRequestIDException(message.format(request_id))
+
+        self._request_holder.update_request_state(request, state, **options)
+
+    def register_recorder(self, recorder):
+        '''
+        Registers request recorder.
+
+        @param object recorder: request recorder
+        '''
+
+        self._recorders[recorder.get_name()] = recorder
+
+    def register_holder(self, holder):
+        '''
+        Registers request holder.
+
+        @param object holder: request holder
+        '''
+
+        self._request_holder = holder

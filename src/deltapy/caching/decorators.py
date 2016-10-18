@@ -5,6 +5,7 @@ Created on Aug 18, 2009
 '''
 
 from threading import Lock
+from operator import itemgetter
 
 from deltapy.utils.decorator import make_decorator
 from deltapy.caching.manager import CacheManagerException
@@ -18,7 +19,7 @@ class cache:
     '''
     
     # TODO: Getting category in caching methods
-    def __init__(self, scavenger = None, name = None, category = 'functions', **cache_params):
+    def __init__(self, scavenger=None, name=None, category='functions', **cache_params):
         # Getting parameters
         self._scavenger = scavenger
         self._catogory = category
@@ -64,7 +65,7 @@ class cache:
         
         # Creating input parameters key
         # TODO: fix creating cache key 
-        key = str(args) + str(kwargs)
+        key = str(args) + str(sorted(kwargs.items(), key=itemgetter(0)))
         
         try:
             # Looking in cache

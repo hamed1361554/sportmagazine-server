@@ -248,8 +248,11 @@ class ChannelManager(DeltaObject):
         '''
         
         session = get_current_session()
-        context = session.get_context()
-        return context.get('channel')
+        if session is not None:
+            context = session.get_context()
+            return context.get('channel')
+
+        return None
     
     def load(self):
         '''

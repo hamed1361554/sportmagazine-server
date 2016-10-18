@@ -40,13 +40,21 @@ def register_reverser(reverser, **options):
     '''
     
     return get_component(APP_REVERSE_MANAGER).register_reverser(reverser, **options)
-    
-def reverse(reverser_id, params, **options):
+
+def reverse_transaction(transaction_id, **options):
     '''
     Reverses an action by the specified reverser using the given parameters.
-    
-    @param reverser_id: reverser ID
-    @param params: required parameters to reverse
+
+    @param str transaction_id: transaction ID
     '''
 
-    return get_component(APP_REVERSE_MANAGER).reverse(reverser_id, params, **options)
+    return get_component(APP_REVERSE_MANAGER).reverse_transaction(transaction_id, **options)
+
+def reverse_request(request_id, **options):
+    '''
+    Reverses an action by the specified reverser using the given parameters.
+
+    @param str request_id: request ID
+    '''
+
+    return get_component(APP_REVERSE_MANAGER).reverse_request(request_id, **options)

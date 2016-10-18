@@ -117,10 +117,10 @@ class ZMQRequestProcessor(RequestProcessorBase):
     def resize(self, size):
         '''
         Resizes current process pool.
-        @param size:
+        @param int size: pool size
         '''
-
-        return self._pool.set_size(size)
+        if self._pool is not None:
+            return self._pool.set_size(size)
 
     def terminate(self):
         '''

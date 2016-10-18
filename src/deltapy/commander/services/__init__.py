@@ -14,7 +14,6 @@ def execute(key, *args, **kargs):
     @param key: command key or command name
     @return: object
     '''
-    print '!'*25, key
     return get_app_context()[APP_COMMANDER].execute(key, *args, **kargs)
 
 def bulk_execute(commands, **options):
@@ -70,23 +69,29 @@ def add_command(command, **options):
 
 def get_commands(parent=None,
                  name_filter=None,
-                 description_filter=None):
+                 description_filter=None,
+                 exact_name=None):
     '''
     Returns all commands.
     If any filter specified, it filter those commands.
-    
+
     @keyword str parent: only return commands that their parrents
         matches this string.
     @keyword str name_filter: only return commands that their names
         contain this string.
+    @keyword str exact_name: only return command that its name
+        is this string.
     @keyword str description_filter: only return commands that their
         description contain this string.
-    
-    @return: list<Command>
+
+    @return: founded commands
+    @rtype: list(dict(str name,
+                      str description))
     '''
     return get_app_context()[APP_COMMANDER].get_commands(parent=parent,
                                                          name_filter=name_filter,
-                                                         description_filter=description_filter)    
+                                                         description_filter=description_filter,
+                                                         exact_name=exact_name)
 
 def get_command(key):
     '''

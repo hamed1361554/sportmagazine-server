@@ -61,14 +61,18 @@ def get_command_description(key):
 @command('command.find')
 def find_commands(parent=None,
                   name_filter=None,
-                  description_filter=None):
+                  description_filter=None,
+                  exact_name=None):
     '''
-    Finds commands according to the specified filters.
-    
+    Returns all commands.
+    If any filter specified, it filter those commands.
+
     @keyword str parent: only return commands that their parrents
         matches this string.
     @keyword str name_filter: only return commands that their names
         contain this string.
+    @keyword str exact_name: only return command that its name
+        is this string.
     @keyword str description_filter: only return commands that their
         description contain this string.
 
@@ -79,7 +83,8 @@ def find_commands(parent=None,
     
     commands = commander.get_commands(parent=parent,
                                       name_filter=name_filter,
-                                      description_filter=description_filter)
+                                      description_filter=description_filter,
+                                      exact_name=exact_name)
     
     return [{'name': cmd.get_name(), 'description': cmd.get_description()}
             for cmd in commands]

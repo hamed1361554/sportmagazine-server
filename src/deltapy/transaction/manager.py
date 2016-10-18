@@ -9,6 +9,8 @@ import datetime
 import weakref 
 
 from deltapy.core import DeltaObject, DeltaException
+from deltapy.request_processor.manager import TimeoutException
+from deltapy.security.session.services import get_current_session
 from deltapy.utils.uniqueid import get_uuid
 
 
@@ -71,6 +73,7 @@ class Transaction(DeltaObject):
         self._before_rollback_triggers = []
         self._before_commit_triggers = []
         self._after_commit_triggers = []
+        self._timeout = 0
         
     def add_before_commit_trigger(self, trigger, *params):
         '''
@@ -186,7 +189,16 @@ class Transaction(DeltaObject):
     def get_manager(self):
         return self.__manager()
     
-    def commit(self):        
+    def commit(self):
+        # Checking request timeout
+        if self._timeout is not None and self._timeout > 0:
+            # Getting client request
+            client_request = get_current_session().get_client_request()
+            if (datetime.datetime.now() - client_request.recieve_date).seconds > self._timeout:
+                self.rollback()
+                message = _('Transaction timeout [{0} second(s)] reached for request [{1}].')
+                raise TimeoutException(message.format(self._timeout, client_request))
+
         if self.is_commitable():
             self._set_status_(Transaction.StatusEnum.COMMITTING)
             if self.get_manager().commit(self):
@@ -256,6 +268,20 @@ class Transaction(DeltaObject):
         if root is None:
             return self
         return root.get_root()
+
+    def set_timeout(self, timeout):
+        """
+        Sets request timeout in transaction.
+        """
+
+        self._timeout = timeout
+
+    def get_timeout(self):
+        """
+        Returns timeout.
+        """
+
+        return self._timeout
 
 class TwoPhaseCommitTransaction(Transaction):
     
@@ -332,28 +358,38 @@ class TransactionManager(DeltaObject):
         pool_name = kargs.get('pool_name', TransactionManager.DEFAULT_TRANSACTION)
         if not pool_name:
             pool_name = TransactionManager.DEFAULT_TRANSACTION
-        
+
         is_root = kargs.get('is_root', False)
 
         parent_transaction = None
-        connection = None               
-        
+        connection = None
+        timeout = None
+
         if not is_root:
             parent_transaction = self.__get_current_root_transaction__(pool_name)
-                              
+
         if not issubclass(type(parent_transaction), TwoPhaseCommitTransaction):
             if parent_transaction is not None:
                 connection = parent_transaction.get_connection()
             else:
                 connection = self._database_manager.open(pool_name)
-         
+
         trx = Transaction(self, connection, auto_commit, parent_transaction)
         trx._pool_name = pool_name
-        
+
+        current_session = get_current_session()
+        if current_session is not None:
+            client_request = current_session.get_client_request()
+
+            if client_request.timeout is not None and client_request.timeout > 0:
+                timeout = client_request.timeout
+
+        self.set_timeout(trx, timeout)
+
         if not parent_transaction:
             connection.transaction = trx
             self.__add_root_transaction__(pool_name, trx)
-            
+
         return trx
        
     def _run_before_commit_triggers_(self, tx):
@@ -442,7 +478,9 @@ class TransactionManager(DeltaObject):
                         trx.finalize()
         self._transactions.clear()
 
-        
+    def set_timeout(self, tx, timeout):
+        tx.set_timeout(timeout)
+
     def __str__(self):
         return "%s" % self._transactions.values()
     

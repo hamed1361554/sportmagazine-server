@@ -4,157 +4,183 @@ Created on Mar 3, 2013
 @author: Abi.Mohammadi & Majid.Vesal
 '''
 
-from deltapy.request_processor.coordinator import APP_TRANSACTION_COORDINATOR
 from deltapy.application.services import get_component
+from deltapy.request_processor.coordinator import APP_TRANSACTION_COORDINATOR
 
-def get_transaction_state(transaction_id):
-    '''
-    Returns transaction state.
-    
-    @param str transaction_id: transaction ID
-    
-    @rtype: int
-    @note: 
-        0: Received
-        1: Completed
-        2: Failed
-    @return: transaction state
-    '''
-    
-    return get_component(APP_TRANSACTION_COORDINATOR).get_transaction_state(transaction_id)
     
 def get_request_state(request_id):
     '''
-    Returns reuqest state.
-    
+    Returns state of specified request.
+
     @param str request_id: request ID
-    
+
     @rtype: int
-    @note: 
+    @note:
         0: Received
         1: Completed
         2: Failed
-    @return: transaction state
+        3: Reversed
+    @return: request state
     '''
     
-    return get_component(APP_TRANSACTION_COORDINATOR).get_request_state(request_id)    
+    return get_component(APP_TRANSACTION_COORDINATOR).get_request_state(request_id)
+
+def get_request(request_id):
+    '''
+    Returns the specified request.
+
+    @param str request_id: request ID
+
+    @rtype: dict(str request_id: client request ID,
+                 str transaction_id: client request transaction ID,
+                 str user_name: client request user name,
+                 str client_ip: client request IP,
+                 str service_id: client request service ID,
+                 datetime receieve_date: client request recieve date,
+                 datetime request_date: client request request date,
+                 str trace_id: client request trace ID,
+                 int state: request state,
+                 dict data: data)
+    @type data: dict(dict request_header: request header,
+                     dict command_args: command args,
+                     dict command_kwargs: command kwargs,
+                     dict call_context: call context,
+                     dict response_data: response data
+                     str error: error)
+    @type request_header: dict(str recorder_type: recorder type,
+                               int version: version)
+    @type response_data: dict(datetime send_date: client response send date,
+                              dict command_result: client response command result)
+    @return: request info
+    '''
+
+    return get_component(APP_TRANSACTION_COORDINATOR).get_request(request_id)
+
+def try_get_request(request_id):
+    '''
+    Returns information of a particular request.
+
+    @param str request_id: request ID
+
+    @rtype: dict(str request_id: client request ID,
+                 str transaction_id: client request transaction ID,
+                 str user_name: client request user name,
+                 str client_ip: client request IP,
+                 str service_id: client request service ID,
+                 datetime receieve_date: client request recieve date,
+                 datetime request_date: client request request date,
+                 str trace_id: client request trace ID,
+                 int state: request state,
+                 dict data: data)
+    @type data: dict(dict request_header: request header,
+                     dict command_args: command args,
+                     dict command_kwargs: command kwargs,
+                     dict call_context: call context,
+                     dict response_data: response data
+                     str error: error)
+    @type request_header: dict(str recorder_type: recorder type,
+                               int version: version)
+    @type response_data: dict(datetime send_date: client response send date,
+                              dict command_result: client response command result)
+    @return: request info
+    '''
+
+    return get_component(APP_TRANSACTION_COORDINATOR).try_get_request(request_id)
     
 def get_transaction_detail(transaction_id):
     '''
     Returns detail information of the specified transaction.
-    
+
     @param str transaction_id: transaction ID
-    
+
     @rtype: dict(str transaction_id: transaction ID
-                 int state: transaction state,
                  datetime start_date: start date of transaction,
                  str user_id: user ID,
-                 list requests: requests regarding to the transaction)
-    @type requests: dict(str request_id: request ID,
-                         int state: request state,
-                         object input: request input,
-                         object result: request result)
-                         
+                 list(dict) requests: requests regarding to the transaction)
+    @type request: dict(str request_id: client request ID,
+                        str transaction_id: client request transaction ID,
+                        str user_name: client request user name,
+                        str client_ip: client request IP,
+                        str service_id: client request service ID,
+                        datetime receieve_date: client request recieve date,
+                        datetime request_date: client request request date,
+                        str trace_id: client request trace ID,
+                        int state: request state,
+                        dict data: data)
+    @type data: dict(dict request_header: request header,
+                     dict command_args: command args,
+                     dict command_kwargs: command kwargs,
+                     dict call_context: call context,
+                     dict response_data: response data
+                     str error: error)
+    @type request_header: dict(str recorder_type: recorder type,
+                               int version: version)
+    @type response_data: dict(datetime send_date: client response send date,
+                              dict command_result: client response command result)
     @return: transaction detail
     '''
     
-    return get_component(APP_TRANSACTION_COORDINATOR).get_transaction_detail(transaction_id)    
-    
-def activate_channel(channel_id):
-    '''
-    Activates transaction coordination on the given channel. 
-    
-    @param str channel_id: channel ID
-    '''
-    
-    return get_component(APP_TRANSACTION_COORDINATOR).activate_channel(channel_id)
-    
-def activate_service(channel_id, service_id):
-    '''
-    Activates transaction coordination on the given service.
-    
-    @param str channel_id: channel ID
-    @param str service_id: service ID
-    '''
-           
-    return get_component(APP_TRANSACTION_COORDINATOR).activate_service(service_id)
+    return get_component(APP_TRANSACTION_COORDINATOR).get_transaction_detail(transaction_id)
 
-def deactivate_channel(channel_id):
-    '''
-    Deativates transaction coordination on the given channel. 
-    
-    @param str channel_id: channel ID
-    '''
-    
-    return get_component(APP_TRANSACTION_COORDINATOR).deactivate_channel(channel_id)
 
-def deactivate_service(service_id):
-    '''
-    Dectivates transaction coordination on the given service.
-    
-    @param str channel_id: channel ID
-    @param str service_id: service ID
-    '''
-    
-    return get_component(APP_TRANSACTION_COORDINATOR).deactivate_service(service_id)
-
-def update_request_state(request_id, state, **options):
-    '''
-    Updates the state of the given request.
-    
-    @param str request_id: request ID
-    @param int state: request state
-    '''
-    
-    return get_component(APP_TRANSACTION_COORDINATOR).update_request_state(request_id, state, **options)
-
-def record_request(request, **options):
+def record_request(recorder_type, client_request, **options):
     '''
     Records a request data using the given information.
-    
-    @param dict request: request data
-    @type request: dict(str id: request ID,
-                        str transaction_id: transaction ID,
-                        str user_name: user name,
-                        str ip: client IP,
-                        datetime recieve_date: receive date,
-                        datetime request_date: request date from client)
+
+    @param str recorder_type: recorder type
+    @param dict client_request: request data
+    @type client_request: dict(str id: request ID,
+                               str transaction_id: transaction ID,
+                               str user_name: user name,
+                               str client_ip: client IP,
+                               datetime receive_date: receive date,
+                               datetime request_date: request date from client)
     '''
 
-    return get_component(APP_TRANSACTION_COORDINATOR).record_request(request, **options)
+    return get_component(APP_TRANSACTION_COORDINATOR).record_request(recorder_type,
+                                                                     client_request,
+                                                                     **options)
 
-def set_completed(request, **options):
+
+def set_completed(recorder_type, client_request, client_response, **options):
     '''
     Completes the state of the given request.
-    
-    @param str request_id: request ID
-    @param request_id: request ID
+
+    @param str recorder_type: recorder type
+    @param dict client_request: request data
+    @type client_request: dict(str id: request ID,
+                               str transaction_id: transaction ID,
+                               str user_name: user name,
+                               str client_ip: client IP,
+                               datetime receive_date: receive date,
+                               datetime request_date: request date from client)
+    @param dict client_response: client response
     '''
     
-    return get_component(APP_TRANSACTION_COORDINATOR).set_completed(request, **options)
+    return get_component(APP_TRANSACTION_COORDINATOR).set_completed(recorder_type,
+                                                                    client_request,
+                                                                    client_response,
+                                                                    **options)
 
-def set_failed(request, error, **options):
+
+def set_failed(recorder_type, client_request, error, **options):
     '''
     Sets the state of the given request to failed.
-    
-    @param str request_id: request ID
-    @param str error: error description 
+
+    @param str recorder_type: recorder type
+    @param dict client_request: request data
+    @type client_request: dict(str id: request ID,
+                               str transaction_id: transaction ID,
+                               str user_name: user name,
+                               str client_ip: client IP,
+                               datetime receive_date: receive date,
+                               datetime request_date: request date from client)
+    @param dict error: error
     '''
 
-    return get_component(APP_TRANSACTION_COORDINATOR).set_failed(request, error, **options)
+    return get_component(APP_TRANSACTION_COORDINATOR).set_failed(recorder_type,
+                                                                 client_request,
+                                                                 error,
+                                                                 **options)
 
-def load():
-    '''
-    Loads activated channels and services. 
-    '''
 
-    return get_component(APP_TRANSACTION_COORDINATOR).load()
-
-def add_channel(channel_id):
-    """
-    Adds a channel to coordinator.
-
-    @param str channel_id: channel id
-    """
-
-    return get_component(APP_TRANSACTION_COORDINATOR).add_channel(channel_id)

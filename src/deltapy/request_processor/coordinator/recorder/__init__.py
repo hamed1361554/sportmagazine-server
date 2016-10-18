@@ -6,6 +6,11 @@ Created on Apr 23, 2013
 
 from deltapy.packaging.package import Package
 
+
 APP_REQUEST_RECORDER = 'deltapy.request_recorder'
-class RequestRecorederPackage(Package):
-    pass
+
+
+class RequestRecorderPackage(Package):
+    '''
+    Request Recorder Package
+    '''

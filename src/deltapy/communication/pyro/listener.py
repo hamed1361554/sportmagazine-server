@@ -3,7 +3,7 @@ Created on Sep 28, 2009
 
 @author: Abi.Mohammadi & Majid.Vesal
 '''
-
+import time
 import traceback
 
 import Pyro.core
@@ -103,6 +103,8 @@ class PyroExceptionManager(DeltaObject):
             code = self.type_converter.to_internal(exception.code)
         elif hasattr(exception, 'get_code'):
             code = self.type_converter.to_internal(exception.get_code())
+        else:
+            code = exception.__class__.__name__
         ex.code = code
 
         # Formatting and setting optional exception data, if it is provided
@@ -161,7 +163,9 @@ class PyroListener(Listener):
     Pyro listener.
     '''
     
-    logger = logging.get_logger(name = 'PYRO')
+    logger = logging.get_logger(name='PYRO')
+
+    communicator_logger = logging.get_logger(name='communicator')
     
     def __init__(self, communicator, name, params, client_request_class=None):
         Listener.__init__(self, communicator, name, params, client_request_class=client_request_class)
@@ -203,7 +207,16 @@ class PyroListener(Listener):
         @param password: user password
         '''
         try:
-            return Listener.login_ex(self,ip, user_name, password, **options)
+            start = time.time()
+            login_result = \
+                Listener.login_ex(self, ip, user_name, password, **options)
+
+            end = time.time()
+            time_span = end - start
+            PyroListener.communicator_logger.info("Pyro [{0}] login [{1}]".format(login_result["ticket"],
+                                                                                  time_span))
+
+            return login_result
         except DeltaException, error:
             self._exception_manager.raise_exception(error)
         except Exception, error:
@@ -233,6 +246,7 @@ class PyroListener(Listener):
                                       command_key,
                                       *args,
                                       **kargs)
+
             return result
 
         except DeltaException, error:
@@ -240,13 +254,18 @@ class PyroListener(Listener):
             ex = Exception(message)
             ex.code = error.get_code()
             ex.data = error.get_data()
-            ex.traceback = traceback.format_exc()
+            ex.traceback = error.get_traceback()
+            if ex.traceback is None:
+                ex.traceback = traceback.format_exc()
             PyroListener.logger.exception(ex)
             self._exception_manager.raise_exception(ex)
         except Exception, error:
             message = str(error)
             ex = Exception(message)
-            ex.traceback = traceback.format_exc()
+            if hasattr(error, 'traceback'):
+                ex.traceback = getattr(error, 'traceback')
+            else:
+                ex.traceback = traceback.format_exc()
             PyroListener.logger.exception(ex)
             self._exception_manager.raise_exception(ex)
 
@@ -260,9 +279,14 @@ class PyroListener(Listener):
         '''
     
         try:
+            start = time.time()
             result = Listener.execute_ex(self,
                                          request,
                                          **options)
+            end = time.time()
+            time_span = end - start
+            PyroListener.communicator_logger.info("Pyro [{0}] executed [{1}]".format(result['request_id'],
+                                                                                     time_span))
             return result
 
         except DeltaException, error:
@@ -270,13 +294,18 @@ class PyroListener(Listener):
             ex = Exception(message)
             ex.code = error.get_code()
             ex.data = error.get_data()
-            ex.traceback = traceback.format_exc()
+            ex.traceback = error.get_traceback()
+            if ex.traceback is None:
+                ex.traceback = traceback.format_exc()
             PyroListener.logger.exception(ex)
             self._exception_manager.raise_exception(ex)
         except Exception, error:
             message = str(error)
             ex = Exception(message)
-            ex.traceback = traceback.format_exc()
+            if hasattr(error, 'traceback'):
+                ex.traceback = getattr(error, 'traceback')
+            else:
+                ex.traceback = traceback.format_exc()
             PyroListener.logger.exception(ex)
             self._exception_manager.raise_exception(ex)
         
@@ -303,3 +332,21 @@ class PyroListener(Listener):
         '''
         
         self._daemon.shutdown()
+
+    def logout(self, ip, ticket, user_name):
+        '''
+        Log outs the user.
+
+        @param ip: client ip
+        @param ticket: user ticket
+        @param user_name: user name
+        '''
+        start = time.time()
+        logout_result = \
+            super(PyroListener, self).logout(ip, ticket, user_name)
+
+        end = time.time()
+        time_span = end - start
+        PyroListener.communicator_logger.info("Pyro [{0}] logout [{1}]".format(ticket,
+                                                                               time_span))
+        return logout_result

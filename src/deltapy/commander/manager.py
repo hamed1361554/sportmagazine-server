@@ -6,9 +6,12 @@ Created on Aug 14, 2009
 
 import traceback
 
+import time
+
 from deltapy.core import DeltaException, DynamicObject
 from deltapy.core import DeltaObject
 from deltapy.commander.executor import CommandExecutor
+from deltapy.security.session.services import get_current_session
 from deltapy.utils.concurrent import run_in_thread
 import deltapy.logging.services as logging
 
@@ -82,6 +85,12 @@ class CommandManager(DeltaObject):
             error_stack = traceback.format_exc()
             error_message = "[{command_key}] Error:\n{error}".format(command_key=key, error=error_stack)
             CommandManager.logger.error(error_message)
+
+            # If it's an standard error, there is no need to wrap it again,
+            # because it can be pickled with no difficulty.
+            if isinstance(error, StandardError):
+                raise
+
             raise Exception("%s:%s" % (str(error), error_stack))
     
     def bulk_execute(self, commands, **options):
@@ -167,6 +176,11 @@ class CommandManager(DeltaObject):
         
         @param command: command
         '''
+
+        # Setting start processing time in command manager
+        current_session = get_current_session()
+        internal_context = current_session.get_internal_context()
+        internal_context['start_process_time'] = time.time()
         
         if len(self._hooks):
             for hook in self._hooks:
@@ -221,25 +235,30 @@ class CommandManager(DeltaObject):
     def get_commands(self,
                      parent=None,
                      name_filter=None,
-                     description_filter=None):
+                     description_filter=None,
+                     exact_name=None):
         '''
         Returns all commands.
         If any filter specified, it filter those commands.
-        
+
         @keyword str parent: only return commands that their parrents
             matches this string.
         @keyword str name_filter: only return commands that their names
             contain this string.
+        @keyword str exact_name: only return command that its name
+            is this string.
         @keyword str description_filter: only return commands that their
             description contain this string.
-        
-        @return: list<Command>
+
+        @return: founded commands
+        @rtype: list(dict(str name,
+                          str description))
         '''
         commands = self._commands.values()
         results = []
 
         if (parent is None and name_filter is None and
-            description_filter is None):
+            description_filter is None and exact_name is None):
             # If no filter provided.
             return commands
 
@@ -252,6 +271,9 @@ class CommandManager(DeltaObject):
             if name_filter is not None:
                 if cmd.get_name().find(name_filter) < 0:
                     filtered = True
+            if exact_name is not None:
+                if cmd.get_name() != exact_name:
+                    filtered = True
             if description_filter is not None:
                 command_description = cmd.get_description()
                 if (command_description is None or
@@ -261,7 +283,7 @@ class CommandManager(DeltaObject):
             if not filtered:
                 results.append(cmd)
 
-        return results                
+        return results
 
     def remove_commands(self, parent):
         '''

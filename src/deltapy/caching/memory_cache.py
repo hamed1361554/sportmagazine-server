@@ -5,7 +5,7 @@ Created on May 21, 2010
 '''
 
 import time
-import cPickle
+from copy import deepcopy
 from multiprocessing import Lock
 
 from deltapy.caching.cache import CacheBase, CacheItem, CacheException
@@ -38,8 +38,8 @@ class MemoryCache(CacheBase):
         
         if self.get_size() <= 0:
             return
-        
-        value = cPickle.dumps(value)
+
+        value = deepcopy(value)
 
         try:
             self._cache_lock.acquire()
@@ -105,7 +105,7 @@ class MemoryCache(CacheBase):
         
         cache_item.hit_count += 1
         
-        return cPickle.loads(cache_item.value)
+        return deepcopy(cache_item.value)
             
     def _check_lifetime_(self, key):
         
@@ -144,7 +144,7 @@ class MemoryCache(CacheBase):
         '''
         values = []
         for cache_item in self.get_items():
-            values.append(cPickle.loads(cache_item.value))
+            values.append(deepcopy(cache_item.value))
         return values
 
     def reset_item(self, key):

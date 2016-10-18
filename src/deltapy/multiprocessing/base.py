@@ -13,9 +13,10 @@ class BasePool(DeltaObject):
     def __init__(self, name, size, **options):
         DeltaObject.__init__(self)
         self._set_name_(name)
-        self._size = 0
-        self.set_size(size)
         self._options = options
+
+        self.__size = 0
+        self.set_size(size)
     
     def get_options(self):   
         '''
@@ -25,13 +26,26 @@ class BasePool(DeltaObject):
     
     def set_size(self, size):
         '''
-        Sets pool size
-        @param size:
+        Sets pool size.
+
+        @param int size: pool size
         '''
-        if self._size != size:
-            old_size = self._size
-            self._size = size
+
+        old_size = self.get_size()
+
+        if old_size != size:
+            self.__size = size
             self._change_size_(old_size, size)
+
+    def get_size(self):
+        '''
+        Gets pool size.
+
+        @rtype: int
+        @return: pool size
+        '''
+
+        return self.__size
         
     def execute(self, func, *args, **kwargs):
         '''

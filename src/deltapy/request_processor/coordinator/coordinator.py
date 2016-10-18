@@ -4,264 +4,209 @@ Created on Feb 27, 2013
 @author: Abi.Mohammadi & Majid.Vesal
 '''
 
-import fnmatch
-
-from deltapy.core import DeltaObject, DeltaEnum, DeltaEnumValue, DynamicObject
-from deltapy.request_processor.services import register_request_processor_hook
-from deltapy.request_processor.coordinator.request_processor_hook import TransactionCoordinatorRequestProcessorManagerHook
-from deltapy.security.channel.services import get_current_channel_id
+from deltapy.commander.services import add_hook
+from deltapy.core import DeltaObject, DeltaEnum, DeltaEnumValue, DeltaException
+from deltapy.request_processor.coordinator.commander_hook import \
+    TransactionCoordinatorCommandExecutionHook
 
 import deltapy.logging.services as logging_services
 import deltapy.request_processor.coordinator.recorder.services as request_recorder_services
-import deltapy.security.channel.services as channel_services
-import deltapy.commander.services as commander_services
+
+
+class InvalidRequestIDException(DeltaException):
+    '''
+    Is raised when given request id is not valid.
+    '''
+
 
 class TransactionCoordinator(DeltaObject):
     
     LOGGER = logging_services.get_logger(name='request.coordinator')
     
     class StateEnum(DeltaEnum):
-        RECIEVED = DeltaEnumValue(0, 'Received')
+        RECEIVED = DeltaEnumValue(0, 'Received')
         COMPLETED = DeltaEnumValue(1, 'Completed')
         FAILED = DeltaEnumValue(2, 'Failed')
+        REVERSED = DeltaEnumValue(3, 'Reversed')
+        REVERSE_FAILED = DeltaEnumValue(4, 'Reversed Failed')
         
     def __init__(self):
-        self._channels = {}
-        self.load()
-        register_request_processor_hook(TransactionCoordinatorRequestProcessorManagerHook())
-
-    def load(self):
         '''
-        Loads activated channels and services. 
+        Initializes transaction coordinator.
         '''
 
-        self._channels = {}
+        DeltaObject.__init__(self)
 
-        all_commands = []
-        for command in commander_services.get_commands():
-            all_commands.append(command.get_key())
+        add_hook(TransactionCoordinatorCommandExecutionHook())
 
-        if channel_services.is_enable():
-            for channel in channel_services.get_all():
-                self._add_channel_services(channel, all_commands=all_commands)
+    def get_request(self, request_id):
+        '''
+        Returns the specified request.
 
-    def add_channel(self, channel_id):
-        """
-        Adds a channel to coordinator.
+        @param str request_id: request ID
 
-        @param str channel_id: channel id
-        """
+        @rtype: dict(str request_id: client request ID,
+                     str transaction_id: client request transaction ID,
+                     str user_name: client request user name,
+                     str client_ip: client request IP,
+                     str service_id: client request service ID,
+                     datetime receieve_date: client request recieve date,
+                     datetime request_date: client request request date,
+                     str trace_id: client request trace ID,
+                     int state: request state,
+                     dict data: data)
+        @type data: dict(dict request_header: request header,
+                         dict command_args: command args,
+                         dict command_kwargs: command kwargs,
+                         dict call_context: call context,
+                         dict response_data: response data
+                         str error: error)
+        @type request_header: dict(str recorder_type: recorder type,
+                                   int version: version)
+        @type response_data: dict(datetime send_date: client response send date,
+                                  dict command_result: client response command result)
+        @return: request info
+        '''
 
-        all_commands = []
-        for command in commander_services.get_commands():
-            all_commands.append(command.get_key())
+        return request_recorder_services.get_by_request_id(request_id)
 
-        if channel_services.is_enable():
-            channel = channel_services.get(channel_id)
-            self._add_channel_services(channel, all_commands=all_commands)
+    def try_get_request(self, request_id, **options):
+        '''
+        Returns information of a particular request.
 
-    def _add_channel_services(self, channel, **options):
-        """
-        Registers allowed services for given channel.
+        @param str request_id: request ID
 
-        @param dict channel: channel information
+        @rtype: dict(str request_id: client request ID,
+                     str transaction_id: client request transaction ID,
+                     str user_name: client request user name,
+                     str client_ip: client request IP,
+                     str service_id: client request service ID,
+                     datetime receieve_date: client request recieve date,
+                     datetime request_date: client request request date,
+                     str trace_id: client request trace ID,
+                     int state: request state,
+                     dict data: data)
+        @type data: dict(dict request_header: request header,
+                         dict command_args: command args,
+                         dict command_kwargs: command kwargs,
+                         dict call_context: call context,
+                         dict response_data: response data
+                         str error: error)
+        @type request_header: dict(str recorder_type: recorder type,
+                                   int version: version)
+        @type response_data: dict(datetime send_date: client response send date,
+                                  dict command_result: client response command result)
+        @return: request info
+        '''
 
-        @keyword list all_commands: List of commands` key
-        @type all_commands: list(str command_key: command key)
-        """
-
-        # Getting command from options
-        all_commands = options.get('all_commands')
-
-        if channel is None:
-            return
-
-        # IF command is not given, getting commands key
-        if all_commands is None or len(all_commands) == 0:
-            for command in commander_services.get_commands():
-                all_commands.append(command.get_key())
-
-        # Registering channel services
-        if 'recordable_services' in channel:
-            service_patterns = channel.recordable_services.replace(';', ',').split(',')
-            for pattern in service_patterns:
-                for service_id in all_commands:
-                    if fnmatch.fnmatch(service_id, pattern.strip()):
-                        self.activate_service(channel.id, service_id)
-            enable_recording = channel.get('enable_recording')
-            if enable_recording:
-                self.activate_channel(channel.id)
-            else:
-                self.deactivate_channel(channel.id)
+        return request_recorder_services.try_get_by_request_id(request_id, **options)
                         
     def get_request_state(self, request_id):
         '''
         Returns state of specified request.
-        
+
         @param str request_id: request ID
-        
+
         @rtype: int
-        @note: 
+        @note:
             0: Received
             1: Completed
             2: Failed
+            3: Reversed
         @return: request state
         '''
         
         return request_recorder_services.get_request_state(request_id)
-        
-    def get_transaction_state(self, transaction_id):
-        '''
-        Returns transaction state.
-        
-        @param str transaction_id: transaction ID
-        
-        @rtype: int
-        @note: 
-            0: Received
-            1: Completed
-            2: Failed
-        @return: transaction state
-        '''
 
     def get_transaction_detail(self, transaction_id):
         '''
         Returns detail information of the specified transaction.
-        
+
         @param str transaction_id: transaction ID
-        
+
         @rtype: dict(str transaction_id: transaction ID
-                     int state: transaction state,
                      datetime start_date: start date of transaction,
                      str user_id: user ID,
-                     list requests: requests regarding to the transaction)
-        @type requests: dict(str request_id: request ID,
-                             int state: request state,
-                             object input: request input,
-                             object result: request result)
-                             
+                     list(dict) requests: requests regarding to the transaction)
+        @type request: dict(str request_id: client request ID,
+                            str transaction_id: client request transaction ID,
+                            str user_name: client request user name,
+                            str client_ip: client request IP,
+                            str service_id: client request service ID,
+                            datetime receieve_date: client request recieve date,
+                            datetime request_date: client request request date,
+                            str trace_id: client request trace ID,
+                            int state: request state,
+                            dict data: data)
+        @type data: dict(dict request_header: request header,
+                         dict command_args: command args,
+                         dict command_kwargs: command kwargs,
+                         dict call_context: call context,
+                         dict response_data: response data
+                         str error: error)
+        @type request_header: dict(str recorder_type: recorder type,
+                                   int version: version)
+        @type response_data: dict(datetime send_date: client response send date,
+                                  dict command_result: client response command result)
         @return: transaction detail
         '''
 
-    def _get_channel_info(self, channel_id):
-        '''
-        Returns channel information.
-        
-        @param str channel_id: channel ID
-        
-        @rtype: dict(bool enable,
-                     list services)
-        @type services: list
-        @return: channel information
-        '''
-        
-        channel = self._channels.get(channel_id)
-        if channel is None:
-            channel = DynamicObject(enabled=False, services=[])
-            self._channels[channel_id] = channel
-        return channel
+        return request_recorder_services.get_detail_by_transaction_id(transaction_id)
 
-    def activate_channel(self, channel_id):
-        '''
-        Activates transaction coordination on the given channel. 
-        
-        @param str channel_id: channel ID
-        '''
-        
-        channel = self._get_channel_info(channel_id)
-        if not channel.enabled:
-            channel.enabled = True
-    
-    def activate_service(self, channel_id, service_id):
-        '''
-        Activates transaction coordination on the given service.
-
-        @param str channel_id: channel ID
-        @param str service_id: service ID
-        '''
-        
-        channel = self._get_channel_info(channel_id)
-        if service_id not in channel.services:
-            channel.services.append(service_id)
-        
-    def deactivate_channel(self, channel_id):
-        '''
-        Deativates transaction coordination on the given channel. 
-        
-        @param str channel_id: channel ID
-        '''
-        
-        channel = self._get_channel_info(channel_id)
-        if channel.enabled:
-            channel.enabled = False
-
-    def deactivate_service(self, channel_id, service_id):
-        '''
-        Dectivates transaction coordination on the given service.
-        
-        @param str channel_id: channel ID
-        @param str service_id: service ID
-        '''
-        
-        channel = self._get_channel_info(channel_id)
-        if service_id in channel.services:
-            channel.services.pop(service_id)
-            
-    def is_required_to_record_request(self, request):
-        '''
-        Returns True if the request must be recorded.
-        
-        @param ClientRequest request: request instance
-        
-        @rtype: bool
-        @return: True or False
-        '''
-
-        channel_id = get_current_channel_id()
-        channel = self._get_channel_info(channel_id)
-        if channel.enabled:
-            if request.command_key in channel.services:
-                return True
-        return False
-
-    def record_request(self, request, **options):
+    def record_request(self, recorder_type, client_request, **options):
         '''
         Records a request data using the given information.
-        
-        @param dict request: request data
-        @type request: dict(str id: request ID,
-                            str transaction_id: transaction ID,
-                            str user_name: user name,
-                            str ip: client IP,
-                            datetime recieve_date: receive date,
-                            datetime request_date: request date from client)
+
+        @param str recorder_type: recorder type
+        @type client_request: dict(str id: request ID,
+                               str transaction_id: transaction ID,
+                               str user_name: user name,
+                               str client_ip: client IP,
+                               datetime receive_date: receive date,
+                               datetime request_date: request date from client)
+        @param dict client_request: request data
         '''
 
-        if self.is_required_to_record_request(request):
-            request_recorder_services.record(request)
+        request_recorder_services.record(recorder_type,
+                                         client_request,
+                                         **options)
         
-        
-    def set_completed(self, request, **options):
+    def set_completed(self, recorder_type, client_request, client_response, **options):
         '''
         Completes the state of the given request.
-        
-        @param str request_id: request ID
-        @param request_id: request ID
+
+        @param str recorder_type: recorder type
+        @param dict client_request: request data
+        @type client_request: dict(str id: request ID,
+                               str transaction_id: transaction ID,
+                               str user_name: user name,
+                               str client_ip: client IP,
+                               datetime receive_date: receive date,
+                               datetime request_date: request date from client)
+        @param dict client_response: client response
         '''
+
+        request_recorder_services.set_completed(recorder_type,
+                                                client_request,
+                                                client_response,
+                                                **options)
         
-        if self.is_required_to_record_request(request):
-            request_recorder_services.set_completed(request.id)
-        
-    def set_failed(self, request, error, **options):
+    def set_failed(self, recorder_type, client_request, error, **options):
         '''
         Sets the state of the given request to failed.
         
-        @param str request_id: request ID
-        @param str error: error description 
+        @param str recorder_type: recorder type
+        @param dict client_request: request data
+        @type client_request: dict(str id: request ID,
+                               str transaction_id: transaction ID,
+                               str user_name: user name,
+                               str client_ip: client IP,
+                               datetime receive_date: receive date,
+                               datetime request_date: request date from client)
+        @param duct error: error
         '''
 
-        if self.is_required_to_record_request(request):
-            request = request_recorder_services.try_get(request.id)
-            if request is not None:
-                request_recorder_services.set_failed(request.id, error)
-    
+        request_recorder_services.set_failed(recorder_type,
+                                             client_request,
+                                             error,
+                                             **options)

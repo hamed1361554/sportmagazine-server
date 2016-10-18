@@ -11,6 +11,7 @@ class DeltaException(Exception):
         Exception.__init__(self, *args, **kwargs)
         
         self._data = {}
+        self._traceback = None
         
     def get_code(self):
         '''
@@ -25,6 +26,12 @@ class DeltaException(Exception):
         '''
         
         return self._data
+
+    def get_traceback(self):
+        '''
+        Returns the traceback of this exception.
+        '''
+        return self._traceback
 
 class DeltaObject(object):
     '''

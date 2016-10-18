@@ -57,29 +57,21 @@ def update_user(id, **params):
 
     return get_component(APP_SECURITY).update_user(id, **params)
 
-def get_user(id):
-    '''
+def get_user(id, **options):
+    """
     Returns user information by specified name
     
     @param id: user name
+    @keyword bool get_extra_user_info: extra user info should be gotten
+                                       if this options is true.
     
     @return: user data as DynamicObject
-    '''
+    """
     
-    return get_component(APP_SECURITY).get_user(id)
+    return get_component(APP_SECURITY).get_user(id, **options)
 
-def get_user_by_id(user_id):
-    """
-    Returns user information by specified name
 
-    @param user_id: user ID
-
-    @return: user data as DynamicObject
-    """
-
-    return get_component(APP_SECURITY).get_user_by_id(user_id)
-
-def activate_user(id, flag, **options):
+def activate_user(id, flag):
     '''
     Active or inactive specified user. 
     
@@ -87,7 +79,7 @@ def activate_user(id, flag, **options):
     @param flag: activation flag(True or False)
     '''
     
-    return get_component(APP_SECURITY).activate_user(id, flag, **options)
+    return get_component(APP_SECURITY).activate_user(id, flag)
 
 
 def is_superuser(id):

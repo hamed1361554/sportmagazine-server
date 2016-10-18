@@ -3,6 +3,7 @@ Created on Sep 28, 2009
 
 @author: Abi.Mohammadi & Majid.Vesal
 '''
+import time
 
 import sys
 import traceback
@@ -15,16 +16,18 @@ from deltapy.communication.listener import Listener
 from deltapy.communication.listener import Dispatcher
 from deltapy.communication.ice import utils
 from deltapy.locals import get_app
+import deltapy.logging.services as logging
 from deltapy.security.authentication.authenticator import AuthenticationException
 
 
 class IceDispatcher(DeltaIce.IIceDispatcher, Dispatcher):
-    
+
+    logger = logging.get_logger(name='communicator')
+
     def __init__(self, listener):
         Dispatcher.__init__(self, listener)
 
     def _get_client_ip_(self, **options):
-        return utils.object_to_dobject('192.168.22.88')
         current = options.get('current')
         if current is not None:
             ip_port = current.con.toString().split('remote address = ')[1]
@@ -33,95 +36,196 @@ class IceDispatcher(DeltaIce.IIceDispatcher, Dispatcher):
     
     def login(self, userName, password, options, current = None):
         try:
-            return self._listener.login(self._get_client_ip_(current = current), 
-                                        userName, 
-                                        password,
-                                        **options)
-        except DeltaException, error:
-            exception = DeltaIce.AuthenticationException()
-            exception.code = error.get_code()
-            exception.data = utils.object_to_dobject(error.get_data())
-            exception.message = utils.str_to_external(str(error))
-            exception.traceback = utils.str_to_external(traceback.format_exc())
-            raise exception
-        except Exception, error:
-            exception = DeltaIce.GenericException()
-            exception.message = utils.str_to_external(str(error))
-            exception.traceback = traceback.format_exc()
-            raise exception
+            start = time.time()
 
-    def loginEx(self, userName, password, options, current = None):
-        try:
-            return self._listener.login_ex(self._get_client_ip_(current = current), 
-                                           userName, 
-                                           password,
-                                           **options)
+            login_result = \
+                self._listener.login(self._get_client_ip_(current=current),
+                                     userName,
+                                     password,
+                                     **options)
+
+            end = time.time()
+            ticket = login_result.value['ticket'].value
+            time_span = end - start
+            IceDispatcher.logger.info("Ice [{0}] login [{1}]".format(ticket,
+                                                                     time_span))
+
+            return login_result
         except DeltaException as error:
             exception = DeltaIce.AuthenticationException()
             exception.code = error.get_code()
             exception.data = utils.object_to_dobject(error.get_data())
             exception.message = utils.str_to_external(str(error))
-            exception.traceback = utils.str_to_external(traceback.format_exc())
+
+            # Getting the true trace back from the error itself.
+            if error.get_traceback() is not None:
+                exception.traceback = utils.str_to_external(error.get_traceback())
+            else:
+                exception.traceback = utils.str_to_external(traceback.format_exc())
+
             raise exception
+
         except Exception as error:
             exception = DeltaIce.GenericException()
             exception.message = utils.str_to_external(str(error))
-            exception.traceback = traceback.format_exc()
+            
+            # Getting the true trace back from the error itself.
+            if hasattr(error, 'traceback'):
+                exception.traceback = getattr(error, 'traceback')
+            else:
+                exception.traceback = traceback.format_exc()
+            raise exception
+
+    def loginEx(self, userName, password, options, current=None):
+        try:
+            start = time.time()
+
+            login_result = \
+                self._listener.login_ex(self._get_client_ip_(current=current),
+                                        userName,
+                                        password,
+                                        **options)
+
+            end = time.time()
+            ticket = login_result.value['ticket'].value
+            time_span = end - start
+            IceDispatcher.logger.info("Ice [{0}] login [{1}]".format(ticket,
+                                                                     time_span))
+
+            return login_result
+
+        except DeltaException as error:
+            exception = DeltaIce.AuthenticationException()
+            exception.code = error.get_code()
+            exception.data = utils.object_to_dobject(error.get_data())
+            exception.message = utils.str_to_external(str(error))
+
+            # Getting the true trace back from the error itself.
+            if error.get_traceback() is not None:
+                exception.traceback = utils.str_to_external(error.get_traceback())
+            else:
+                exception.traceback = utils.str_to_external(traceback.format_exc())
+
+            raise exception
+
+        except Exception as error:
+            exception = DeltaIce.GenericException()
+            exception.message = utils.str_to_external(str(error))
+
+            # Getting the true trace back from the error itself.
+            if hasattr(error, 'traceback'):
+                exception.traceback = getattr(error, 'traceback')
+            else:
+                exception.traceback = traceback.format_exc()
             raise exception
         
-    def logout(self, ticket, userName, current = None):
+    def logout(self, ticket, userName, current=None):
         try:
-            return self._listener.logout(self._get_client_ip_(current = current), 
-                                         ticket, 
-                                         userName)
+            start = time.time()
+
+            logout_result = \
+                self._listener.logout(self._get_client_ip_(current=current),
+                                      ticket,
+                                      userName)
+
+            end = time.time()
+            time_span = end - start
+            IceDispatcher.logger.info("Ice [{0}] logout [{1}]".format(ticket.value,
+                                                                      time_span))
+
+            return logout_result
+
         except Exception as error:
             exception = DeltaIce.GenericException()
             exception.message = str(error)
-            exception.traceback = traceback.format_exc()
+
+            # Getting the true trace back from the error itself.
+            if hasattr(error, 'traceback'):
+                exception.traceback = getattr(error, 'traceback')
+            else:
+                exception.traceback = traceback.format_exc()
             raise exception
     
-    def execute(self, ticket, userName, commandKey, args, kwargs, current = None):
+    def execute(self, ticket, userName, commandKey, args, kwargs, current=None):
         try:
-            return self._listener.execute(self._get_client_ip_(current = current),
-                                          ticket, 
-                                          userName, 
-                                          commandKey,
-                                          *args,
-                                          **kwargs)
+            execute_result = \
+                self._listener.execute(self._get_client_ip_(current=current),
+                                       ticket,
+                                       userName,
+                                       commandKey,
+                                       *args,
+                                       **kwargs)
+
+            return execute_result
+
         except DeltaException as error:
             exception = DeltaIce.GenericException()
             exception.code = error.get_code()
             exception.data = utils.object_to_dobject(error.get_data())
             exception.message = utils.str_to_external(str(error))
-            exception.traceback = utils.str_to_external(traceback.format_exc())
+
+            # Getting the true trace back from the error itself.
+            if error.get_traceback() is not None:
+                exception.traceback = utils.str_to_external(error.get_traceback())
+            else:
+                exception.traceback = utils.str_to_external(traceback.format_exc())
+
             raise exception
+
         except Exception as error:
             exception = DeltaIce.GenericException()
             exception.message = utils.str_to_external(str(error))
-            exception.traceback = traceback.format_exc()
+
+            # Getting the true trace back from the error itself.
+            if hasattr(error, 'traceback'):
+                exception.traceback = getattr(error, 'traceback')
+            else:
+                exception.traceback = traceback.format_exc()
             raise exception
 
-    def executeEx(self, request, current = None):
+    def executeEx(self, request, current=None):
         try:
-            request['ip'] = self._get_client_ip_(current = current)
-            return self._listener.execute_ex(request)
+            start = time.time()
+
+            request['ip'] = self._get_client_ip_(current=current)
+            execute_result = \
+                self._listener.execute_ex(request)
+
+            end = time.time()
+            request_id = execute_result.value['request_id'].value
+            time_span = end - start
+            IceDispatcher.logger.info("Ice [{0}] executed [{1}]".format(request_id,
+                                                                        time_span))
+
+            return execute_result
+
         except DeltaException, error:
             exception = DeltaIce.GenericException()
             exception.code = error.get_code()
             exception.data = utils.object_to_dobject(error.get_data())
             exception.message = utils.str_to_external(str(error))
-            exception.traceback = utils.str_to_external(traceback.format_exc())
+
+            # Getting the true trace back from the error itself.
+            if error.get_traceback() is not None:
+                exception.traceback = utils.str_to_external(error.get_traceback())
+            else:
+                exception.traceback = utils.str_to_external(traceback.format_exc())
+
             raise exception
+
         except Exception, error:
             exception = DeltaIce.GenericException()
             exception.message = utils.str_to_external(str(error))
-            exception.traceback = traceback.format_exc()
+
+            # Getting the true trace back from the error itself.
+            if hasattr(error, 'traceback'):
+                exception.traceback = getattr(error, 'traceback')
+            else:
+                exception.traceback = traceback.format_exc()
             raise exception
 
 class IceListener(Listener):
-    
-    #logger = logging.get_logger(name = 'IceDispatcher')
-    
+
     def __init__(self, communicator, name, params, client_request_class=None):
         Listener.__init__(self, communicator, name, params, client_request_class=client_request_class)
 
@@ -194,7 +298,7 @@ class IceListener(Listener):
                               'options': options}
         
         login_request = self._client_request_class(request_dict)
-        
+
         return self._communicator.login(self, login_request)
 
     def logout(self, ip, ticket, user_name):
@@ -212,7 +316,10 @@ class IceListener(Listener):
 
         logout_request = self._client_request_class(request_dict)
 
-        return self._communicator.logout(self, logout_request)
+        logout_result = \
+            self._communicator.logout(self, logout_request)
+
+        return logout_result
 
     def execute(self, ip, ticket, user_name, command_key, *args, **kargs):
         '''
@@ -225,7 +332,7 @@ class IceListener(Listener):
         
         @return: object
         
-        @note: This method is existed for backward compability.
+        @note: This method is existed for backward compatibility.
             `execute_ex' should be used instead.
         '''
         request_dict = DeltaIce.DictObject()
@@ -243,8 +350,8 @@ class IceListener(Listener):
         request = self._client_request_class(request_dict)
 
         result = self._communicator.execute(self, request)
-        
-        return result.value['response']
+
+        return result.value['result']
 
     def start(self):
         self._proxy.waitForShutdown() 
