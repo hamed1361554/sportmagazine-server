@@ -241,6 +241,19 @@ class ProductsEntity(ProductsBaseEntity):
         OUT_OF_STOCK = DeltaEnumValue(0, "Out of Stock")
         IN_STOCK = DeltaEnumValue(1, "In Stock")
 
+    class ProductAgeCategoryEnum(DeltaEnum):
+        ADULT = DeltaEnumValue(0, "Adult")
+        CHILDREN_TEENAGER = DeltaEnumValue(1, "Children & Teenager")
+
+    class ProductGenderEnum(DeltaEnum):
+        MALE = DeltaEnumValue(0, "Male")
+        FEMALE = DeltaEnumValue(1, "Female")
+        BOTH = DeltaEnumValue(2, "Both Male/Female")
+
+    class ProductWholesaleTypeEnum(DeltaEnum):
+        RETAIL = DeltaEnumValue(0, "Retail")
+        WHOLESALE = DeltaEnumValue(1, "Wholesale")
+
     product_name = Unicode("PRODUCTNAME")
     product_price = Decimal('PRODUCTPRICE')
     product_category = Int('PRODUCTCATEGORY')
@@ -249,6 +262,11 @@ class ProductsEntity(ProductsBaseEntity):
     product_unique_name = Unicode("PRODUCTUNIQNAME")
     product_producer_user_id = Unicode("PRODUCTPRODUCERID")
     product_creation_date = DateTime("PRODUCTCREATIONDATE")
+    product_counter = Int("PRODUCTCNTR")
+    product_age_category = Int("PRODUCTAGECAT")
+    product_gender = Int("PRODUCTGNDR")
+    product_comment = Unicode("PRODUCTCMNT")
+    product_whole_sale_type = Int("PRODUCTWHOLESALETYPE")
 
 
 class ProductsHistoryBaseEntity(Storm):
@@ -311,6 +329,15 @@ class ProductsHistoryEntity(ProductsHistoryBaseEntity):
         OUT_OF_STOCK = DeltaEnumValue(0, "Out of Stock")
         IN_STOCK = DeltaEnumValue(1, "In Stock")
 
+    class ProductHistoryAgeCategoryEnum(DeltaEnum):
+        ADULT = DeltaEnumValue(0, "Adult")
+        CHILDREN_TEENAGER = DeltaEnumValue(1, "Children & Teenager")
+
+    class ProductHistoryGenderEnum(DeltaEnum):
+        MALE = DeltaEnumValue(0, "Male")
+        FEMALE = DeltaEnumValue(1, "Female")
+        BOTH = DeltaEnumValue(2, "Both Male/Female")
+
     product_id = Unicode("PRDCTID")
     product_history_name = Unicode("PRDCTHISTNAME")
     product_history_price = Decimal('PRDCTHISTPRICE')
@@ -321,6 +348,12 @@ class ProductsHistoryEntity(ProductsHistoryBaseEntity):
     product_history_edit_date = DateTime("PRDCTHISTEDITDATE")
     product_history_colors = Unicode("PRDCTHISTCOLORS")
     product_history_sizes = Unicode("PRDCTHISTSIZES")
+    product_history_brands = Unicode("PRDCTHISTBRANDS")
+    product_history_counter = Int("PRDCTHISTCNTR")
+    product_history_age_category = Int("PRDCTHISTAGECAT")
+    product_history_gender = Int("PRDCTHISTGNDR")
+    product_history_comment = Unicode("PRDCTHISTCMNT")
+    product_history_editor_id = Unicode("PRDCTHISTEDITORID")
 
 
 class ProductsColorsBaseEntity(Storm):
@@ -397,6 +430,44 @@ class ProductsSizesEntity(ProductsSizesBaseEntity):
 
     product_id = Unicode('PRDCTSIZEPRODUCTID')
     product_size = Unicode('PRDCTSIZE')
+
+
+class ProductsBrandsBaseEntity(Storm):
+    """
+    This class defines spproductbrands table.
+    *Created automatically by ExtractorEngine*
+    """
+    __version__ = 1.0
+    __storm_table__ = "spproductbrands"
+    __storm_primary__ = "product_brand_id"
+
+    product_brand_id = Unicode("PRDCTBRANDID")
+
+    def __eq__(self, other):
+        if isinstance(other, ProductsBrandsBaseEntity):
+            return self.product_brand_id == other.product_brand_id
+        return False
+
+    def __hash__(self):
+        return hash(self.product_brand_id)
+
+    def __repr__(self):
+        return '<%s.%s [ %s ] >' % (self.__module__,
+                                    self.__class__.__name__,
+                                    str(self.product_brand_id))
+
+    def __str__(self):
+        return self.__storm_primary__.__str__()
+
+
+class ProductsBrandsEntity(ProductsBrandsBaseEntity):
+    """
+    This class defines spproductbrands table.
+    *Created automatically by ExtractorEngine*
+    """
+
+    product_id = Unicode('PRDCTBRANDPRODUCTID')
+    product_brand = Unicode('PRDCTBRAND')
 
 
 class InvoiceBaseEntity(Storm):

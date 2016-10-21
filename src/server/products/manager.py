@@ -7,15 +7,17 @@ Created on Oct 14, 2016
 import datetime
 from decimal import Decimal
 
+from storm.expr import Select, Count, And, Like, In
+
 from deltapy.core import DeltaObject, DeltaException, DynamicObject
 from deltapy.security.session.services import get_current_user
 from deltapy.transaction.services import get_current_transaction_store
 from deltapy.utils.storm_aux import entity_to_dic
-from server.model import ProductsEntity, UserEntity, ProductsColorsEntity, ProductsSizesEntity
+from server.model import UserEntity, ProductsEntity, ProductsColorsEntity, ProductsSizesEntity, ProductsBrandsEntity
 from server.products.helper import generate_product_unique_name
-from storm.expr import Select, Count, And, Like, In
 
 import deltapy.unique_id.services as unique_id_services
+import server.products.history.services as history_services
 
 
 class ProductsException(DeltaException):
@@ -45,7 +47,7 @@ class ProductsManager(DeltaObject):
 
         return entity
 
-    def get(self, product_id):
+    def get(self, product_id, **options):
         """
         Returns product info.
 
@@ -54,9 +56,30 @@ class ProductsManager(DeltaObject):
         """
 
         entity = self._get(product_id)
-        return DynamicObject(entity_to_dic(entity))
+        product = DynamicObject(entity_to_dic(entity))
 
-    def get_by_name(self, name, category):
+        fetch_details = options.get('fetch_details')
+        if fetch_details is None:
+            fetch_details = True
+
+        if fetch_details:
+            store = get_current_transaction_store()
+
+            product.colors = []
+            colors = store.find(ProductsColorsEntity, ProductsColorsEntity.product_id == product_id)
+            product.colors.extend([DynamicObject(entity_to_dic(e)) for e in colors])
+
+            product.sizes = []
+            sizes = store.find(ProductsSizesEntity, ProductsSizesEntity.product_id == product_id)
+            product.sizes.extend([DynamicObject(entity_to_dic(e)) for e in sizes])
+
+            product.brands = []
+            brands = store.find(ProductsBrandsEntity, ProductsBrandsEntity.product_id == product_id)
+            product.brands.extend([DynamicObject(entity_to_dic(e)) for e in brands])
+
+        return product
+
+    def get_by_name(self, name, category, **options):
         """
         Returns product info.
 
@@ -74,7 +97,28 @@ class ProductsManager(DeltaObject):
         if entity is None:
             raise ProductsException("Product [{0}] not found".format(name))
 
-        return DynamicObject(entity_to_dic(entity))
+        product = DynamicObject(entity_to_dic(entity))
+
+        fetch_details = options.get('fetch_details')
+        if fetch_details is None:
+            fetch_details = True
+
+        if fetch_details:
+            store = get_current_transaction_store()
+
+            product.colors = []
+            colors = store.find(ProductsColorsEntity, ProductsColorsEntity.product_id == product.product_id)
+            product.colors.extend([DynamicObject(entity_to_dic(e)) for e in colors])
+
+            product.sizes = []
+            sizes = store.find(ProductsSizesEntity, ProductsSizesEntity.product_id == product.product_id)
+            product.sizes.extend([DynamicObject(entity_to_dic(e)) for e in sizes])
+
+            product.brands = []
+            brands = store.find(ProductsBrandsEntity, ProductsBrandsEntity.product_id == product.product_id)
+            product.brands.extend([DynamicObject(entity_to_dic(e)) for e in brands])
+
+        return product
 
     def _validate_product_unique_name(self, name, category):
         """
@@ -96,15 +140,16 @@ class ProductsManager(DeltaObject):
         if result > 0:
             raise ProductsException("Please select another name for product.")
 
-    def create(self, name, price, category, colors, sizes, **options):
+    def create(self, name, price, category, colors, sizes, brands, **options):
         """
         Creates product.
 
         :param name:
         :param price:
         :param category:
-        :param sizes:
         :param colors:
+        :param sizes:
+        :param brands:
         :param options:
         :return:
         """
@@ -121,6 +166,9 @@ class ProductsManager(DeltaObject):
         if sizes is None or len(sizes) <= 0:
             raise ProductsException("At least one size for product should be selected.")
 
+        if brands is None or len(brands) <= 0:
+            raise ProductsException("At least one brand for product should be selected.")
+
         current_user = get_current_user()
         if current_user.user_production_type != UserEntity.UserProductionTypeEnum.PRODUCER:
             raise ProductsException("Consumer user can not create product.")
@@ -134,12 +182,37 @@ class ProductsManager(DeltaObject):
         product.product_category = category
         product.product_image = buffer(options.get('image_data'))
         product.product_producer_user_id = current_user.id
+        product.product_unique_name = generate_product_unique_name(name, category)
+        product.product_creation_date = datetime.datetime.now()
+
         status = options.get('status')
         if status is None:
             status = ProductsEntity.ProductStatusEnum.IN_STOCK
         product.product_status = status
-        product.product_unique_name = generate_product_unique_name(name, category)
-        product.product_creation_date = datetime.datetime.now()
+
+        counter = options.get('counter')
+        if counter is None:
+            counter = 0
+        product.product_counter = counter
+
+        age_category = options.get('age_category')
+        if age_category is None:
+            age_category = ProductsEntity.ProductAgeCategoryEnum.ADULT
+        product.product_age_category = age_category
+
+        gender = options.get('gender')
+        if gender is None:
+            gender = ProductsEntity.ProductGenderEnum.BOTH
+        product.product_gender = gender
+
+        wholesale_type = options.get('wholesale_type')
+        if wholesale_type is None:
+            wholesale_type = ProductsEntity.ProductWholesaleTypeEnum.RETAIL
+        product.product_whole_sale_type = wholesale_type
+
+        comment = options.get("comment")
+        if comment is not None and len(comment) > 0:
+            product.product_comment = comment
 
         store = get_current_transaction_store()
         store.add(product)
@@ -158,6 +231,15 @@ class ProductsManager(DeltaObject):
             size_entity.product_size = unicode(size)
             store.add(size_entity)
 
+        for brand in brands:
+            brand_entity = ProductsBrandsEntity()
+            brand_entity.product_brand_id = unicode(unique_id_services.get_id('uuid'))
+            brand_entity.product_id = product.product_id
+            brand_entity.product_brand = unicode(brand)
+            store.add(brand_entity)
+
+        history_services.write_history(product, colors, sizes, brands, **options)
+
         return DynamicObject(entity_to_dic(product))
 
     def update(self, id, **options):
@@ -170,6 +252,7 @@ class ProductsManager(DeltaObject):
         """
 
         entity = self._get(id)
+        store = get_current_transaction_store()
 
         new_name = options.get('name')
         if new_name is not None and new_name.strip() != "":
@@ -189,7 +272,86 @@ class ProductsManager(DeltaObject):
         if new_status is None:
             entity.product_status = new_status
 
-        return DynamicObject(entity_to_dic(entity))
+        colors = options.get('colors')
+        if colors is not None and len('colors') > 0:
+            already_colors = store.find(ProductsColorsEntity, ProductsColorsEntity.product_id == entity.product_id)
+
+            to_delete = []
+            for c in already_colors:
+                if c.product_color_hex not in colors:
+                    to_delete.append(c)
+
+            to_insert = []
+            for c in colors:
+                if c not in [a.product_color_hex for a in already_colors]:
+                    to_insert.append(c)
+
+            for d in to_delete:
+                store.remove(d)
+
+            for i in to_insert:
+                color_entity = ProductsColorsEntity()
+                color_entity.product_color_id = unicode(unique_id_services.get('uuid'))
+                color_entity.product_id = entity.product_id
+                color_entity.product_color_hex = unicode(i)
+                store.add(color_entity)
+
+        sizes = options.get('sizes')
+        if sizes is not None and len(sizes) > 0:
+            already_sizes = store.find(ProductsSizesEntity, ProductsSizesEntity.product_id == entity.product_id)
+
+            to_delete = []
+            for s in already_sizes:
+                if s.product_size not in sizes:
+                    to_delete.append(s)
+
+            to_insert = []
+            for s in sizes:
+                if s not in [a.product_size for a in already_sizes]:
+                    to_insert.append(s)
+
+            for d in to_delete:
+                store.remove(d)
+
+            for i in to_insert:
+                size_entity = ProductsSizesEntity()
+                size_entity.product_size_id = unicode(unique_id_services.get_id('uuid'))
+                size_entity.product_id = entity.product_id
+                size_entity.product_size = unicode(i)
+                store.add(size_entity)
+
+        brands = options.get('brands')
+        if brands is not None and len(brands) > 0:
+            already_brands = store.find(ProductsBrandsEntity, ProductsBrandsEntity.product_id == entity.product_id)
+
+            to_delete = []
+            for b in already_brands:
+                if b.product_brand not in brands:
+                    to_delete.append(b)
+
+            to_insert = []
+            for b in brands:
+                if b not in [a.product_brand for a in already_brands]:
+                    to_insert.append(b)
+
+            for d in to_delete:
+                store.remove(d)
+
+            for i in to_insert:
+                brand_entity = ProductsBrandsEntity()
+                brand_entity.product_brand_id = unicode(unique_id_services.get_id('uuid'))
+                brand_entity.product_id = entity.product_id
+                brand_entity.product_brand = unicode(i)
+                store.add(brand_entity)
+
+        product = DynamicObject(entity_to_dic(entity))
+        product.sizes = []
+        product.colors = []
+        product.brands = []
+
+        history_services.write_history(entity, colors, sizes, brands, **options)
+
+        return product
 
     def find(self, **options):
         """
@@ -233,3 +395,29 @@ class ProductsManager(DeltaObject):
             results.append(DynamicObject(entity_to_dic(entity)))
 
         return results
+
+    def decrease_product_counter(self, product_id, **options):
+        """
+        Decreases product counter.
+
+        :param product_id:
+        :return:
+        """
+
+        entity = self._get(product_id)
+
+        counter = options.get('counter')
+        decrease = options.get('decrease')
+
+        if counter is not None:
+            entity.product_counter = counter
+        elif decrease is not None:
+            entity.product_counter = entity.product_counter - decrease
+        else:
+            entity.product_counter = entity.product_counter - 1
+
+        if entity.product_counter < 0:
+            raise ProductsException("Not possible to decrease counter with value [{0}], already is [{1}]".format(counter or decrease and 1,
+                                                                                                                 entity.product_counter))
+
+        return entity.product_counter

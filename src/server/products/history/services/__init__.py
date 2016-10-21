@@ -30,15 +30,16 @@ def find(**options):
     return get_component(SERVER_PRODUCTS_HISTORY_MANAGER).find(**options)
 
 
-def write_history(product, colors, sizes, **options):
+def write_history(product, colors, sizes, brands, **options):
     """
     Writes product history.
 
     :param product:
     :param colors:
     :param sizes:
+    :param brands:
     :param options:
     :return:
     """
 
-    return get_component(SERVER_PRODUCTS_HISTORY_MANAGER).write_history(product, colors, sizes, **options)
+    return get_component(SERVER_PRODUCTS_HISTORY_MANAGER).write_history(product, colors, sizes, brands, **options)

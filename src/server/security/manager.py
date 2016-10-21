@@ -99,6 +99,11 @@ class SecurityManager(BaseSecurityManager):
             mobile = ""
         user.user_mobile = unicode(mobile)
 
+        phone = options.get('phone')
+        if phone is None:
+            phone = ""
+        user.user_phone = unicode(phone)
+
         email = options.get('email')
         if email is None:
             raise UserSecurityException("User email can not be nothing.")
@@ -108,6 +113,21 @@ class SecurityManager(BaseSecurityManager):
         if address is None:
             address = ""
         user.user_address = unicode(address)
+
+        work_address = options.get('work_address')
+        if work_address is None:
+            work_address = ""
+        user.user_work_address = unicode(work_address)
+
+        national_code = options.get('national_code')
+        if national_code is None:
+            national_code = 0
+        user.user_national_code = national_code
+
+        production_type = options.get('production_type')
+        if production_type is None:
+            production_type = UserEntity.UserProductionTypeEnum.CONSUMER
+        user.user_production_type = production_type
 
         user.user_last_login_date = datetime.datetime(datetime.MINYEAR, 1, 1, 0, 0, 0, 0)
 
@@ -267,7 +287,7 @@ class SecurityManager(BaseSecurityManager):
         @return: bool
         """
 
-        user = self.get_user_by_id(user_id)
+        user = self.get_user(user_id)
         if user is None:
             raise UserNotFoundException(user_id)
 
@@ -286,7 +306,7 @@ class SecurityManager(BaseSecurityManager):
         return False
 
     @transactional
-    def get_user(self, id):
+    def get_user(self, id, **options):
         """
         Returns user information by specified name
 
@@ -301,7 +321,7 @@ class SecurityManager(BaseSecurityManager):
         return DynamicObject(entity_to_dic(user))
 
     @transactional
-    def get_user_by_id(self, user_id):
+    def get_user_by_id(self, user_id, **options):
         """
         Returns user information by specified name
 

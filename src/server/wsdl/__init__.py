@@ -13,6 +13,8 @@ from server.wsdl.service_manager import PyroServer
 
 
 SERVER_FLASK_WEB_SERVICES_PROVIDER_MANAGER = 'server.flask.web_services.provider.manager'
+SERVER_FLASK_WEB_SERVICES_SECURITY_MANAGER = 'server.flask.web_services.security.manager'
+SERVER_FLASK_WEB_SERVICES_PRODUCTS_MANAGER = 'server.flask.web_services.products.manager'
 SUCCESS_RESPONSE = "SUCCESSFUL"
 FAILED_RESPONSE = "FAILED"
 

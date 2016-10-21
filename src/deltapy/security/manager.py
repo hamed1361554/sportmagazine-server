@@ -151,6 +151,16 @@ class BaseSecurityManager(DeltaObject):
         
         raise NotImplementedError()
 
+    def get_user_by_id(self, user_id, **options):
+        """
+        Returns user information by specified name
+
+        @param user_id: user ID
+
+        @return: user data as DynamicObject
+        """
+
+        raise NotImplementedError()
 
     def is_superuser(self, id):
         '''

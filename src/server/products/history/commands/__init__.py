@@ -33,15 +33,16 @@ def find(**options):
 
 
 @command('server.products.history.write')
-def write_history(product, colors, sizes, **options):
+def write_history(product, colors, sizes, brands, **options):
     """
     Writes product history.
 
     :param product:
     :param colors:
     :param sizes:
+    :param brands:
     :param options:
     :return:
     """
 
-    return history_services.write_history(product, colors, sizes, **options)
+    return history_services.write_history(product, colors, sizes, brands, **options)

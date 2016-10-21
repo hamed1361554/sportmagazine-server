@@ -5,7 +5,6 @@ Created on Oct 14, 2016
 """
 
 import datetime
-
 from decimal import Decimal
 
 from storm.expr import Select, In, And
@@ -16,7 +15,8 @@ from deltapy.security.session.services import get_current_user
 from deltapy.utils.storm_aux import entity_to_dic
 import deltapy.unique_id.services as unique_id_services
 
-from server.model import InvoiceEntity, InvoiceItemEntity
+from server.model import InvoiceEntity, InvoiceItemEntity, ProductsEntity, UserEntity
+import server.products.services as products_services
 
 
 class InvoiceException(DeltaException):
@@ -165,13 +165,26 @@ class InvoicesManager(DeltaObject):
         result = DynamicObject(entity_to_dic(invoice))
         result.items = []
         for item in invoice_items:
-            item_entity = InvoiceItemEntity
+            item_entity = InvoiceItemEntity()
             item_entity.invoice_id = invoice.invoice_id
             item_entity.item_color = unicode(item.get('color'))
             item_entity.item_id = unicode(unique_id_services.get('uuid'))
             item_entity.item_price = Decimal(str(item.get('price')))
             item_entity.item_quantity = int(item.get('quantity'))
             item_entity.item_row = counter
+            item_entity.item_product_id = unicode(item.get('product_id'))
+
+            products_services.decrease_product_counter(item_entity.item_product_id)
+            product = products_services.get(item_entity.item_product_id,
+                                            fetch_details=False)
+            if (product.product_whole_sale_type == ProductsEntity.ProductWholesaleTypeEnum.WHOLESALE and
+                current_user.user_production_type != UserEntity.UserProductionTypeEnum.PRODUCER):
+                raise InvoiceException("User [{0}---{1}] is not producer one and can not register "
+                                       "product [{2}---{3}] which is wholesale product type.".format(current_user.id,
+                                                                                                     current_user.user_id,
+                                                                                                     product.product_id,
+                                                                                                     product.product_name))
+
             counter += 1
 
             store.add(item_entity)

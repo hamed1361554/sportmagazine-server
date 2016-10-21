@@ -97,13 +97,14 @@ class ProductsHistoryManager(DeltaObject):
 
         return results
 
-    def write_history(self, product, colors, sizes, **options):
+    def write_history(self, product, colors, sizes, brands, **options):
         """
         Writes product history.
 
         :param product:
         :param colors:
         :param sizes:
+        :param brands:
         :param options:
         :return:
         """
@@ -118,8 +119,16 @@ class ProductsHistoryManager(DeltaObject):
         history.product_history_image = product.product_image
         history.product_history_status = product.product_status
         history.product_history_unique_name = product.product_unique_name
-        history.product_history_colors = '-'.join(colors)
-        history.product_history_sizes = '-'.join(sizes)
+        if colors is not None and len(colors) > 0:
+            history.product_history_colors = '-'.join(colors)
+        if sizes is not None and len(sizes) > 0:
+            history.product_history_sizes = '-'.join(sizes)
+        if brands is not None and len(brands) > 0:
+            history.product_history_brands = '-'.join(brands)
+        history.product_history_counter = product.product_counter
+        history.product_history_age_category = product.product_age_category
+        history.product_history_gender = product.product_gender
+        history.product_history_comment = product.product_comment
 
         store = get_current_transaction_store()
         store.add(history)

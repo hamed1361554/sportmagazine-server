@@ -5,9 +5,7 @@ Created on Oct 18, 2016
 """
 
 from flask import request, abort, jsonify, json
-
 from deltapy.core import DeltaObject
-
 from server.wsdl import flask_app, pyro_server
 
 
@@ -50,16 +48,25 @@ class FlaskWebServicesProductsManager(DeltaObject):
         Creates product!
         """
 
-        FlaskWebServicesProductsManager.check_service_requirements(['ticket', 'user_name', 'name', 'price', 'category', 'colors', 'sizes'])
+        FlaskWebServicesProductsManager.check_service_requirements(['ticket', 'user_name', 'name', 'price',
+                                                                    'category', 'colors', 'sizes', 'brands'])
         options = FlaskWebServicesProductsManager.get_service_options()
 
         if 'status' in request.json:
             options['status'] = request.json['status']
+        if 'counter' in request.json:
+            options['counter'] = request.json['counter']
+        if 'age_category' in request.json:
+            options['age_category'] = request.json['age_category']
+        if 'gender' in request.json:
+            options['gender'] = request.json['gender']
+        if 'comment' in request.json:
+            options['comment'] = request.json['comment']
 
         product = \
             pyro_server.execute_ex(request.json['ticket'], request.json['user_name'], 'server.products.create', {},
                                    request.json['name'], request.json['price'], request.json['category'],
-                                   request.json['colors'], request.json['sizes'], **options)
+                                   request.json['colors'], request.json['sizes'], request.json['brands'], **options)
 
         return jsonify(product)
 
@@ -83,6 +90,16 @@ class FlaskWebServicesProductsManager(DeltaObject):
             options['colors'] = request.json['colors']
         if 'sizes' in request.json:
             options['sizes'] = request.json['sizes']
+        if 'brands' in request.json:
+            options['brands'] = request.json['brands']
+        if 'counter' in request.json:
+            options['counter'] = request.json['counter']
+        if 'age_category' in request.json:
+            options['age_category'] = request.json['age_category']
+        if 'gender' in request.json:
+            options['gender'] = request.json['gender']
+        if 'comment' in request.json:
+            options['comment'] = request.json['comment']
 
         product = \
             pyro_server.execute_ex(request.json['ticket'], request.json['user_name'], 'server.products.update', {},
@@ -150,7 +167,7 @@ class FlaskWebServicesProductsManager(DeltaObject):
 
     @staticmethod
     @flask_app.route('/products/history/find/', methods=["GET"])
-    def find():
+    def find_history():
         """
         Finds products histories!
         """

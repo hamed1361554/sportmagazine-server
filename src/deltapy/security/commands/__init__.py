@@ -64,7 +64,20 @@ def get_user(id, **options):
     
     @return: user data as DynamicObject
     """
+
     return security_services.get_user(id, **options)
+
+@command('security.user.get.by_id')
+def get_user_by_id(user_id, **options):
+    """
+    Returns user information by specified name
+
+    @param user_id: user ID
+
+    @return: user data as DynamicObject
+    """
+
+    return security_services.get_user_by_id(user_id, **options)
 
 @command('security.user.activate')
 def activate_user(id, flag):

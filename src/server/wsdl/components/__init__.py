@@ -5,14 +5,19 @@ Created on Sep 12, 2016
 """
 
 from deltapy.application.decorators import register
+from deltapy.core import DeltaObject
 from deltapy.utils.concurrent import run_in_thread
 
-from server.wsdl.security_manager import FlaskWebServicesManager, app
-from server.wsdl import SERVER_FLASK_WEB_SERVICES_PROVIDER_MANAGER
+from server.wsdl import flask_app
+from server.wsdl import SERVER_FLASK_WEB_SERVICES_PROVIDER_MANAGER, \
+    SERVER_FLASK_WEB_SERVICES_PRODUCTS_MANAGER, \
+    SERVER_FLASK_WEB_SERVICES_SECURITY_MANAGER
+from server.wsdl.product_manager import FlaskWebServicesProductsManager
+from server.wsdl.security_manager import FlaskWebServicesSecurityManager
 
 
 @register(SERVER_FLASK_WEB_SERVICES_PROVIDER_MANAGER)
-class FlaskWebServicesManagerComponent(FlaskWebServicesManager):
+class FlaskWebServicesManagerComponent(DeltaObject):
     """
     Flask Web Services Manager Component
     """
@@ -22,7 +27,22 @@ class FlaskWebServicesManagerComponent(FlaskWebServicesManager):
         Inits!
         """
 
-        FlaskWebServicesManager.__init__(self)
+        DeltaObject.__init__(self)
 
         #app.run(debug=True, threaded=True, use_reloader=False)
-        run_in_thread(app.run, debug=True, threaded=True, use_reloader=False)
+        run_in_thread(flask_app.run, debug=True, threaded=True, use_reloader=False)
+
+
+@register(SERVER_FLASK_WEB_SERVICES_SECURITY_MANAGER)
+class FlaskWebServicesSecurityManagerComponent(FlaskWebServicesSecurityManager):
+    """
+    Flask Web Services Security Manager Component
+    """
+
+
+@register(SERVER_FLASK_WEB_SERVICES_PRODUCTS_MANAGER)
+class FlaskWebServicesProductsManagerComponent(FlaskWebServicesProductsManager):
+    """
+    Flask Web Services Products Manager Component
+    """
+

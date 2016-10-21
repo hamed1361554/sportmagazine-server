@@ -34,18 +34,21 @@ def get_by_name(name, category):
 
 
 @command('server.products.create')
-def create(name, price, category, colors, **options):
+def create(name, price, category, colors, sizes, brands, **options):
     """
     Creates product.
 
     :param name:
     :param price:
     :param category:
+    :param colors:
+    :param sizes:
+    :param brands:
     :param options:
     :return:
     """
 
-    return products_services.create(name, price, category, colors, **options)
+    return products_services.create(name, price, category, colors, sizes, brands, **options)
 
 
 @command('server.products.update')

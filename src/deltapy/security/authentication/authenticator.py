@@ -97,7 +97,7 @@ class BaseAuthenticator(DeltaObject):
         '''
 
         try:
-            user = security_services.get_user(user_name)
+            user = security_services.get_user_by_id(user_name)
 
             if user is None:
                 BaseAuthenticator.logger.error('User[{user_name}] not found.'.format(user_name = user_name))
@@ -107,7 +107,7 @@ class BaseAuthenticator(DeltaObject):
                 message = 'User[{user_name}] entered invalid password[{password}].'
                 BaseAuthenticator.logger.error(message.format(user_name=user_name,
                                                               password=password))
-                #Delay to prevent brute force.
+                # Delay to prevent brute force.
                 time.sleep(BaseAuthenticator.INCORRECT_PASSWORD_DELAY)
                 raise AuthenticationException(_('User or password is invalid.'))
 
@@ -129,7 +129,7 @@ class BaseAuthenticator(DeltaObject):
             BaseAuthenticator.logger.error('User[{user_name}] not found.'.format(user_name = user_name))
             time.sleep(BaseAuthenticator.INCORRECT_PASSWORD_DELAY)
             raise AuthenticationException(_('User or password is invalid.'))
-        except Exception, error:
+        except Exception as error:
             BaseAuthenticator.logger.exception('Exception : {error}'.format(error = error))
             raise AuthenticationException(str(error))
             
@@ -154,7 +154,7 @@ class BaseAuthenticator(DeltaObject):
             user = session.get_user()
             client_ip = options.get('client_ip')
 
-            if user.id != user_name:
+            if user.user_id != user_name:
                 message = '[{user_name}], [{ip}] sent invalid ticket[{ticket}]'
                 BaseAuthenticator.logger.error(message.format(user_name=user_name,
                                                               ip=client_ip,

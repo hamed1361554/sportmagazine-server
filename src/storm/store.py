@@ -924,7 +924,7 @@ class ResultSet(object):
     """
 
     def __init__(self, store, find_spec,
-                 where=Undef, tables=Undef, select=Undef):
+                 where=Undef, tables=Undef, select=Undef, for_update_nowait=False):
         self._store = store
         self._find_spec = find_spec
         self._where = where
@@ -936,6 +936,7 @@ class ResultSet(object):
         self._distinct = False
         self._group_by = Undef
         self._having = Undef
+        self._for_update_nowait = for_update_nowait
 
     def copy(self):
         """Return a copy of this ResultSet object, with the same configuration.

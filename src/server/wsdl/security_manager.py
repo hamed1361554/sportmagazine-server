@@ -87,10 +87,18 @@ class FlaskWebServicesSecurityManager(DeltaObject):
             options['type'] = request.json['type']
         if 'mobile' in request.json:
             options['mobile'] = request.json['mobile']
+        if 'phone' in request.json:
+            options['phone'] = request.json['phone']
         if 'email' in request.json:
             options['email'] = request.json['email']
         if 'address' in request.json:
             options['address'] = request.json['address']
+        if 'work_address' in request.json:
+            options['work_address'] = request.json['work_address']
+        if 'national_code' in request.json:
+            options['national_code'] = request.json['national_code']
+        if 'production_type' in request.json:
+            options['production_type'] = request.json['production_type']
 
         user = pyro_server.execute_ex(ticket, 'admin', 'security.user.create', {},
                                       request.json['user_name'], request.json['password'],
@@ -100,7 +108,30 @@ class FlaskWebServicesSecurityManager(DeltaObject):
         return jsonify({"user_name": user.get('user_name')})
 
     @staticmethod
-    @flask_app.route('/activate/<path:input_data>', methods=["GET"])
+    @flask_app.route('/user/get', methods=["POST"])
+    def get_user():
+        '''
+        Gets user!
+        '''
+
+        FlaskWebServicesSecurityManager.check_service_requirements(['ticket', 'user_name'])
+
+        user = \
+            pyro_server.execute_ex(request.json['ticket'], request.json['user_name'], 'security.user.get.by_id',
+                                   {}, request.json['user_name'])
+
+        return jsonify({"user_name": user.get('result').get('user_id'),
+                        "full_name": user.get('result').get('user_full_name'),
+                        "mobile": user.get('result').get('user_mobile'),
+                        "email": user.get('result').get('user_email'),
+                        "address": user.get('result').get('user_address'),
+                        "phone": user.get('result').get('user_phone'),
+                        "work_address": user.get('result').get('user_work_address'),
+                        "national_code": user.get('result').get('user_national_code'),
+                        "production_type": user.get('result').get('user_production_type')})
+
+    @staticmethod
+    @flask_app.route('/activate/<path:input_data>', methods=["POST"])
     def activate(input_data):
         '''
         Activates!

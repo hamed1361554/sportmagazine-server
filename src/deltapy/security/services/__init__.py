@@ -71,6 +71,17 @@ def get_user(id, **options):
     return get_component(APP_SECURITY).get_user(id, **options)
 
 
+def get_user_by_id(user_id, **options):
+    """
+    Returns user information by specified name
+
+    @param user_id: user ID
+
+    @return: user data as DynamicObject
+    """
+
+    return get_component(APP_SECURITY).get_user_by_id(user_id, **options)
+
 def activate_user(id, flag):
     '''
     Active or inactive specified user. 
