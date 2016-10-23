@@ -7,7 +7,8 @@ Created on May 30, 2010
 from deltapy.event_system.decorators import after_handler
 import deltapy.request_processor.services as request_processor
 
-@after_handler('application.start', 'request_processor.start')
+
+@after_handler('application.initialize', 'request_processor.start')
 def application_start_handler(params):
     '''
     Starts request processor.

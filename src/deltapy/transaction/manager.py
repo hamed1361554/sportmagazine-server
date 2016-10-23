@@ -12,6 +12,7 @@ from deltapy.core import DeltaObject, DeltaException
 from deltapy.request_processor.manager import TimeoutException
 from deltapy.security.session.services import get_current_session
 from deltapy.utils.uniqueid import get_uuid
+from deltapy.logging.services import get_logger
 
 
 class TransactionException(DeltaException):
@@ -313,6 +314,7 @@ class TwoPhaseCommitTransaction(Transaction):
 class TransactionManager(DeltaObject):
     
     DEFAULT_TRANSACTION = 'default'
+    LOGGER = get_logger(name='transaction')
     
     def __init__(self, database_manager):
         DeltaObject.__init__(self)        
@@ -447,15 +449,25 @@ class TransactionManager(DeltaObject):
             if not tx.get_parent():
                 tx.get_connection().transaction = None
 
-                self._run_before_rollback_triggers_(tx)
+                # Triggers should not interfere with rollback if they're erroneous.
+                try:
+                    self._run_before_rollback_triggers_(tx)
+                except Exception as error:
+                    TransactionManager.LOGGER.error(str(error))
+
                 tx.get_connection().rollback()
-                self._run_after_rollback_triggers_(tx)
+
+                try:
+                    self._run_after_rollback_triggers_(tx)
+                except Exception as error:
+                    TransactionManager.LOGGER.error(str(error))
                 
                 self._database_manager.close(tx.get_connection())
                 self.__remove_root_transaction__(tx._pool_name)
                 return True
-        except Exception, e:
-            print str(e)
+        except Exception as error:
+            TransactionManager.LOGGER.error(str(error))
+            print str(error)
         return False
     
     def tpc_begin(self):

@@ -3,6 +3,7 @@ Created on Apr 8, 2010
 
 @author: Abi.Mohammadi & Majid.Vesal
 '''
+
 from deltapy.core import DeltaObject
 
 
@@ -45,8 +46,10 @@ class DeltaEventHandler(DeltaObject):
         it's parameters and it's result. 
         '''
 
+
 class DeltaFunctionEventHandler(DeltaEventHandler):
     '''
+    Delta Function Event Handler
     '''
     
     def __init__(self, name, before, after):
@@ -61,6 +64,7 @@ class DeltaFunctionEventHandler(DeltaEventHandler):
         @param params: this parameter included event, 
         pointed function and it's parameters. 
         '''
+
         if self._before is not None:
             return self._before(params)
         
@@ -74,7 +78,3 @@ class DeltaFunctionEventHandler(DeltaEventHandler):
 
         if self._after is not None:
             return self._after(params)
-
-        
-        
-        

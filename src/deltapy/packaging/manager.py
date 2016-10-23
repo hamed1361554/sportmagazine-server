@@ -154,8 +154,7 @@ class PackageManager(DeltaObject):
         if package_name not in self.__loaded_packages__:
             try:
                 module = __import__(package_name, fromlist=parent or [])
-            except ImportError as error:
-                print error
+            except ImportError:
                 return None, None
                 
             package_class = None

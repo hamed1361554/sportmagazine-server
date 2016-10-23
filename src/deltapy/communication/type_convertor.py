@@ -1,11 +1,23 @@
+# -*- coding: cp1256 -*-
 '''
 Created on Nov 15, 2009
 
 @author: Abi.Mohammadi & Majid.Vesal
 '''
 
-from deltapy.core import DeltaObject
+import re
 import copy
+
+from deltapy.logging.services import get_logger
+from deltapy.core import DeltaObject, DeltaException
+from deltapy.security.session.services import get_current_user
+
+
+class TypeConverterException(DeltaException):
+    '''
+    Is raised when type converter encounters error.
+    '''
+
 
 class ObjectTraverser:
     def __init__(self, traverse_func):
@@ -66,12 +78,54 @@ class TypeConvertor(NullTypeConvertor):
     '''
     Provides functionality for converting external types to internal types and vice versa
     '''
+
+    LOGGER = get_logger(name='root')
     
     def __init__(self):
+        '''
+        Initializes type converter.
+        '''
+
         NullTypeConvertor.__init__(self)
         
-        self.__internal_traverser = ObjectTraverser(self.internal_convert)
-        self.__external_traverser = ObjectTraverser(self.external_convert)
+        self.__internal_traverser = ObjectTraverser(self.safe_internal_convert)
+        self.__external_traverser = ObjectTraverser(self.safe_external_convert)
+
+        self._invalid_phrases = \
+            ['`', '^', '\\', 'script', 'html', 'xhtml', 'colon', 'base64',
+             'import', 'exec', 'eval', 'compile', 'getattr', 'setattr',
+             '__getattr__', '__getattribute__', '__setattr__', '__delattr__',
+             '__class__', '__module__', 'BANNED_WORDS']
+        self._invalid_regex = \
+            [r'[\s\S]*<[\s\S]*>[\s\S]*',
+             r'[\s\S]*[&#"\'][\s\S]*;[\s\S]*',
+             r'([\s\"\'`;\/0-9\=]+on\w+\s*=)']
+        self._combined_invalid_regex = \
+            re.compile("(" + ")|(".join(self._invalid_regex) + ")")
+
+    def _normalize(self, obj):
+        return obj.lower().strip().replace('\n', '').replace('\r', '')
+
+    def _validate(self, obj):
+        if not isinstance(obj, (str, unicode)):
+            return
+
+        normalized_obj = self._normalize(obj)
+
+        for invalid_phrase in self._invalid_phrases:
+            if invalid_phrase in normalized_obj:
+                raise TypeConverterException(_('Invalid phrase [{0}] got detected.'.format(invalid_phrase)))
+
+        if re.match(self._combined_invalid_regex, normalized_obj):
+            raise TypeConverterException(_('Invalid phrase [{0}] got detected.'.format(obj)))
+
+    def safe_internal_convert(self, obj):
+        self._validate(obj)
+        result = self.internal_convert(obj)
+        return result
+
+    def safe_external_convert(self, obj):
+        return self.external_convert(obj)
     
     def internal_convert(self, obj):
         return obj
