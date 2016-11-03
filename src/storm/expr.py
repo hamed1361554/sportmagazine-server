@@ -255,6 +255,7 @@ class State(object):
         self.join_tables = None
         self.context = None
         self.aliases = None
+        self._counter = 0
 
     def push(self, attr, new_value=Undef):
         """Set an attribute in a way that can later be reverted with L{pop}.
@@ -270,6 +271,13 @@ class State(object):
         """Revert the topmost L{push}.
         """
         setattr(self, *self._stack.pop(-1))
+
+    @property
+    def counter(self):
+        """
+        """
+        self._counter += 1
+        return self._counter
 
 
 compile = Compile()
@@ -633,15 +641,19 @@ def build_tables(compile, tables, default_tables, state):
         result.append(compile(elem, state, token=True))
     return "".join(result)
 
-
+# This class has been changed by Me. I have added "for_update_nowait" to Select class and
+# compile_select. Please be aware of this changes when you want to change Storm library.
+# This change is related to RFC-42259. We needed to lock selected record to avoid concorency problems.
+# So, we did it by use of FOR UPDATE NOWAIT in our Selects.
 class Select(Expr):
     __slots__ = ("columns", "where", "tables", "default_tables", "order_by",
-                 "group_by", "limit", "offset", "distinct", "having")
+                 "group_by", "limit", "offset", "distinct", "having", "for_update_nowait")
 
     def __init__(self, columns, where=Undef,
                  tables=Undef, default_tables=Undef,
                  order_by=Undef, group_by=Undef,
-                 limit=Undef, offset=Undef, distinct=False, having=Undef):
+                 limit=Undef, offset=Undef, distinct=False,
+                 having=Undef, for_update_nowait=False):
         self.columns = columns
         self.where = where
         self.tables = tables
@@ -652,6 +664,7 @@ class Select(Expr):
         self.offset = offset
         self.distinct = distinct
         self.having = having
+        self.for_update_nowait = for_update_nowait
 
 @compile.when(Select)
 def compile_select(compile, select, state):
@@ -679,6 +692,8 @@ def compile_select(compile, select, state):
     if select.order_by is not Undef:
         tokens.append(" ORDER BY ")
         tokens.append(compile(select.order_by, state, raw=True))
+    if select.for_update_nowait:
+        tokens.append(" FOR UPDATE NOWAIT")
     if select.limit is not Undef:
         tokens.append(" LIMIT %d" % select.limit)
     if select.offset is not Undef:
@@ -836,7 +851,7 @@ def compile_column(compile, column, state):
             # See compile_set_expr().
             alias = state.aliases.get(column)
             if alias is not None:
-                return compile(alias.name, state, token=True)
+                return compile(alias.get_name(state), state, token=True)
         if column.compile_id != id(compile):
             column.compile_cache = compile(column.name, state, token=True)
             column.compile_id = id(compile)
@@ -862,9 +877,7 @@ def compile_python_column(compile, column, state):
 class Alias(ComparableExpr):
     """A representation of "AS" alias clauses. e.g., SELECT foo AS bar.
     """
-    __slots__ = ("expr", "name")
-
-    auto_counter = 0
+    __slots__ = ("expr", "name", "_ignore")
 
     def __init__(self, expr, name=Undef):
         """Create alias of C{expr} AS C{name}.
@@ -872,15 +885,24 @@ class Alias(ComparableExpr):
         If C{name} is not given, then a name will automatically be
         generated.
         """
+        
         self.expr = expr
-        if name is Undef:
-            Alias.auto_counter += 1
-            name = "_%x" % Alias.auto_counter
         self.name = name
+        self._ignore = False
+    
+    def get_name(self, state):
+        """
+        """
+        self._ignore = True
+        if self.name is Undef:
+            self.name = "_%x" % state.counter
+        self._ignore = False
+        return self.name
+
 
 @compile.when(Alias)
 def compile_alias(compile, alias, state):
-    name = compile(alias.name, state, token=True)
+    name = compile(alias.get_name(state), state, token=True)
     if state.context is COLUMN or state.context is TABLE:
         return "%s AS %s" % (compile(alias.expr, state), name)
     return name

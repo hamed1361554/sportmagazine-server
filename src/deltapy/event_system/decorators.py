@@ -36,7 +36,7 @@ def delta_event(event_name):
 def before_handler(event_name, handler_name):
     def event_decorator(f):
         """
-            The decorator function.
+        The decorator function.
         """        
                
         event_services.add_event_handler(event_name, DeltaFunctionEventHandler(handler_name, f, None))            
@@ -59,11 +59,10 @@ def before_handler(event_name, handler_name):
     return event_decorator
 
 
-
 def after_handler(event_name, handler_name):
     def event_decorator(f):
         """
-            The decorator function.
+        The decorator function.
         """        
         
         event_services.add_event_handler_at(event_name, DeltaFunctionEventHandler(handler_name, None, f), 0)          

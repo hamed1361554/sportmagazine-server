@@ -133,13 +133,24 @@ class Application(DeltaObject):
             name += '.{0}'.format(instance_name)
         return name
 
+    def _initialize_requirements_(self):
+        '''
+        Initializes requirement packages.
+        '''
+
+        pass
+
     def load(self, *args, **kargs):        
         '''
         Loads application packages.
         '''        
         
         packaging.load('deltapy.event_system')
-        
+
+        # It has to be a difference between application initialize event, which is fired when
+        # loading packages got completed, and its start event, which is when application is
+        # fully loaded and configured, and of course, ready to serve.
+        event_system_services.register_event('application.initialize', self._initialize_requirements_)
         event_system_services.register_event('application.start', self._start_requirements_)
         event_system_services.register_event('application.stop', self._stop_requirements_)
 
@@ -155,6 +166,9 @@ class Application(DeltaObject):
         current_package = get_package_of(self.get_name())
         packaging.load(current_package)        
         print ">> Application[%s] loaded." % self.get_name()
+
+        # Application is initializing.
+        event_system_services.fire('application.initialize')
         
     def _start_requirements_(self):
         '''
@@ -182,8 +196,8 @@ class Application(DeltaObject):
         self._set_status_(Application.StatusEnum.LOADING)
         print ">> Loading application[%s]." % self.get_name()
         self.load(*args, **kargs)
-        
-        #self._start_requirements_()
+
+        # Application is satrting.
         event_system_services.fire('application.start')
         
         # Getting parent information

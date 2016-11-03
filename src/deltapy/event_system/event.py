@@ -36,19 +36,20 @@ class DeltaEvent(DeltaObject):
         '''
         fires the event.
         '''
+
+        params = {}
+        reversed_handlers = []
         
         if self._enabled:
-            params = {}
             params['event'] = self
             params['function'] = self._function
             params['args'] = args
             params['kwargs'] = kwargs
             
-            reversed_handlers = []
-            
             for handler in self._handlers:
-                handler.before(params)
-                reversed_handlers.insert(0, handler)
+                if handler.is_enable():
+                    handler.before(params)
+                    reversed_handlers.insert(0, handler)
         
         params['result'] = self._function(*args, **kwargs)      
         
@@ -64,6 +65,7 @@ class DeltaEvent(DeltaObject):
         @param handler: event handler function.
         @param index: index of handler
         '''
+
         self._handlers.insert(index, handler)
             
     def add_handler(self, handler):
@@ -71,8 +73,8 @@ class DeltaEvent(DeltaObject):
         Adds a new handler at specified index.
         @param handler: event handler function.
         '''
+
         self._handlers.append(handler)
-    
 
     def get_handlers(self):
         '''
@@ -107,6 +109,5 @@ class DeltaEvent(DeltaObject):
         '''
         Resets registered handles.
         '''
+
         self._handlers = []
-    
-    

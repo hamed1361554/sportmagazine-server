@@ -230,8 +230,6 @@ class Communicator(DeltaObject):
             raise CommunicatorException('Listener[%s] is disabled.' % listener.get_name())
 
         try:
-            request_processor.wait_for_ready()
-
             return request_processor.login(login_request)
 
         except Exception:

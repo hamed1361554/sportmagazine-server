@@ -85,8 +85,6 @@ class IceJsonTypeConvertor(TypeConvertor):
     def external_convert(self, obj):
         if isinstance(obj, DynamicObject):
             return dict(obj)
-        elif isinstance(obj, str):
-            return self._str_converter.to_external(obj)
         return obj
 
     def internal_convert(self, obj):

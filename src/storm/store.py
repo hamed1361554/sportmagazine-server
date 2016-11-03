@@ -984,7 +984,7 @@ class ResultSet(object):
         return Select(columns, self._where, self._tables, default_tables,
                       self._order_by, offset=self._offset, limit=self._limit,
                       distinct=self._distinct, group_by=self._group_by,
-                      having=self._having)
+                      having=self._having, for_update_nowait=self._for_update_nowait)
 
     def _load_objects(self, result, values):
         return self._find_spec.load_objects(self._store, result, values)
