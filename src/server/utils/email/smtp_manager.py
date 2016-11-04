@@ -38,6 +38,7 @@ class SmtpEmailManager(DeltaObject):
         :param email:
         :param url:
         '''
+        return
 
         sender = 'info@faportmagazine.com'
         receivers = [email]

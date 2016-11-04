@@ -72,7 +72,7 @@ class UserEntity(UserBaseEntity):
     user_email = Unicode("USEREMAIL")
     user_address = Unicode("USERADDRESS")
     user_work_address = Unicode("USERWORKADDRESS")
-    user_national_code = Int("USERNATIONALCODE")
+    user_national_code = Unicode("USERNATIONALCODE")
     user_production_type = Int('USERPRODUCTIONTYPE')
 
 

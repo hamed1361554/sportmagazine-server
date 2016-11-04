@@ -30,7 +30,7 @@ class FlaskWebServicesManagerComponent(DeltaObject):
         DeltaObject.__init__(self)
 
         #app.run(debug=True, threaded=True, use_reloader=False)
-        run_in_thread(flask_app.run, debug=True, threaded=True, use_reloader=False)
+        run_in_thread(flask_app.run, debug=True, threaded=True, use_reloader=False, host='0.0.0.0', port=5001)
 
 
 @register(SERVER_FLASK_WEB_SERVICES_SECURITY_MANAGER)

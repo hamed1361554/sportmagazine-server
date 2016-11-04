@@ -17,7 +17,7 @@ from deltapy.transaction.services import get_current_transaction_store
 import deltapy.unique_id.services as unique_id_services
 
 from server.model import UserEntity, UserActionEntity
-from server.utils.encryption import encrypt_sha512, verify_sha512
+from server.utils.encryption import encrypt_sha512, verify_sha512, encrypt_aes, decrypt_aes
 
 import server.utils.email.services as email_services
 
@@ -121,8 +121,8 @@ class SecurityManager(BaseSecurityManager):
 
         national_code = options.get('national_code')
         if national_code is None:
-            national_code = 0
-        user.user_national_code = national_code
+            national_code = "0"
+        user.user_national_code = unicode(national_code)
 
         production_type = options.get('production_type')
         if production_type is None:
@@ -135,6 +135,8 @@ class SecurityManager(BaseSecurityManager):
         store.add(user)
 
         self.activate_user(user.user_id, True)
+
+        return DynamicObject(entity_to_dic(user))
 
     def remove_user(self, id):
         """
@@ -208,7 +210,7 @@ class SecurityManager(BaseSecurityManager):
                    tables=[UserActionEntity])
         result = store.execute(statement).get_one()
 
-        if self.is_active(id):
+        if self.is_active(user.id):
             raise UserSecurityException("User is already activated.")
         else:
             if activation_data is None or activation_data.strip() == "":
@@ -217,6 +219,7 @@ class SecurityManager(BaseSecurityManager):
                     activation_date = datetime.datetime(now_date.year, now_date.month, now_date.day,
                                                         now_date.hour, now_date.minute, now_date.second)
                     activation_data = self._generate_activation_data(user, activation_date)
+                    activation_data = encrypt_aes("{0}${1}".format(user.user_id, activation_data))
 
                     action_entity = UserActionEntity()
                     action_entity.id = unicode(unique_id_services.get_id('uuid'))
@@ -273,10 +276,13 @@ class SecurityManager(BaseSecurityManager):
         Generates activation/change password data.
         '''
 
+        decrypted = decrypt_aes(activation_data)
+        user_id, data = decrypted.split('$')
+
         new_data = \
             "{0}]*[{1}]*[{2}".format(user.user_id, activation_date, user.user_password)
 
-        return verify_sha512(new_data, activation_data)
+        return verify_sha512(new_data, data)
 
     def is_active(self, user_id):
         """
@@ -317,6 +323,9 @@ class SecurityManager(BaseSecurityManager):
 
         store = get_current_transaction_store()
         user = store.find(UserEntity, And(UserEntity.id == id)).one()
+
+        if user is None:
+            return None
 
         return DynamicObject(entity_to_dic(user))
 

@@ -105,7 +105,16 @@ class FlaskWebServicesSecurityManager(DeltaObject):
                                       request.json['full_name'], **options)
         pyro_server.logoff(ticket, 'admin')
 
-        return jsonify({"user_name": user.get('user_name')})
+        return jsonify({"user_name": user.get('result').get('user_id'),
+                        "password": user.get('result').get('user_password'),
+                        "full_name": user.get('result').get('user_full_name'),
+                        "mobile": user.get('result').get('user_mobile'),
+                        "email": user.get('result').get('user_email'),
+                        "address": user.get('result').get('user_address'),
+                        "phone": user.get('result').get('user_phone'),
+                        "work_address": user.get('result').get('user_work_address'),
+                        "national_code": user.get('result').get('user_national_code'),
+                        "production_type": user.get('result').get('user_production_type')})
 
     @staticmethod
     @flask_app.route('/user/get', methods=["POST"])
@@ -121,6 +130,7 @@ class FlaskWebServicesSecurityManager(DeltaObject):
                                    {}, request.json['user_name'])
 
         return jsonify({"user_name": user.get('result').get('user_id'),
+                        "password": user.get('result').get('user_password'),
                         "full_name": user.get('result').get('user_full_name'),
                         "mobile": user.get('result').get('user_mobile'),
                         "email": user.get('result').get('user_email'),
@@ -131,7 +141,7 @@ class FlaskWebServicesSecurityManager(DeltaObject):
                         "production_type": user.get('result').get('user_production_type')})
 
     @staticmethod
-    @flask_app.route('/activate/<path:input_data>', methods=["POST"])
+    @flask_app.route('/activate/<path:input_data>', methods=["GET"])
     def activate(input_data):
         '''
         Activates!
@@ -145,7 +155,7 @@ class FlaskWebServicesSecurityManager(DeltaObject):
 
         ticket = pyro_server.login('admin', 'sportmagazineserver')
         data = pyro_server.execute_ex(ticket, 'admin', 'security.user.activate', {},
-                                      user_id, True, activation_data=activation_data)
+                                      user_id, True, activation_data=input_data)
         pyro_server.logoff(ticket, 'admin')
 
         if data is not None and data.get('result') is not None:
