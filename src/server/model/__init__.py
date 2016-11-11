@@ -61,6 +61,12 @@ class UserEntity(UserBaseEntity):
         CONSUMER = DeltaEnumValue(0, "Consumer")
         PRODUCER = DeltaEnumValue(1, "Producer")
 
+    class UserProductionPackageEnum(DeltaEnum):
+        FREE = DeltaEnumValue(0, "Free Package")
+        SILVER = DeltaEnumValue(1, "Silver Package")
+        GOLDEN = DeltaEnumValue(2, "Golden Package")
+
+
     user_id = Unicode("USERID")
     user_full_name = Unicode("USERNAME")
     user_password = Unicode("USERPSWD")
@@ -74,6 +80,7 @@ class UserEntity(UserBaseEntity):
     user_work_address = Unicode("USERWORKADDRESS")
     user_national_code = Unicode("USERNATIONALCODE")
     user_production_type = Int('USERPRODUCTIONTYPE')
+    user_production_package = Int('USERPRDCRPCKG')
 
 
 class UserHistoryBaseEntity(Storm):
@@ -560,3 +567,42 @@ class InvoiceItemEntity(InvoiceItemBaseEntity):
     item_price = Decimal('INVITMPRICE')
     item_quantity = Int('INVITMQNTY')
     item_color = Unicode('INVITMCOLOR')
+
+
+class UserProductionPackageBaseEntity(Storm):
+    """
+    This class defines spprdcrpckg table.
+    *Created automatically by ExtractorEngine*
+    """
+    __version__ = 1.0
+    __storm_table__ = "spprdcrpckg"
+    __storm_primary__ = "package_id"
+
+    package_id = Unicode("ID")
+
+    def __eq__(self, other):
+        if isinstance(other, UserProductionPackageBaseEntity):
+            return self.package_id == other.package_id
+        return False
+
+    def __hash__(self):
+        return hash(self.package_id)
+
+    def __repr__(self):
+        return '<%s.%s [ %s ] >' % (self.__module__,
+                                    self.__class__.__name__,
+                                    str(self.package_id))
+
+    def __str__(self):
+        return self.__storm_primary__.__str__()
+
+
+class UserProductionPackageEntity(UserProductionPackageBaseEntity):
+    """
+    This class defines spprdcrpckg table.
+    *Created automatically by ExtractorEngine*
+    """
+
+    package_code = Int("PCKGCODE")
+    package_description = Unicode("PCKGDSCR")
+    package_price = Decimal("PCKGPRC")

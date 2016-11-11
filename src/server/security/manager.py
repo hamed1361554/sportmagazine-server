@@ -129,6 +129,12 @@ class SecurityManager(BaseSecurityManager):
             production_type = UserEntity.UserProductionTypeEnum.CONSUMER
         user.user_production_type = production_type
 
+        production_package = options.get('production_package')
+        if production_package is None:
+            production_type = UserEntity.UserProductionPackageEnum.FREE
+        if production_type == UserEntity.UserProductionTypeEnum.PRODUCER:
+            user.user_production_package = production_package
+
         user.user_last_login_date = datetime.datetime(datetime.MINYEAR, 1, 1, 0, 0, 0, 0)
 
         store = get_current_transaction_store()

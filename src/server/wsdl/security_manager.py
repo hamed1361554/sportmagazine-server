@@ -99,6 +99,8 @@ class FlaskWebServicesSecurityManager(DeltaObject):
             options['national_code'] = request.json['national_code']
         if 'production_type' in request.json:
             options['production_type'] = request.json['production_type']
+        if 'production_package' in request.json:
+            options['production_package'] = request.json['production_package']
 
         user = pyro_server.execute_ex(ticket, 'admin', 'security.user.create', {},
                                       request.json['user_name'], request.json['password'],
@@ -114,7 +116,8 @@ class FlaskWebServicesSecurityManager(DeltaObject):
                         "phone": user.get('result').get('user_phone'),
                         "work_address": user.get('result').get('user_work_address'),
                         "national_code": user.get('result').get('user_national_code'),
-                        "production_type": user.get('result').get('user_production_type')})
+                        "production_type": user.get('result').get('user_production_type'),
+                        "production_package": user.get('result').get('user_production_package')})
 
     @staticmethod
     @flask_app.route('/user/get', methods=["POST"])
@@ -138,7 +141,8 @@ class FlaskWebServicesSecurityManager(DeltaObject):
                         "phone": user.get('result').get('user_phone'),
                         "work_address": user.get('result').get('user_work_address'),
                         "national_code": user.get('result').get('user_national_code'),
-                        "production_type": user.get('result').get('user_production_type')})
+                        "production_type": user.get('result').get('user_production_type'),
+                        "production_package": user.get('result').get('user_production_package')})
 
     @staticmethod
     @flask_app.route('/activate/<path:input_data>', methods=["GET"])
