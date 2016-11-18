@@ -19,7 +19,7 @@ class SmtpEmailManager(DeltaObject):
 
         self._messages = {'activation_email':
                             """
-                            From: Sport Magazine <info@faportmagazine.com>
+                            From: Sport Magazine <mail.sportmagazine.ir>
                             To: {full_name} <{email}>
                             MIME-Version: 1.0
                             Content-type: text/html
@@ -38,9 +38,8 @@ class SmtpEmailManager(DeltaObject):
         :param email:
         :param url:
         '''
-        return
 
-        sender = 'info@faportmagazine.com'
+        sender = 'mail'
         receivers = [email]
 
         smtpServer = smtplib.SMTP()
@@ -48,3 +47,4 @@ class SmtpEmailManager(DeltaObject):
         smtpServer.sendmail(sender, receivers, self._messages['activation_email'].format(full_name=full_name,
                                                                                          email=email,
                                                                                          url=url))
+        smtpServer.quit()
