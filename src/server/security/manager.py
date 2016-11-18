@@ -243,7 +243,9 @@ class SecurityManager(BaseSecurityManager):
                 else:
                     actions_id, user_action_data, user_action_date = result
                     email_services.send_activation_email(user.user_full_name, user.user_email,
-                                                         "http://localhost:5000/activate/{0}".format(user_action_data))
+                                                         "http://{0}:{1}/activate/{2}".format("185.94.99.134",
+                                                                                              "5001",
+                                                                                              user_action_data))
                     return user_action_data
 
         if result is None:

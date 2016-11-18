@@ -37,7 +37,8 @@ class SmtpEmailManager(DeltaObject):
         subject = u'User Activation Email (Simaye Salem)'
 
         # Example body
-        html = u'<b>Activation URL (Just Click)</b><br\><h1>{url}</h1>'.format(url=url)
+        html = \
+            u'<b>Activation URL (Just Click)</b><br\><h1><a href="{url}">Click Here To Activate ...</a></h1>'.format(url=url)
 
         # Default encoding mode set to Quoted Printable. Acts globally!
         Charset.add_charset('utf-8', Charset.QP, Charset.QP, 'utf-8')
