@@ -237,7 +237,9 @@ class SecurityManager(BaseSecurityManager):
                     store.add(action_entity)
 
                     email_services.send_activation_email(user.user_full_name, user.user_email,
-                                                         "http://localhost:5000/activate/{0}".format(activation_data))
+                                                         "http://{0}:{1}/activate/{2}".format("185.94.99.134",
+                                                                                              "5001",
+                                                                                              activation_data))
 
                     return activation_data
                 else:
