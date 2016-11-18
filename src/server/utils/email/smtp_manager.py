@@ -5,6 +5,11 @@ Created on Sep 9, 2016
 """
 
 import smtplib
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
+from email.header import Header
+from email import Charset
+from email.generator import Generator
 
 from deltapy.core import DeltaObject
 
@@ -17,19 +22,6 @@ class SmtpEmailManager(DeltaObject):
     def __init__(self):
         DeltaObject.__init__(self)
 
-        self._messages = {'activation_email':
-                            """
-                            From: Sport Magazine <mail.sportmagazine.ir>
-                            To: {full_name} <{email}>
-                            MIME-Version: 1.0
-                            Content-type: text/html
-                            Subject: User Activation Email (Sports Magazine)
-
-                            <b>Activation URL (Just Click)</b>
-                            <h1>{url}</h1>
-                            """
-                          }
-
     def send_activation_email(self, full_name, email, url):
         '''
         Sends activation email via smtp protocol.
@@ -39,12 +31,28 @@ class SmtpEmailManager(DeltaObject):
         :param url:
         '''
 
-        sender = 'mail'
-        receivers = [email]
+        # Example address data
+        from_address = [u'Sport Magazine', 'mail.sportmagazine.ir']
+        recipient = [unicode(full_name), email]
+        subject = u'User Activation Email (Simaye Salem)'
+
+        # Example body
+        html = u'<b>Activation URL (Just Click)</b><br\><h1>{url}</h1>'.format(url=url)
+
+        # Default encoding mode set to Quoted Printable. Acts globally!
+        Charset.add_charset('utf-8', Charset.QP, Charset.QP, 'utf-8')
+
+        msg = MIMEMultipart('alternative')
+        msg['Subject'] = "%s" % Header(subject, 'utf-8')
+        # Only descriptive part of recipient and sender shall be encoded, not the email address
+        msg['From'] = "\"%s\" <%s>" % (Header(from_address[0], 'utf-8'), from_address[1])
+        msg['To'] = "\"%s\" <%s>" % (Header(recipient[0], 'utf-8'), recipient[1])
+
+        # Attach both parts
+        htmlpart = MIMEText(html, 'html', 'UTF-8')
+        msg.attach(htmlpart)
 
         smtpServer = smtplib.SMTP()
         smtpServer.connect()
-        smtpServer.sendmail(sender, receivers, self._messages['activation_email'].format(full_name=full_name,
-                                                                                         email=email,
-                                                                                         url=url))
+        smtpServer.sendmail(from_address[1], [recipient[1]], msg.as_string())
         smtpServer.quit()
