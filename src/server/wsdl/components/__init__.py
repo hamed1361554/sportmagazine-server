@@ -11,9 +11,11 @@ from deltapy.utils.concurrent import run_in_thread
 from server.wsdl import flask_app
 from server.wsdl import SERVER_FLASK_WEB_SERVICES_PROVIDER_MANAGER, \
     SERVER_FLASK_WEB_SERVICES_PRODUCTS_MANAGER, \
-    SERVER_FLASK_WEB_SERVICES_SECURITY_MANAGER
+    SERVER_FLASK_WEB_SERVICES_SECURITY_MANAGER, \
+    SERVER_FLASK_WEB_SERVICES_INVOICE_MANAGER
 from server.wsdl.product_manager import FlaskWebServicesProductsManager
 from server.wsdl.security_manager import FlaskWebServicesSecurityManager
+from server.wsdl.invoice_manager import FlaskWebServicesInvoiceManager
 
 
 @register(SERVER_FLASK_WEB_SERVICES_PROVIDER_MANAGER)
@@ -46,3 +48,8 @@ class FlaskWebServicesProductsManagerComponent(FlaskWebServicesProductsManager):
     Flask Web Services Products Manager Component
     """
 
+@register(SERVER_FLASK_WEB_SERVICES_INVOICE_MANAGER)
+class FlaskWebServicesInvoiceManagerComponent(FlaskWebServicesInvoiceManager):
+    """
+    Flask Web Services Invoice Manager Component
+    """

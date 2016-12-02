@@ -236,10 +236,10 @@ class TransactionalStore(Store):
         try:
             return super(TransactionalStore, self).execute(statement, params, noresult)
         except Exception as db_error:
-            if db_error[0].code == RESOURCE_BUSY_ERROR_CODE:  # Resource busy
-                raise DatabaseResourceBusyException(_(RESOURCE_BUSY_ERROR_MESSAGE))
+            #if db_error[0].code == RESOURCE_BUSY_ERROR_CODE:  # Resource busy
+            #    raise DatabaseResourceBusyException(_(RESOURCE_BUSY_ERROR_MESSAGE))
 
-            raise db_error
+            raise
 
     def get(self, cls, key, **options):
         """Get object of type cls with the given primary key from the database.

@@ -69,7 +69,7 @@ def find(**options):
     :return:
     """
 
-    return get_component(SERVER_PRODUCTS_MANAGER).update(id, **options)
+    return get_component(SERVER_PRODUCTS_MANAGER).find(**options)
 
 
 def decrease_product_counter(product_id, **options):

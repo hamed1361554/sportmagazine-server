@@ -73,4 +73,4 @@ def find(**options):
     :return:
     """
 
-    return products_services.update(id, **options)
+    return products_services.find(**options)

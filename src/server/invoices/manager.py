@@ -127,15 +127,15 @@ class InvoicesManager(DeltaObject):
                                         invoice_status=invoice_status,
                                         invoice_consumer_user_id=invoice_consumer_user_id,
                                         total_invoce_price=0,
-                                        items=[])
+                                        invoice_items=[])
                 results[invoice_id] = invoice
 
-            invoice.items.append(DynamicObject(item_id=item_id,
-                                               item_product_id=item_product_id,
-                                               item_price=item_price,
-                                               item_quantity=item_quantity,
-                                               item_row=item_row,
-                                               item_color=item_color))
+            invoice.invoice_items.append(DynamicObject(item_id=item_id,
+                                                       item_product_id=item_product_id,
+                                                       item_price=item_price,
+                                                       item_quantity=item_quantity,
+                                                       item_row=item_row,
+                                                       item_color=item_color))
             invoice.total_invoce_price += item_quantity * item_price
 
         return results
@@ -163,12 +163,12 @@ class InvoicesManager(DeltaObject):
 
         counter = 1
         result = DynamicObject(entity_to_dic(invoice))
-        result.items = []
+        result.invoice_items = []
         for item in invoice_items:
             item_entity = InvoiceItemEntity()
             item_entity.invoice_id = invoice.invoice_id
             item_entity.item_color = unicode(item.get('color'))
-            item_entity.item_id = unicode(unique_id_services.get('uuid'))
+            item_entity.item_id = unicode(unique_id_services.get_id('uuid'))
             item_entity.item_price = Decimal(str(item.get('price')))
             item_entity.item_quantity = int(item.get('quantity'))
             item_entity.item_row = counter
@@ -179,16 +179,15 @@ class InvoicesManager(DeltaObject):
                                             fetch_details=False)
             if (product.product_whole_sale_type == ProductsEntity.ProductWholesaleTypeEnum.WHOLESALE and
                 current_user.user_production_type != UserEntity.UserProductionTypeEnum.PRODUCER):
-                raise InvoiceException("User [{0}---{1}] is not producer one and can not register "
-                                       "product [{2}---{3}] which is wholesale product type.".format(current_user.id,
-                                                                                                     current_user.user_id,
-                                                                                                     product.product_id,
+                raise InvoiceException("User [{0} - {1}] is not producer one and can not register "
+                                       "product [{2}] which is wholesale product type.".format(current_user.user_id,
+                                                                                                     current_user.user_name,
                                                                                                      product.product_name))
 
             counter += 1
 
             store.add(item_entity)
-            result.items.append(DynamicObject(entity_to_dic(item_entity)))
+            result.invoice_items.append(DynamicObject(entity_to_dic(item_entity)))
 
         return result
 

@@ -107,17 +107,18 @@ class FlaskWebServicesSecurityManager(DeltaObject):
                                       request.json['full_name'], **options)
         pyro_server.logoff(ticket, 'admin')
 
-        return jsonify({"user_name": user.get('result').get('user_id'),
-                        "password": user.get('result').get('user_password'),
-                        "full_name": user.get('result').get('user_full_name'),
-                        "mobile": user.get('result').get('user_mobile'),
-                        "email": user.get('result').get('user_email'),
-                        "address": user.get('result').get('user_address'),
-                        "phone": user.get('result').get('user_phone'),
-                        "work_address": user.get('result').get('user_work_address'),
-                        "national_code": user.get('result').get('user_national_code'),
-                        "production_type": user.get('result').get('user_production_type'),
-                        "production_package": user.get('result').get('user_production_package')})
+        user = user.get('result')
+        return jsonify({"user_name": user.get('user_id'),
+                        "password": user.get('user_password'),
+                        "full_name": user.get('user_full_name'),
+                        "mobile": user.get('user_mobile'),
+                        "email": user.get('user_email'),
+                        "address": user.get('user_address'),
+                        "phone": user.get('user_phone'),
+                        "work_address": user.get('user_work_address'),
+                        "national_code": user.get('user_national_code'),
+                        "production_type": user.get('user_production_type'),
+                        "production_package": user.get('user_production_package')})
 
     @staticmethod
     @flask_app.route('/user/get', methods=["POST"])
@@ -132,17 +133,18 @@ class FlaskWebServicesSecurityManager(DeltaObject):
             pyro_server.execute_ex(request.json['ticket'], request.json['user_name'], 'security.user.get.by_id',
                                    {}, request.json['user_name'])
 
-        return jsonify({"user_name": user.get('result').get('user_id'),
-                        "password": user.get('result').get('user_password'),
-                        "full_name": user.get('result').get('user_full_name'),
-                        "mobile": user.get('result').get('user_mobile'),
-                        "email": user.get('result').get('user_email'),
-                        "address": user.get('result').get('user_address'),
-                        "phone": user.get('result').get('user_phone'),
-                        "work_address": user.get('result').get('user_work_address'),
-                        "national_code": user.get('result').get('user_national_code'),
-                        "production_type": user.get('result').get('user_production_type'),
-                        "production_package": user.get('result').get('user_production_package')})
+        user = user.get('result')
+        return jsonify({"user_name": user.get('user_id'),
+                        "password": user.get('user_password'),
+                        "full_name": user.get('user_full_name'),
+                        "mobile": user.get('user_mobile'),
+                        "email": user.get('user_email'),
+                        "address": user.get('user_address'),
+                        "phone": user.get('user_phone'),
+                        "work_address": user.get('user_work_address'),
+                        "national_code": user.get('user_national_code'),
+                        "production_type": user.get('user_production_type'),
+                        "production_package": user.get('user_production_package')})
 
     @staticmethod
     @flask_app.route('/activate/<path:input_data>', methods=["GET"])

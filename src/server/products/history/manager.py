@@ -6,6 +6,7 @@ Created on Oct 18, 2016
 
 import datetime
 
+from deltapy.security.session.services import get_current_user
 from storm.expr import Like, In, And
 
 from deltapy.core import DeltaObject, DeltaException, DynamicObject
@@ -129,6 +130,7 @@ class ProductsHistoryManager(DeltaObject):
         history.product_history_age_category = product.product_age_category
         history.product_history_gender = product.product_gender
         history.product_history_comment = product.product_comment
+        history.product_history_editor_id = get_current_user().id
 
         store = get_current_transaction_store()
         store.add(history)

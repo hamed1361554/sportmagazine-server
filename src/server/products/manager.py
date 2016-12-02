@@ -6,8 +6,10 @@ Created on Oct 14, 2016
 
 import datetime
 from decimal import Decimal
+from dateutil import parser
 
-from storm.expr import Select, Count, And, Like, In
+from storm import Undef
+from storm.expr import Select, Count, And, Like, In, Desc
 
 from deltapy.core import DeltaObject, DeltaException, DynamicObject
 from deltapy.security.session.services import get_current_user
@@ -18,6 +20,7 @@ from server.products.helper import generate_product_unique_name
 
 import deltapy.unique_id.services as unique_id_services
 import server.products.history.services as history_services
+from werkzeug.wsgi import extract_path_info
 
 
 class ProductsException(DeltaException):
@@ -40,7 +43,7 @@ class ProductsManager(DeltaObject):
         """
 
         store = get_current_transaction_store()
-        entity = store.get(ProductsEntity, product_id)
+        entity = store.get(ProductsEntity, unicode(product_id))
 
         if entity is None:
             raise ProductsException("Product [{0}] not found".format(product_id))
@@ -130,7 +133,7 @@ class ProductsManager(DeltaObject):
         store = get_current_transaction_store()
         result = \
             store.execute(Select(columns=[Count(1)],
-                                 where=And(ProductsEntity.product_unique_name == unique_name),
+                                 where=And(ProductsEntity.product_unique_name == unicode(unique_name)),
                                  tables=[ProductsEntity])).get_one()
 
         if result is None:
@@ -157,8 +160,8 @@ class ProductsManager(DeltaObject):
         if name is None or name.strip() == "":
             raise ProductsException("Product name could not be nothing.")
 
-        if price is None or price.strip() == "":
-            raise ProductsException("Product price could not be nothing.")
+        if price is None or price <= 1000:
+            raise ProductsException("Product price could not be nothing or invalid.")
 
         if colors is None or len(colors) <= 0:
             raise ProductsException("At least one color for product should be selected.")
@@ -176,14 +179,17 @@ class ProductsManager(DeltaObject):
         self._validate_product_unique_name(name, category)
 
         product = ProductsEntity()
-        product.product_id = unicode(unique_id_services.get('uuid'))
+        product.product_id = unicode(unique_id_services.get_id('uuid'))
         product.product_name = name
         product.product_price = Decimal(price)
         product.product_category = category
-        product.product_image = buffer(options.get('image_data'))
         product.product_producer_user_id = current_user.id
-        product.product_unique_name = generate_product_unique_name(name, category)
+        product.product_unique_name = unicode(generate_product_unique_name(name, category))
         product.product_creation_date = datetime.datetime.now()
+
+        product_image = options.get('image')
+        if product_image not in (None, ""):
+            product.product_image = str(product_image)
 
         status = options.get('status')
         if status is None:
@@ -218,24 +224,30 @@ class ProductsManager(DeltaObject):
         store.add(product)
 
         for color in colors:
+            if color == "":
+                continue
             color_entity = ProductsColorsEntity()
-            color_entity.product_color_id = unicode(unique_id_services.get('uuid'))
+            color_entity.product_color_id = unicode(unique_id_services.get_id('uuid'))
             color_entity.product_id = product.product_id
-            color_entity.product_color_hex = unicode(color)
+            color_entity.product_color_hex = unicode(color.strip())
             store.add(color_entity)
 
         for size in sizes:
+            if size == "":
+                continue
             size_entity = ProductsSizesEntity()
             size_entity.product_size_id = unicode(unique_id_services.get_id('uuid'))
             size_entity.product_id = product.product_id
-            size_entity.product_size = unicode(size)
+            size_entity.product_size = unicode(size.strip())
             store.add(size_entity)
 
         for brand in brands:
+            if brand == "":
+                continue
             brand_entity = ProductsBrandsEntity()
             brand_entity.product_brand_id = unicode(unique_id_services.get_id('uuid'))
             brand_entity.product_id = product.product_id
-            brand_entity.product_brand = unicode(brand)
+            brand_entity.product_brand = unicode(brand.strip())
             store.add(brand_entity)
 
         history_services.write_history(product, colors, sizes, brands, **options)
@@ -367,6 +379,8 @@ class ProductsManager(DeltaObject):
         to_price = options.get('to_price')
         name = options.get('name')
         categories = options.get('categories')
+        if not isinstance(categories, (list, tuple)):
+            categories = [categories]
         include_out_of_stock = options.get('include_out_of_stock')
         if include_out_of_stock is None:
             include_out_of_stock = False
@@ -375,24 +389,73 @@ class ProductsManager(DeltaObject):
         if not include_out_of_stock:
             expressions.append(ProductsEntity.product_status == ProductsEntity.ProductStatusEnum.IN_STOCK)
         if from_creation_date is not None:
+            if not isinstance(from_creation_date, datetime.datetime):
+                from_creation_date = parser.parse(from_creation_date)
             expressions.append(ProductsEntity.product_creation_date >= from_creation_date)
         if to_creation_date is not None:
+            if not isinstance(to_creation_date, datetime.datetime):
+                to_creation_date = parser.parse(to_creation_date)
             expressions.append(ProductsEntity.product_creation_date <= to_creation_date)
-        if from_price is not None:
-            expressions.append(ProductsEntity.product_price >= from_price)
-        if to_price is not None:
-            expressions.append(ProductsEntity.product_price >= to_price)
+        if from_price not in (None, 0, "", "0"):
+            expressions.append(ProductsEntity.product_price >= Decimal(from_price))
+        if to_price not in (None, 0, "", "0"):
+            expressions.append(ProductsEntity.product_price <= Decimal(to_price))
         if name is not None and name.strip() != "":
             expressions.append(Like(ProductsEntity.product_name, "%{0}%".format(name)))
-        if categories is not None and len(categories) > 0:
+        if categories is not None and len(categories) > 0 and -1 not in categories:
             expressions.append(In(ProductsEntity.product_category, categories))
 
+        offset = options.get("__offset__")
+        if offset is None:
+            offset = 0
+        else:
+            offset = int(offset)
+        limit = options.get("__limit__")
+        if limit in (None, 0):
+            limit = Undef
+        else:
+            limit = int(limit)
+
+        statement = \
+            Select(columns=[ProductsEntity.product_id,
+                            ProductsEntity.product_name,
+                            ProductsEntity.product_category,
+                            ProductsEntity.product_image,
+                            ProductsEntity.product_age_category,
+                            ProductsEntity.product_comment,
+                            ProductsEntity.product_creation_date,
+                            ProductsEntity.product_price,
+                            ProductsEntity.product_gender],
+                   where=And(*expressions),
+                   tables=[ProductsEntity],
+                   order_by=[Desc(ProductsEntity.product_creation_date)],
+                   offset=offset,
+                   limit=limit)
+
         store = get_current_transaction_store()
-        entities = store.find(ProductsEntity, And(*expressions)).order_by(ProductsEntity.product_creation_date)
 
         results = []
-        for entity in entities:
-            results.append(DynamicObject(entity_to_dic(entity)))
+        for (product_id,
+             product_name,
+             product_category,
+             product_image,
+             product_age_category,
+             product_comment,
+             product_creation_date,
+             product_price,
+             product_gender) in store.execute(statement):
+            results.append(DynamicObject(product_id=product_id,
+                                         product_name=product_name,
+                                         product_category=product_category,
+                                         product_image=product_image,
+                                         product_age_category=product_age_category,
+                                         product_comment=product_comment,
+                                         product_creation_date=product_creation_date,
+                                         product_price=product_price,
+                                         product_gender=product_gender,
+                                         product_colors=self.get_product_colors(product_id, concat_results=True),
+                                         product_sizes=self.get_product_sizes(product_id, concat_results=True),
+                                         product_brands=self.get_product_brands(product_id, concat_results=True)))
 
         return results
 
@@ -421,3 +484,96 @@ class ProductsManager(DeltaObject):
                                                                                                                  entity.product_counter))
 
         return entity.product_counter
+
+    def get_product_colors(self, product_id, **options):
+        '''
+        Returns product colors.
+
+        :param product_id:
+        :return:
+        '''
+
+        store = get_current_transaction_store()
+
+        statement = \
+            Select(columns=[ProductsColorsEntity.product_color_hex,
+                            ProductsColorsEntity.product_color_id],
+                   where=And(ProductsColorsEntity.product_id == product_id),
+                   tables=[ProductsColorsEntity])
+
+        results = []
+        for (product_color_hex,
+             product_color_id) in store.execute(statement):
+            results.append(DynamicObject(product_color_hex=product_color_hex,
+                                         product_color_id=product_color_id))
+
+        concat_results = options.get('concat_results')
+        if concat_results is None:
+            concat_results = False
+
+        if concat_results:
+            return ','.join([c.product_color_hex for c in results])
+
+        return results
+
+    def get_product_sizes(self, product_id, **options):
+        '''
+        Returns product sizes.
+
+        :param product_id:
+        :return:
+        '''
+
+        store = get_current_transaction_store()
+
+        statement = \
+            Select(columns=[ProductsSizesEntity.product_size,
+                            ProductsSizesEntity.product_size_id],
+                   where=And(ProductsSizesEntity.product_id == product_id),
+                   tables=[ProductsSizesEntity])
+
+        results = []
+        for (product_size,
+             product_size_id) in store.execute(statement):
+            results.append(DynamicObject(product_size=product_size,
+                                         product_size_id=product_size_id))
+
+        concat_results = options.get('concat_results')
+        if concat_results is None:
+            concat_results = False
+
+        if concat_results:
+            return ','.join([s.product_size for s in results])
+
+        return results
+
+    def get_product_brands(self, product_id, **options):
+        '''
+        Returns product brands.
+
+        :param product_id:
+        :return:
+        '''
+
+        store = get_current_transaction_store()
+
+        statement = \
+            Select(columns=[ProductsBrandsEntity.product_brand,
+                            ProductsBrandsEntity.product_brand_id],
+                   where=And(ProductsBrandsEntity.product_id == product_id),
+                   tables=[ProductsBrandsEntity])
+
+        results = []
+        for (product_brand,
+             product_brand_id) in store.execute(statement):
+            results.append(DynamicObject(product_brand=product_brand,
+                                         product_brand_id=product_brand_id))
+
+        concat_results = options.get('concat_results')
+        if concat_results is None:
+            concat_results = False
+
+        if concat_results:
+            return ','.join([b.product_brand for b in results])
+
+        return results

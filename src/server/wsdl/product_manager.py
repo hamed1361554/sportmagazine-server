@@ -42,7 +42,7 @@ class FlaskWebServicesProductsManager(DeltaObject):
         return options
 
     @staticmethod
-    @flask_app.route('/products/create', methods=["POST"])
+    @flask_app.route('/product/create', methods=["POST"])
     def create():
         """
         Creates product!
@@ -62,16 +62,22 @@ class FlaskWebServicesProductsManager(DeltaObject):
             options['gender'] = request.json['gender']
         if 'comment' in request.json:
             options['comment'] = request.json['comment']
+        if 'image' in request.json:
+            options['image'] = request.json['image']
 
         product = \
             pyro_server.execute_ex(request.json['ticket'], request.json['user_name'], 'server.products.create', {},
                                    request.json['name'], request.json['price'], request.json['category'],
-                                   request.json['colors'], request.json['sizes'], request.json['brands'], **options)
+                                   request.json['colors'].split(','), request.json['sizes'].split(','),
+                                   request.json['brands'].split(','), **options)
 
-        return jsonify(product)
+        product = product.get('result')
+        product['product_price'] = None
+        return jsonify({"name": product.get("product_name"),
+                        "comment": product.get("product_comment")})
 
     @staticmethod
-    @flask_app.route('/products/update', methods=["POST"])
+    @flask_app.route('/product/update', methods=["POST"])
     def update():
         """
         Updates product!
@@ -122,7 +128,7 @@ class FlaskWebServicesProductsManager(DeltaObject):
         return jsonify(product)
 
     @staticmethod
-    @flask_app.route('/products/get/<string:name>', methods=["GET"])
+    @flask_app.route('/product/get/<string:name>', methods=["GET"])
     def get_by_name(name):
         """
         Gets product!
@@ -136,7 +142,7 @@ class FlaskWebServicesProductsManager(DeltaObject):
         return jsonify(product)
 
     @staticmethod
-    @flask_app.route('/products/find/', methods=["GET"])
+    @flask_app.route('/product/find', methods=["POST"])
     def find():
         """
         Finds products!
@@ -159,14 +165,31 @@ class FlaskWebServicesProductsManager(DeltaObject):
             options['categories'] = request.json['categories']
         if 'include_out_of_stock' in request.json:
             options['include_out_of_stock'] = request.json['include_out_of_stock']
+        if '__offset__' in request.json:
+            options['__offset__'] = request.json['__offset__']
+        if '__limit__' in request.json:
+            options['__limit__'] = request.json['__limit__']
 
         products = \
-            pyro_server.execute_ex(request.json['ticket'], request.json['user_name'], 'server.products.find', {})
+            pyro_server.execute_ex(request.json['ticket'], request.json['user_name'], 'server.products.find', {},
+                                   **options)
 
-        return jsonify(products)
+        products = products.get('result')
+        return jsonify([{"id": p.get("product_id"),
+                         "name": p.get("product_name"),
+                         "category": p.get("product_category"),
+                         "image": p.get("product_image"),
+                         "age_category": p.get("product_age_category"),
+                         "comment": p.get("product_comment"),
+                         "creation_date": p.get("product_creation_date"),
+                         "price": float(p.get("product_price")),
+                         "gender": p.get("product_gender"),
+                         "colors": p.get("product_colors"),
+                         "sizes": p.get("product_sizes"),
+                         "brands": p.get("product_brands")} for p in products])
 
     @staticmethod
-    @flask_app.route('/products/history/find/', methods=["GET"])
+    @flask_app.route('/product/history/find', methods=["POST"])
     def find_history():
         """
         Finds products histories!
