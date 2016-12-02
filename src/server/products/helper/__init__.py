@@ -13,4 +13,4 @@ def generate_product_unique_name(name, category):
     """
 
     current_user_id = get_current_user().id
-    return "{0}]*[{1}]*[{2}".format(name, category, current_user_id)
+    return u"{0}]*[{1}]*[{2}".format(name, category, current_user_id)
