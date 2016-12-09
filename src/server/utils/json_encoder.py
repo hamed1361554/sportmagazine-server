@@ -6,12 +6,16 @@ Created on Dec 1, 2016
 
 import decimal
 import flask.json
+from datetime import datetime
 
 
 class CustomJsonEncoder(flask.json.JSONEncoder):
 
     def default(self, obj):
         if isinstance(obj, decimal.Decimal):
-            # Convert decimal instances to strings.
             return str(obj)
+
+        if isinstance(obj, datetime):
+            return obj.strftime("%Y-%M-%d %H:%M:%S")
+
         return super(CustomJsonEncoder, self).default(obj)

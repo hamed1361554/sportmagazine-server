@@ -384,6 +384,13 @@ class ProductsManager(DeltaObject):
         include_out_of_stock = options.get('include_out_of_stock')
         if include_out_of_stock is None:
             include_out_of_stock = False
+        wholesale_type = options.get('wholesale_type')
+        if wholesale_type is None:
+            wholesale_type = ProductsEntity.ProductWholesaleTypeEnum.RETAIL
+        if wholesale_type == ProductsEntity.ProductWholesaleTypeEnum.WHOLESALE:
+            current_user = get_current_user()
+            if current_user.user_production_type != UserEntity.UserProductionTypeEnum.PRODUCER:
+                raise ProductsException("Consumer user can not search wholesale products.")
 
         expressions = []
         if not include_out_of_stock:

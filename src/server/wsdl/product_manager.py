@@ -43,7 +43,7 @@ class FlaskWebServicesProductsManager(DeltaObject):
 
     @staticmethod
     @flask_app.route('/product/create', methods=["POST"])
-    def create():
+    def create_product():
         """
         Creates product!
         """
@@ -64,6 +64,8 @@ class FlaskWebServicesProductsManager(DeltaObject):
             options['comment'] = request.json['comment']
         if 'image' in request.json:
             options['image'] = request.json['image']
+        if 'wholesale_type' in request.json:
+            options['wholesale_type'] = request.json['wholesale_type']
 
         product = \
             pyro_server.execute_ex(request.json['ticket'], request.json['user_name'], 'server.products.create', {},
@@ -115,7 +117,7 @@ class FlaskWebServicesProductsManager(DeltaObject):
 
     @staticmethod
     @flask_app.route('/products/get/<string:id>', methods=["GET"])
-    def get(id):
+    def get_product(id):
         """
         Gets product!
         """
@@ -129,7 +131,7 @@ class FlaskWebServicesProductsManager(DeltaObject):
 
     @staticmethod
     @flask_app.route('/product/get/<string:name>', methods=["GET"])
-    def get_by_name(name):
+    def get_product_by_name(name):
         """
         Gets product!
         """
@@ -143,7 +145,7 @@ class FlaskWebServicesProductsManager(DeltaObject):
 
     @staticmethod
     @flask_app.route('/product/find', methods=["POST"])
-    def find():
+    def find_products():
         """
         Finds products!
         """
@@ -165,6 +167,8 @@ class FlaskWebServicesProductsManager(DeltaObject):
             options['categories'] = request.json['categories']
         if 'include_out_of_stock' in request.json:
             options['include_out_of_stock'] = request.json['include_out_of_stock']
+        if 'wholesale_type' in request.json:
+            options['wholesale_type'] = request.json['wholesale_type']
         if '__offset__' in request.json:
             options['__offset__'] = request.json['__offset__']
         if '__limit__' in request.json:

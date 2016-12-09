@@ -251,6 +251,7 @@ class ProductsEntity(ProductsBaseEntity):
     class ProductAgeCategoryEnum(DeltaEnum):
         ADULT = DeltaEnumValue(0, "Adult")
         CHILDREN_TEENAGER = DeltaEnumValue(1, "Children & Teenager")
+        BOTH = DeltaEnumValue(2, "Adult/Children & Teenager")
 
     class ProductGenderEnum(DeltaEnum):
         MALE = DeltaEnumValue(0, "Male")
@@ -524,6 +525,7 @@ class InvoiceEntity(InvoiceBaseEntity):
 
     invoice_date = DateTime('INVOICEDATE')
     invoice_status = Int('INVOICESTATE')
+    invoice_comment = DateTime('INVOICECMNT')
     invoice_consumer_user_id = Unicode('INVOICECONSUMERID')
 
 
@@ -567,6 +569,8 @@ class InvoiceItemEntity(InvoiceItemBaseEntity):
     item_price = Decimal('INVITMPRICE')
     item_quantity = Int('INVITMQNTY')
     item_color = Unicode('INVITMCOLOR')
+    item_size = Unicode('INVITMSIZE')
+    item_brand = Unicode('INVITMBRAND')
 
 
 class UserProductionPackageBaseEntity(Storm):

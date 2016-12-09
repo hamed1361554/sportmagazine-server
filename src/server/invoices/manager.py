@@ -6,8 +6,10 @@ Created on Oct 14, 2016
 
 import datetime
 from decimal import Decimal
+from dateutil import parser
 
-from storm.expr import Select, In, And
+from storm import Undef
+from storm.expr import Select, In, And, Exists, Desc
 
 from deltapy.core import DeltaObject, DeltaException, DynamicObject
 from deltapy.transaction.services import get_current_transaction_store
@@ -81,31 +83,62 @@ class InvoicesManager(DeltaObject):
         statuses = options.get('statuses')
         consumer_user_id = options.get('consumer_user_id')
 
-        expressions = [InvoiceItemEntity.invoice_id == InvoiceEntity.invoice_id]
+        expressions = []
 
         if from_invoice_date is not None:
+            if not isinstance(from_invoice_date, datetime.datetime):
+                from_invoice_date = parser.parse(from_invoice_date)
             expressions.append(InvoiceEntity.invoice_date >= from_invoice_date)
         if to_invoice_date is not None:
+            if not isinstance(to_invoice_date, datetime.datetime):
+                to_invoice_date = parser.parse(to_invoice_date)
             expressions.append(InvoiceEntity.invoice_date <= to_invoice_date)
         if statuses is not None and len(statuses) > 0:
             expressions.append(In(InvoiceEntity.invoice_status, statuses))
         if consumer_user_id is not None:
             expressions.append(InvoiceEntity.invoice_consumer_user_id == consumer_user_id)
 
+        offset = options.get("__offset__")
+        if offset is None:
+            offset = 0
+        else:
+            offset = int(offset)
+        limit = options.get("__limit__")
+        if limit in (None, 0):
+            limit = Undef
+        else:
+            limit = int(limit)
+
         statement = Select(columns=[InvoiceEntity.invoice_id,
                                     InvoiceEntity.invoice_date,
                                     InvoiceEntity.invoice_status,
+                                    InvoiceEntity.invoice_comment,
                                     InvoiceEntity.invoice_consumer_user_id,
                                     InvoiceItemEntity.item_id,
                                     InvoiceItemEntity.item_product_id,
                                     InvoiceItemEntity.item_price,
                                     InvoiceItemEntity.item_quantity,
                                     InvoiceItemEntity.item_row,
-                                    InvoiceItemEntity.item_color],
-                           where=And(*expressions),
+                                    InvoiceItemEntity.item_color,
+                                    InvoiceItemEntity.item_size,
+                                    InvoiceItemEntity.item_brand,
+                                    ProductsEntity.product_name,
+                                    ProductsEntity.product_creation_date,
+                                    ProductsEntity.product_comment,
+                                    ProductsEntity.product_image,
+                                    ProductsEntity.product_age_category,
+                                    ProductsEntity.product_gender],
+                           where=And(Exists(Select(columns=[1],
+                                                   where=And(*expressions),
+                                                   order_by=[Desc(InvoiceEntity.invoice_date)],
+                                                   offset=offset,
+                                                   limit=limit)),
+                                     InvoiceItemEntity.invoice_id == InvoiceEntity.invoice_id,
+                                     InvoiceItemEntity.item_product_id == ProductsEntity.product_id),
                            tables=[InvoiceEntity,
-                                   InvoiceItemEntity],
-                           order_by=[InvoiceEntity.invoice_date,
+                                   InvoiceItemEntity,
+                                   ProductsEntity],
+                           order_by=[Desc(InvoiceEntity.invoice_date),
                                      InvoiceItemEntity.item_row])
 
         results = {}
@@ -113,18 +146,28 @@ class InvoicesManager(DeltaObject):
         for (invoice_id,
              invoice_date,
              invoice_status,
+             invoice_comment,
              invoice_consumer_user_id,
              item_id,
              item_product_id,
              item_price,
              item_quantity,
              item_row,
-             item_color) in store.execute(statement):
+             item_color,
+             item_size,
+             item_brand,
+             product_name,
+             product_creation_date,
+             product_comment,
+             product_image,
+             product_age_category,
+             product_gender) in store.execute(statement):
             invoice = results.get(invoice_id)
             if invoice is None:
                 invoice = DynamicObject(invoice_id=invoice_id,
                                         invoice_date=invoice_date,
                                         invoice_status=invoice_status,
+                                        invoice_comment=invoice_comment,
                                         invoice_consumer_user_id=invoice_consumer_user_id,
                                         total_invoce_price=0,
                                         invoice_items=[])
@@ -135,10 +178,19 @@ class InvoicesManager(DeltaObject):
                                                        item_price=item_price,
                                                        item_quantity=item_quantity,
                                                        item_row=item_row,
-                                                       item_color=item_color))
+                                                       item_color=item_color,
+                                                       item_size=item_size,
+                                                       item_brand=item_brand,
+                                                       product=DynamicObject(product_id=item_product_id,
+                                                                             product_name=product_name,
+                                                                             product_creation_date=product_creation_date,
+                                                                             product_comment=product_comment,
+                                                                             product_image=product_image,
+                                                                             product_age_category=product_age_category,
+                                                                             product_gender=product_gender)))
             invoice.total_invoce_price += item_quantity * item_price
 
-        return results
+        return results.values()
 
     def register(self, invoice_items):
         '''
@@ -168,6 +220,8 @@ class InvoicesManager(DeltaObject):
             item_entity = InvoiceItemEntity()
             item_entity.invoice_id = invoice.invoice_id
             item_entity.item_color = unicode(item.get('color'))
+            item_entity.item_size = unicode(item.get('size'))
+            item_entity.item_brand = unicode(item.get('brand'))
             item_entity.item_id = unicode(unique_id_services.get_id('uuid'))
             item_entity.item_price = Decimal(str(item.get('price')))
             item_entity.item_quantity = int(item.get('quantity'))
