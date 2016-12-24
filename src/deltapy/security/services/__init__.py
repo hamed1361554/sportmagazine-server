@@ -327,7 +327,7 @@ def reset_password(user_id, new_password):
 
     return get_component(APP_SECURITY).reset_password(user_id, new_password)
 
-def change_password(current_password, new_password):
+def change_password(user_id, current_password, new_password, **options):
     '''
     Changes password of current user.
     
@@ -335,7 +335,7 @@ def change_password(current_password, new_password):
     @param new_password: user new password 
     '''
 
-    return get_component(APP_SECURITY).change_password(current_password, new_password)
+    return get_component(APP_SECURITY).change_password(user_id, current_password, new_password, **options)
 
 
 def get_user_roles(user_id, **options):

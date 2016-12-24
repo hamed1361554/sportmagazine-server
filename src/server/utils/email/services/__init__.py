@@ -19,3 +19,15 @@ def send_activation_email(full_name, email, url):
     '''
 
     return get_component(SMTP_EMAIL_MANAGER).send_activation_email(full_name, email, url)
+
+
+def send_change_password_email(full_name, email, change_code):
+    '''
+    Sends change password email via smtp protocol.
+
+    :param full_name:
+    :param email:
+    :param change_code:
+    '''
+
+    return get_component(SMTP_EMAIL_MANAGER).send_change_password_email(full_name, email, change_code)

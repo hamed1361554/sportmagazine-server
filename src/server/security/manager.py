@@ -4,6 +4,7 @@ Created on Sep 9, 2016
 @author: Hamed Zekri
 """
 
+import uuid
 import datetime
 
 from storm.expr import Select, And, In
@@ -179,15 +180,15 @@ class SecurityManager(BaseSecurityManager):
 
         password = params.get('password')
         if password is not None and password.strip() != "":
-            user.user_password = unicode(encrypt_sha512(password))
+            user_entity.user_password = unicode(encrypt_sha512(password))
 
         address = params.get('address')
-        if address is None and address.strip() != "":
-            user.user_address = unicode(address)
+        if address is not None and address.strip() != "":
+            user_entity.user_address = unicode(address)
 
         mobile = params.get('mobile')
-        if mobile is None and mobile.strip() != "":
-            user.user_mobile = unicode(mobile)
+        if mobile is not None and mobile.strip() != "":
+            user_entity.user_mobile = unicode(mobile)
 
     def activate_user(self, id, flag, **options):
         """
@@ -411,7 +412,7 @@ class SecurityManager(BaseSecurityManager):
         self._check_invalid_user_names(user_id)
         self.update_user(user_id, password=new_password)
 
-    def change_password(self, user_id, current_password, new_password):
+    def change_password(self, user_id, current_password, new_password, **options):
         """
         Changes password of current user.
 
@@ -420,7 +421,60 @@ class SecurityManager(BaseSecurityManager):
         """
 
         self._check_invalid_user_names(user_id)
-        self.update_user(user_id, password=new_password)
+
+        user = self.get_user_by_id(user_id)
+        if user is None:
+            raise UserNotFoundException(user_id)
+
+        if not self.is_active(user.id):
+            raise UserSecurityException("User is not activated.")
+
+        store = get_current_transaction_store()
+        activation_data = options.get('activation_data')
+
+        statement = \
+            Select(columns=[UserActionEntity.id,
+                            UserActionEntity.user_action_data,
+                            UserActionEntity.user_action_date],
+                   where=And(UserActionEntity.user_id == user.id,
+                             UserActionEntity.user_action == UserActionEntity.UserActionEnum.CHANGE_USER_PASSWORD,
+                             UserActionEntity.user_action_status == UserActionEntity.UserActionStatusEnum.ACTION_CREATED),
+                   tables=[UserActionEntity])
+        result = store.execute(statement).get_one()
+
+        if result is None:
+            if activation_data not in (None, ""):
+                return
+
+            newly_generated_data = str(uuid.uuid4())[:8]
+            entity = UserActionEntity()
+            entity.id = unicode(unique_id_services.get_id('uuid'))
+            entity.user_action = UserActionEntity.UserActionEnum.CHANGE_USER_PASSWORD
+            entity.user_action_data = unicode(newly_generated_data)
+            entity.user_action_date = datetime.datetime.now()
+            entity.user_action_status = UserActionEntity.UserActionStatusEnum.ACTION_CREATED
+            entity.user_id = user.id
+
+            store.add(entity)
+
+            email_services.send_change_password_email(user.user_full_name, user.user_email, newly_generated_data)
+            return newly_generated_data
+        else:
+            entity_id, user_action_data, user_action_date = result
+            if user_action_date < datetime.datetime.now() - datetime.timedelta(days=1):
+                entity = store.get(UserActionEntity, entity_id)
+                entity.user_action_status = UserActionEntity.UserActionStatusEnum.ACTION_EXPIRED
+                return
+
+            if unicode(user_action_data) != unicode(activation_data):
+                raise UserSecurityException("Security change code is wrong.")
+
+            if new_password in (None, "") or new_password.strip() == "":
+                raise UserSecurityException("Password is not valid.")
+
+            self.update_user(user_id, password=new_password)
+            entity = store.get(UserActionEntity, entity_id)
+            entity.user_action_status = UserActionEntity.UserActionStatusEnum.ACTION_COMPLETED
 
     def create_role(self, name, **options):
         """

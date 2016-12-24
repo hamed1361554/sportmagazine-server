@@ -168,3 +168,24 @@ class FlaskWebServicesSecurityManager(DeltaObject):
             return jsonify('activate/{0}'.format(encrypt_aes('{0}${1}'.format(user_id, data.get('result')))))
 
         return jsonify(SUCCESS_RESPONSE)
+
+    @staticmethod
+    @flask_app.route('/change_password', methods=["POST"])
+    def change_password():
+        '''
+        Changes password!
+        '''
+
+        FlaskWebServicesSecurityManager.check_service_requirements(['user_name', 'current_password', 'new_password'])
+        options = FlaskWebServicesSecurityManager.get_service_options()
+
+        if 'activation_data' in request.json:
+            options['activation_data'] = request.json['activation_data']
+
+        ticket = pyro_server.login('admin', 'sportmagazineserver')
+        data = pyro_server.execute_ex(ticket, 'admin', 'security.password.change', {},
+                                      request.json['user_name'], request.json['current_password'],
+                                      request.json['new_password'], **options)
+        pyro_server.logoff(ticket, 'admin')
+
+        return jsonify(SUCCESS_RESPONSE)

@@ -337,7 +337,7 @@ def reset_password(user_id, new_password):
     return security_services.reset_password(user_id, new_password)
 
 @command('security.password.change')
-def change_password(current_password, new_password):
+def change_password(user_id, current_password, new_password, **options):
     '''
     Changes password of current user.
     
@@ -345,7 +345,7 @@ def change_password(current_password, new_password):
     @param new_password: user new password 
     '''
 
-    return security_services.change_password(current_password, new_password)
+    return security_services.change_password(user_id, current_password, new_password, **options)
 
 @command('security.user.roles')
 def get_user_roles(user_id, **options):

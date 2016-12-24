@@ -195,10 +195,11 @@ class BaseSecurityManager(DeltaObject):
 
         self.update_user(user_id, password = self.encrypt_password(user_id, new_password))
 
-    def change_password(self, current_password, new_password):
+    def change_password(self, user_id, current_password, new_password, **options):
         '''
         Changes password of current user.
-        
+
+        @paran user_id: user ID
         @param current_password: user current password
         @param new_password: user new password 
         '''
