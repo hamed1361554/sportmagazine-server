@@ -163,12 +163,22 @@ class FlaskWebServicesProductsManager(DeltaObject):
             options['to_price'] = request.json['to_price']
         if 'name' in request.json:
             options['name'] = request.json['name']
+        if 'size' in request.json:
+            options['size'] = request.json['size']
+        if 'brand' in request.json:
+            options['brand'] = request.json['brand']
         if 'categories' in request.json:
             options['categories'] = request.json['categories']
+        if 'age_categories' in request.json:
+            options['age_categories'] = request.json['age_categories']
+        if 'gender' in request.json:
+            options['gender'] = request.json['gender']
         if 'include_out_of_stock' in request.json:
             options['include_out_of_stock'] = request.json['include_out_of_stock']
         if 'wholesale_type' in request.json:
             options['wholesale_type'] = request.json['wholesale_type']
+        if 'just_current_user' in request.json:
+            options['just_current_user'] = request.json['just_current_user']
         if '__offset__' in request.json:
             options['__offset__'] = request.json['__offset__']
         if '__limit__' in request.json:

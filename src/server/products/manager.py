@@ -9,7 +9,7 @@ from decimal import Decimal
 from dateutil import parser
 
 from storm import Undef
-from storm.expr import Select, Count, And, Like, In, Desc
+from storm.expr import Select, Count, And, Like, In, Desc, Exists
 
 from deltapy.core import DeltaObject, DeltaException, DynamicObject
 from deltapy.security.session.services import get_current_user
@@ -373,24 +373,38 @@ class ProductsManager(DeltaObject):
         :return:
         """
 
+        current_user = get_current_user()
+
         from_creation_date = options.get('from_creation_date')
         to_creation_date = options.get('to_creation_date')
         from_price = options.get('from_price')
         to_price = options.get('to_price')
         name = options.get('name')
+        size = options.get('size')
+        brand = options.get('brand')
         categories = options.get('categories')
         if not isinstance(categories, (list, tuple)):
             categories = [categories]
+        age_categories = options.get('age_categories')
+        if not isinstance(age_categories, (list, tuple)):
+            age_categories = [age_categories]
+        gender = options.get('gender')
+        if not isinstance(gender, (list, tuple)):
+            gender = [gender]
         include_out_of_stock = options.get('include_out_of_stock')
         if include_out_of_stock is None:
             include_out_of_stock = False
         wholesale_type = options.get('wholesale_type')
-        if wholesale_type is None:
+        if wholesale_type not in (None, -1):
             wholesale_type = ProductsEntity.ProductWholesaleTypeEnum.RETAIL
         if wholesale_type == ProductsEntity.ProductWholesaleTypeEnum.WHOLESALE:
-            current_user = get_current_user()
             if current_user.user_production_type != UserEntity.UserProductionTypeEnum.PRODUCER:
                 raise ProductsException("Consumer user can not search wholesale products.")
+        just_current_user = options.get('just_current_user')
+        if just_current_user is None:
+            just_current_user = False
+        if just_current_user and current_user.user_production_type != UserEntity.UserProductionTypeEnum.PRODUCER:
+            raise ProductsException("Consumer user can not search its own products.")
 
         expressions = []
         if not include_out_of_stock:
@@ -408,9 +422,27 @@ class ProductsManager(DeltaObject):
         if to_price not in (None, 0, "", "0"):
             expressions.append(ProductsEntity.product_price <= Decimal(to_price))
         if name is not None and name.strip() != "":
-            expressions.append(Like(ProductsEntity.product_name, "%{0}%".format(name)))
+            name = unicode(name)
+            expressions.append(Like(ProductsEntity.product_name, "%{0}%".format(name.strip())))
+        if size is not None and size.strip() != "":
+            size = unicode(size)
+            expressions.append(Exists(Select(columns=[1],
+                                             where=And(ProductsSizesEntity.product_id == ProductsEntity.product_id,
+                                                       Like(ProductsSizesEntity.product_size, "%{0}%".format(size.strip()))),
+                                             tables=[ProductsSizesEntity])))
+        if brand is not None and brand.strip() != "":
+            brand = unicode(brand)
+            expressions.append(Exists(Select(columns=[1],
+                                             where=And(ProductsBrandsEntity.product_id == ProductsEntity.product_id,
+                                                       Like(ProductsBrandsEntity.product_brand, "%{0}%".format(brand.strip()))))))
         if categories is not None and len(categories) > 0 and -1 not in categories:
             expressions.append(In(ProductsEntity.product_category, categories))
+        if age_categories is not None and len(age_categories) > 0 and -1 not in age_categories:
+            expressions.append(In(ProductsEntity.product_age_category, age_categories))
+        if gender is not None and len(gender) > 0 and -1 not in gender:
+            expressions.append(In(ProductsEntity.product_gender, gender))
+        if just_current_user:
+            expressions.append(ProductsEntity.product_producer_user_id == current_user.id)
 
         offset = options.get("__offset__")
         if offset is None:
