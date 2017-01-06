@@ -395,7 +395,7 @@ class ProductsManager(DeltaObject):
         if include_out_of_stock is None:
             include_out_of_stock = False
         wholesale_type = options.get('wholesale_type')
-        if wholesale_type not in (None, -1):
+        if wholesale_type in (None, -1):
             wholesale_type = ProductsEntity.ProductWholesaleTypeEnum.RETAIL
         if wholesale_type == ProductsEntity.ProductWholesaleTypeEnum.WHOLESALE:
             if current_user.user_production_type != UserEntity.UserProductionTypeEnum.PRODUCER:
@@ -406,7 +406,7 @@ class ProductsManager(DeltaObject):
         if just_current_user and current_user.user_production_type != UserEntity.UserProductionTypeEnum.PRODUCER:
             raise ProductsException("Consumer user can not search its own products.")
 
-        expressions = []
+        expressions = [ProductsEntity.product_whole_sale_type == wholesale_type]
         if not include_out_of_stock:
             expressions.append(ProductsEntity.product_status == ProductsEntity.ProductStatusEnum.IN_STOCK)
         if from_creation_date is not None:
