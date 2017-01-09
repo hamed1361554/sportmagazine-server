@@ -258,3 +258,123 @@ class InvoicesManager(DeltaObject):
         status = options.get('status')
         if status is not None:
             entity.invoice_status = status
+
+    def get_producer_registered_invoices(self, **options):
+        '''
+        Returns producer registered invoices.
+
+        :return:
+        '''
+
+        current_user = get_current_user()
+        if current_user.user_production_type != UserEntity.UserProductionTypeEnum.PRODUCER:
+            return []
+
+        from_invoice_date = options.get('from_invoice_date')
+        to_invoice_date = options.get('to_invoice_date')
+        wholesale_type = options.get('wholesale_type')
+        if wholesale_type in (None, -1):
+            wholesale_type = ProductsEntity.ProductWholesaleTypeEnum.RETAIL
+
+        expressions = \
+            [InvoiceEntity.invoice_status == InvoiceEntity.InvoiceStatusEnum.ORDERED,
+             ProductsEntity.product_producer_user_id == current_user.id,
+             ProductsEntity.product_whole_sale_type == wholesale_type]
+
+        if from_invoice_date is not None:
+            if not isinstance(from_invoice_date, datetime.datetime):
+                from_invoice_date = parser.parse(from_invoice_date)
+            expressions.append(InvoiceEntity.invoice_date >= from_invoice_date)
+        if to_invoice_date is not None:
+            if not isinstance(to_invoice_date, datetime.datetime):
+                to_invoice_date = parser.parse(to_invoice_date)
+            expressions.append(InvoiceEntity.invoice_date <= to_invoice_date)
+
+        offset = options.get("__offset__")
+        if offset is None:
+            offset = 0
+        else:
+            offset = int(offset)
+        limit = options.get("__limit__")
+        if limit in (None, 0):
+            limit = Undef
+        else:
+            limit = int(limit)
+
+        statement = Select(columns=[InvoiceEntity.invoice_id,
+                                    InvoiceEntity.invoice_date,
+                                    InvoiceEntity.invoice_status,
+                                    InvoiceEntity.invoice_comment,
+                                    InvoiceEntity.invoice_consumer_user_id,
+                                    InvoiceItemEntity.item_id,
+                                    InvoiceItemEntity.item_product_id,
+                                    InvoiceItemEntity.item_price,
+                                    InvoiceItemEntity.item_quantity,
+                                    InvoiceItemEntity.item_row,
+                                    InvoiceItemEntity.item_color,
+                                    InvoiceItemEntity.item_size,
+                                    InvoiceItemEntity.item_brand,
+                                    ProductsEntity.product_name,
+                                    ProductsEntity.product_creation_date,
+                                    ProductsEntity.product_comment,
+                                    ProductsEntity.product_image,
+                                    ProductsEntity.product_age_category,
+                                    ProductsEntity.product_gender],
+                           where=And(Exists(Select(columns=[1],
+                                                   where=And(*expressions),
+                                                   order_by=[Desc(InvoiceEntity.invoice_date)],
+                                                   offset=offset,
+                                                   limit=limit)),
+                                     InvoiceItemEntity.invoice_id == InvoiceEntity.invoice_id,
+                                     InvoiceItemEntity.item_product_id == ProductsEntity.product_id),
+                           tables=[InvoiceEntity,
+                                   InvoiceItemEntity,
+                                   ProductsEntity],
+                           order_by=[Desc(InvoiceEntity.invoice_date),
+                                     InvoiceItemEntity.item_row])
+
+        results = []
+        store = get_current_transaction_store()
+        for (invoice_id,
+             invoice_date,
+             invoice_status,
+             invoice_comment,
+             invoice_consumer_user_id,
+             item_id,
+             item_product_id,
+             item_price,
+             item_quantity,
+             item_row,
+             item_color,
+             item_size,
+             item_brand,
+             product_name,
+             product_creation_date,
+             product_comment,
+             product_image,
+             product_age_category,
+             product_gender) in store.execute(statement):
+            invoice_item = DynamicObject(invoice_id=invoice_id,
+                                         invoice_date=invoice_date,
+                                         invoice_status=invoice_status,
+                                         invoice_comment=invoice_comment,
+                                         invoice_consumer_user_id=invoice_consumer_user_id,
+                                         item_id=item_id,
+                                         item_product_id=item_product_id,
+                                         item_price=item_price,
+                                         item_quantity=item_quantity,
+                                         item_row=item_row,
+                                         item_color=item_color,
+                                         item_size=item_size,
+                                         item_brand=item_brand,
+                                         product=DynamicObject(product_id=item_product_id,
+                                                               product_name=product_name,
+                                                               product_creation_date=product_creation_date,
+                                                               product_comment=product_comment,
+                                                               product_image=product_image,
+                                                               product_age_category=product_age_category,
+                                                               product_gender=product_gender))
+
+            results.append(invoice_item)
+
+        return results

@@ -134,3 +134,62 @@ class FlaskWebServicesInvoiceManager(DeltaObject):
             flat_invoices.append(flat_invoice)
 
         return jsonify(flat_invoices)
+
+
+    @staticmethod
+    @flask_app.route('/invoice/producer', methods=["POST"])
+    def find_producer_invoices():
+        """
+        Finds producer invoices!
+        """
+
+        FlaskWebServicesInvoiceManager.check_service_requirements(['ticket', 'user_name'])
+        options = FlaskWebServicesInvoiceManager.get_service_options()
+
+        if 'from_invoice_date' in request.json:
+            options['from_invoice_date'] = request.json['from_invoice_date']
+        if 'to_invoice_date' in request.json:
+            options['to_invoice_date'] = request.json['to_invoice_date']
+        if 'wholesale_type' in request.json:
+            options['wholesale_type'] = request.json['wholesale_type']
+        if '__offset__' in request.json:
+            options['__offset__'] = request.json['__offset__']
+        if '__limit__' in request.json:
+            options['__limit__'] = request.json['__limit__']
+
+        producer_invoices = \
+            pyro_server.execute_ex(request.json['ticket'], request.json['user_name'], 'server.invoices.producer_registered_invoices',
+                                   {}, **options)
+
+        producer_invoices = producer_invoices.get('result')
+
+        flat_invoices = []
+        for invoice in producer_invoices:
+            flat_invoice = {"invoice_id": invoice.get("invoice_id"),
+                            "invoice_date": invoice.get("invoice_date"),
+                            "invoice_status": invoice.get("invoice_status"),
+                            "invoice_consumer_user_id": invoice.get("invoice_consumer_user_id"),
+                            "invoice_comment": invoice.get("invoice_comment"),
+                            "item_id": invoice.get("item_id"),
+                            "item_product_id": invoice.get("item_product_id"),
+                            "item_price": invoice.get("item_price"),
+                            "item_quantity": invoice.get("item_quantity"),
+                            "item_row": invoice.get("item_row"),
+                            "item_color": invoice.get("item_color"),
+                            "item_size": invoice.get("item_size"),
+                            "item_brand": invoice.get("item_brand")}
+
+            p = invoice.get("product")
+            product = {"id": p.get("product_id"),
+                       "name": p.get("product_name"),
+                       "category": p.get("product_category"),
+                       "image": p.get("product_image"),
+                       "age_category": p.get("product_age_category"),
+                       "comment": p.get("product_comment"),
+                       "creation_date": p.get("product_creation_date"),
+                       "gender": p.get("product_gender")}
+
+            flat_invoice.update(product=product)
+            flat_invoices.append(flat_invoice)
+
+        return jsonify(flat_invoices)

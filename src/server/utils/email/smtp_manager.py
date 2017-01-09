@@ -66,7 +66,6 @@ class SmtpEmailManager(DeltaObject):
         :param email:
         :param change_code:
         '''
-        return
 
         # Example address data
         from_address = [u'Sport Magazine', 'mail.sportmagazine.ir']

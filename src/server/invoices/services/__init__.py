@@ -50,3 +50,13 @@ def update(invoice_id, **options):
     '''
 
     return get_component(SERVER_INVOICES_MANAGER).update(invoice_id, **options)
+
+
+def get_producer_registered_invoices(**options):
+    '''
+    Returns producer registered invoices.
+
+    :return:
+    '''
+
+    return get_component(SERVER_INVOICES_MANAGER).get_producer_registered_invoices(**options)

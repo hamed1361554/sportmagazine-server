@@ -54,3 +54,14 @@ def update(invoice_id, **options):
     '''
 
     return invoices_services.update(invoice_id, **options)
+
+
+@command('server.invoices.producer_registered_invoices')
+def get_producer_registered_invoices(**options):
+    '''
+    Returns producer registered invoices.
+
+    :return:
+    '''
+
+    return invoices_services.get_producer_registered_invoices(**options)
