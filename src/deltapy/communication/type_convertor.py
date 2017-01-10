@@ -120,9 +120,8 @@ class TypeConvertor(NullTypeConvertor):
             raise TypeConverterException(_('Invalid phrase [{0}] got detected.'.format(obj)))
 
     def safe_internal_convert(self, obj):
-        self._validate(obj)
-        result = self.internal_convert(obj)
-        return result
+        #self._validate(obj)
+        return self.internal_convert(obj)
 
     def safe_external_convert(self, obj):
         return self.external_convert(obj)
