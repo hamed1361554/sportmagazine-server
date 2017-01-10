@@ -136,6 +136,10 @@ class SecurityManager(BaseSecurityManager):
         if production_type == UserEntity.UserProductionTypeEnum.PRODUCER:
             user.user_production_package = production_package
 
+        user_image = options.get('image')
+        if user_image not in (None, ""):
+            user.user_image = str(user_image)
+
         user.user_last_login_date = datetime.datetime(datetime.MINYEAR, 1, 1, 0, 0, 0, 0)
 
         store = get_current_transaction_store()
@@ -168,6 +172,8 @@ class SecurityManager(BaseSecurityManager):
         @param **options:
         """
 
+        self._check_invalid_user_names(id)
+
         user = self.get_user_by_id(id)
         if user is None:
             raise UserNotFoundException(id)
@@ -189,6 +195,12 @@ class SecurityManager(BaseSecurityManager):
         mobile = params.get('mobile')
         if mobile is not None and mobile.strip() != "":
             user_entity.user_mobile = unicode(mobile)
+
+        user_image = params.get('image')
+        if user_image is not None and user_image.strip() != "":
+            user_entity.user_image = str(user_image)
+
+        return DynamicObject(entity_to_dic(user_entity))
 
     def activate_user(self, id, flag, **options):
         """

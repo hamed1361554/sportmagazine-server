@@ -198,6 +198,7 @@ class FlaskWebServicesProductsManager(DeltaObject):
                          "creation_date": p.get("product_creation_date"),
                          "price": float(p.get("product_price")),
                          "gender": p.get("product_gender"),
+                         "wholesale_type": p.get("product_whole_sale_type"),
                          "colors": p.get("product_colors"),
                          "sizes": p.get("product_sizes"),
                          "brands": p.get("product_brands")} for p in products])

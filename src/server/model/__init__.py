@@ -81,6 +81,7 @@ class UserEntity(UserBaseEntity):
     user_national_code = Unicode("USERNATIONALCODE")
     user_production_type = Int('USERPRODUCTIONTYPE')
     user_production_package = Int('USERPRDCRPCKG')
+    user_image = RawStr('USERIMAGE')
 
 
 class UserHistoryBaseEntity(Storm):
@@ -133,6 +134,13 @@ class UserHistoryEntity(UserHistoryBaseEntity):
     user_history_client_ip = Unicode("USHISTCLNTIP")
     user_history_status = Int("USHISTSTATUS")
     user_history_message = Unicode("USHISTMSG")
+    user_history_mobile = Unicode("USHISTMOBILE")
+    user_history_phone = Unicode("USHISTPHONE")
+    user_history_email = Unicode("USHISTEMAIL")
+    user_history_address = Unicode("USHISTADDRESS")
+    user_history_work_address = Unicode("USHISTWORKADDRESS")
+    user_history_national_code = Unicode("USHISTNATIONALCODE")
+    user_history_image = RawStr('USHISTIMAGE')
 
     user = Reference(("UserHistoryEntity.user_id"), ("UserEntity.id"))
 

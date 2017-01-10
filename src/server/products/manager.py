@@ -464,7 +464,8 @@ class ProductsManager(DeltaObject):
                             ProductsEntity.product_comment,
                             ProductsEntity.product_creation_date,
                             ProductsEntity.product_price,
-                            ProductsEntity.product_gender],
+                            ProductsEntity.product_gender,
+                            ProductsEntity.product_whole_sale_type],
                    where=And(*expressions),
                    tables=[ProductsEntity],
                    order_by=[Desc(ProductsEntity.product_creation_date)],
@@ -482,7 +483,8 @@ class ProductsManager(DeltaObject):
              product_comment,
              product_creation_date,
              product_price,
-             product_gender) in store.execute(statement):
+             product_gender,
+             product_whole_sale_type) in store.execute(statement):
             results.append(DynamicObject(product_id=product_id,
                                          product_name=product_name,
                                          product_category=product_category,
@@ -492,6 +494,7 @@ class ProductsManager(DeltaObject):
                                          product_creation_date=product_creation_date,
                                          product_price=product_price,
                                          product_gender=product_gender,
+                                         product_whole_sale_type=product_whole_sale_type,
                                          product_colors=self.get_product_colors(product_id, concat_results=True),
                                          product_sizes=self.get_product_sizes(product_id, concat_results=True),
                                          product_brands=self.get_product_brands(product_id, concat_results=True)))

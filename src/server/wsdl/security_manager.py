@@ -101,6 +101,8 @@ class FlaskWebServicesSecurityManager(DeltaObject):
             options['production_type'] = request.json['production_type']
         if 'production_package' in request.json:
             options['production_package'] = request.json['production_package']
+        if 'image' in request.json:
+            options['image'] = request.json['image']
 
         user = pyro_server.execute_ex(ticket, 'admin', 'security.user.create', {},
                                       request.json['user_name'], request.json['password'],
@@ -118,7 +120,8 @@ class FlaskWebServicesSecurityManager(DeltaObject):
                         "work_address": user.get('user_work_address'),
                         "national_code": user.get('user_national_code'),
                         "production_type": user.get('user_production_type'),
-                        "production_package": user.get('user_production_package')})
+                        "production_package": user.get('user_production_package'),
+                        "image": user.get('user_image')})
 
     @staticmethod
     @flask_app.route('/user/get', methods=["POST"])
@@ -144,7 +147,8 @@ class FlaskWebServicesSecurityManager(DeltaObject):
                         "work_address": user.get('user_work_address'),
                         "national_code": user.get('user_national_code'),
                         "production_type": user.get('user_production_type'),
-                        "production_package": user.get('user_production_package')})
+                        "production_package": user.get('user_production_package'),
+                        "image": user.get('user_image')})
 
     @staticmethod
     @flask_app.route('/activate/<path:input_data>', methods=["GET"])
@@ -189,3 +193,51 @@ class FlaskWebServicesSecurityManager(DeltaObject):
         pyro_server.logoff(ticket, 'admin')
 
         return jsonify(SUCCESS_RESPONSE)
+
+    @staticmethod
+    @flask_app.route('/user/update', methods=["POST"])
+    def update_user():
+        '''
+        Updates!
+        '''
+
+        FlaskWebServicesSecurityManager.check_service_requirements(['ticket', 'user_name'])
+        FlaskWebServicesSecurityManager.check_user_name()
+
+        options = FlaskWebServicesSecurityManager.get_service_options()
+
+        if 'mobile' in request.json:
+            options['mobile'] = request.json['mobile']
+        if 'phone' in request.json:
+            options['phone'] = request.json['phone']
+        if 'email' in request.json:
+            options['email'] = request.json['email']
+        if 'address' in request.json:
+            options['address'] = request.json['address']
+        if 'work_address' in request.json:
+            options['work_address'] = request.json['work_address']
+        if 'national_code' in request.json:
+            options['national_code'] = request.json['national_code']
+        if 'production_type' in request.json:
+            options['production_type'] = request.json['production_type']
+        if 'production_package' in request.json:
+            options['production_package'] = request.json['production_package']
+        if 'image' in request.json:
+            options['image'] = request.json['image']
+
+        user = pyro_server.execute_ex(request.json['ticket'], request.json['user_name'],
+                                      'security.user.update', {}, request.json['user_name'], **options)
+
+        user = user.get('result')
+        return jsonify({"user_name": user.get('user_id'),
+                        "password": user.get('user_password'),
+                        "full_name": user.get('user_full_name'),
+                        "mobile": user.get('user_mobile'),
+                        "email": user.get('user_email'),
+                        "address": user.get('user_address'),
+                        "phone": user.get('user_phone'),
+                        "work_address": user.get('user_work_address'),
+                        "national_code": user.get('user_national_code'),
+                        "production_type": user.get('user_production_type'),
+                        "production_package": user.get('user_production_package'),
+                        "image": user.get('user_image')})
