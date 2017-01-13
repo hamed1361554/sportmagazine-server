@@ -82,6 +82,9 @@ class InvoicesManager(DeltaObject):
         to_invoice_date = options.get('to_invoice_date')
         statuses = options.get('statuses')
         consumer_user_id = options.get('consumer_user_id')
+        show_only_current_user = options.get('show_only_current_user')
+        if show_only_current_user is None:
+            show_only_current_user = True
 
         expressions = []
 
@@ -97,6 +100,8 @@ class InvoicesManager(DeltaObject):
             expressions.append(In(InvoiceEntity.invoice_status, statuses))
         if consumer_user_id is not None:
             expressions.append(InvoiceEntity.invoice_consumer_user_id == consumer_user_id)
+        if show_only_current_user:
+            expressions.append(InvoiceEntity.invoice_consumer_user_id == get_current_user().id)
 
         offset = options.get("__offset__")
         if offset is None:
@@ -190,7 +195,7 @@ class InvoicesManager(DeltaObject):
                                                                              product_gender=product_gender)))
             invoice.total_invoce_price += item_quantity * item_price
 
-        return results.values()
+        return list(reversed(sorted(results.values(), key=lambda k: k['invoice_date'])))
 
     def register(self, invoice_items):
         '''

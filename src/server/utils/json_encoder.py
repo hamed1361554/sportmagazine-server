@@ -16,6 +16,6 @@ class CustomJsonEncoder(flask.json.JSONEncoder):
             return str(obj)
 
         if isinstance(obj, datetime):
-            return obj.strftime("%Y-%M-%d %H:%M:%S")
+            return obj.strftime("%Y-%m-%d %H:%M:%S")
 
         return super(CustomJsonEncoder, self).default(obj)
