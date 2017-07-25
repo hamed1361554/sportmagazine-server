@@ -618,3 +618,98 @@ class UserProductionPackageEntity(UserProductionPackageBaseEntity):
     package_code = Int("PCKGCODE")
     package_description = Unicode("PCKGDSCR")
     package_price = Decimal("PCKGPRC")
+
+
+class PurchasesBaseEntity(Storm):
+    """
+    This class defines sppurchases table.
+    *Created automatically by ExtractorEngine*
+    """
+    __version__ = 1.0
+    __storm_table__ = "sppurchases"
+    __storm_primary__ = "purchase_id"
+
+    purchase_id = Unicode("PURCHASEID")
+
+    def __eq__(self, other):
+        if isinstance(other, PurchasesBaseEntity):
+            return self.purchase_id == other.purchase_id
+        return False
+
+    def __hash__(self):
+        return hash(self.purchase_id)
+
+    def __repr__(self):
+        return '<%s.%s [ %s ] >' % (self.__module__,
+                                    self.__class__.__name__,
+                                    str(self.purchase_id))
+
+    def __str__(self):
+        return self.__storm_primary__.__str__()
+
+
+class PurchasesEntity(PurchasesBaseEntity):
+    """
+    This class defines sppurchases table.
+    *Created automatically by ExtractorEngine*
+    """
+
+    class InvoiceStatusEnum(DeltaEnum):
+        ORDERED = DeltaEnumValue(0, "Ordered")
+        CONFIRMED = DeltaEnumValue(1, "Confirmed")
+        REJECTED = DeltaEnumValue(2, "Rejected")
+        PAYED = DeltaEnumValue(3, "Payed")
+        NOT_PAYED = DeltaEnumValue(4, "Not Payed")
+        FAILED = DeltaEnumValue(5, "Failed")
+        PROCESSED = DeltaEnumValue(6, "Processed")
+        SHIPPED = DeltaEnumValue(7, "Shipped")
+        DELIVERED = DeltaEnumValue(8, "Delivered")
+
+    purchase_date = DateTime('PURCHASEDATE')
+    purchase_status = Int('PURCHASESTATE')
+    purchase_comment = DateTime('PURCHASECMNT')
+    purchase_producer_user_id = Unicode('PURCHASEPRODUCERID')
+    purchase_consumer_user_id = Unicode('PURCHASECONSUMERID')
+    purchase_product_id = Unicode('PURCHASEPRODUCTID')
+
+
+class PurchasesCommentBaseEntity(Storm):
+    """
+    This class defines sppurchasescmnts table.
+    *Created automatically by ExtractorEngine*
+    """
+    __version__ = 1.0
+    __storm_table__ = "sppurchasescmnts"
+    __storm_primary__ = "comment_id"
+
+    comment_id = Unicode("COMMENTID")
+
+    def __eq__(self, other):
+        if isinstance(other, PurchasesCommentBaseEntity):
+            return self.comment_id == other.comment_id
+        return False
+
+    def __hash__(self):
+        return hash(self.comment_id)
+
+    def __repr__(self):
+        return '<%s.%s [ %s ] >' % (self.__module__,
+                                    self.__class__.__name__,
+                                    str(self.comment_id))
+
+    def __str__(self):
+        return self.__storm_primary__.__str__()
+
+
+class PurchasesCommentEntity(PurchasesCommentBaseEntity):
+    """
+    This class defines sppurchasescmnts table.
+    *Created automatically by ExtractorEngine*
+    """
+
+    purchase_id = Unicode('PURCHASEID')
+    purchase_comment = Unicode('PURCHASECOMMNET')
+    purchase_comment_date = DateTime('PURCHASECOMMNETDATE')
+    purchase_comment_user_id = Unicode('PURCHASECOMMNETUSERID')
+    purchase_comment_producer_last_check = DateTime('PURCHASECOMMNETPRODUCERLAST')
+    purchase_comment_consumer_last_check = DateTime('PURCHASECOMMNETPCONSUMERLAST')
